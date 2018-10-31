@@ -1,4 +1,4 @@
-//META{"name":"GuildData","website":"https://twitter.com/l0c4lh057//","source":"https://github.com/l0c4lh057/GuildData/blob/master/GuildData.plugin.js","key":"value"}*//
+//META{"name":"GuildData","website":"https://twitter.com/l0c4lh057//","source":"https://github.com/l0c4lh057/GuildData/blob/master/GuildData.plugin.js"}*//
 
 class GuildData{
 	initConstructor () {}
@@ -16,7 +16,13 @@ class GuildData{
 	
 	
 	start(){
-		this.initialize();
+		var self = this;
+		if(typeof PluginUtilities === "undefined"){
+			setTimeout(function(){self.start()}, 1000);
+		}else{
+			PluginUtilities.checkForUpdate(this.getName(), this.getVersion(), "https://raw.githubusercontent.com/l0c4lh057/GuildData/master/GuildData.plugin.js");
+			this.initialize();
+		}
 	}
 	initialize(){
 		this.guildModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getGuild"]);
@@ -367,6 +373,7 @@ class GuildData{
 			}
 		});
 		
+		if(!PluginUtilities.isServer()) return;
 		if(document.getElementById('l0c4lh057 popup outer').style.display == 'block') this.getServer(PluginUtilities.getCurrentServer());
 	}
 	
