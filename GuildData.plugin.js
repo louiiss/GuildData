@@ -277,6 +277,15 @@ class GuildData{
 							document.execCommand('copy');
 							document.body.removeChild(tempInput);
 							BDFDB.showToast("Copied '" + document.getElementById(selElement).innerHTML + "'", {type:"success"});
+						}
+						function copyText4Dg3g5(text){
+							var tempInput = document.createElement('textarea');
+							document.body.appendChild(tempInput);
+							tempInput.innerHTML = text;
+							tempInput.select();
+							document.execCommand('copy');
+							document.body.removeChild(tempInput);
+							BDFDB.showToast("Copied '" + text + "'", {type:"success"});
 						}`
 			document.body.appendChild(insertedScript);
 		}
@@ -332,6 +341,7 @@ class GuildData{
 		}
 		$(document).off('contextmenu.' + this.getName());
 		this.stopInterval();
+		if(document.getElementById('l0c4lh057 script copy')) document.getElementById('l0c4lh057 script copy').outerHTML = '';
 		
 		this.initialized = false;
 		BDFDB.unloadMessage(this);
@@ -497,10 +507,22 @@ class GuildData{
 		
 		var roleSearch = document.getElementById('l0c4lh057 popup roleSearch');
 		roleSearch.innerHTML = `<h3 class="l0c4lh057">Role Information</h3><br>`;
+		var roleString = "";
 		for(const rId of Object.keys(guild.roles)){
 			const role = guild.roles[rId];
 			roleSearch.innerHTML += `<div id="l0c4lh057 role ${rId}" class="l0c4lh057 popup role ${rId}">${role.name} (${rId})`;
+			roleString += `${role.name} (${rId})\n`;
 		}
+		var copyRoles = document.createElement('button');
+		copyRoles.id = 'l0c4lh057 popup roles copybtn';
+		copyRoles.onclick = function(){copyText4Dg3g5(roleString.substring(roleString, roleString.length - 1));}
+		copyRoles.innerHTML = "Copy";
+		copyRoles.style.position = 'absolute';
+		copyRoles.style.right = '5px';
+		copyRoles.style.bottom = '5px';
+		copyRoles.style.backgroundColor = '#444';
+		copyRoles.style.color = 'lightgray';
+		roleSearch.appendChild(copyRoles);
 		for(const rId of Object.keys(guild.roles)){
 			const role = guild.roles[rId];
 			$(".l0c4lh057.popup.role." + rId).click((function() {
