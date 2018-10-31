@@ -303,6 +303,7 @@ class GuildData{
 	
 	addContextMenuItems(e) {
 		if(e.target.parentElement.href){
+			if(e.target.parentElement.href.includes('/channels/@me/')) return; /* return if it's a private channel/group channel */
 			let CSSRules = getMatchedCSSRules(e.toElement);
 			let context = document.querySelector('.contextMenu-HLZMGh');
 			if (!CSSRules) return;
@@ -576,10 +577,10 @@ class GuildData{
 		uiOpenChat.style.position = 'absolute';
 		uiOpenChat.style.bottom = '5px';
 		uiOpenChat.style.right = '5px';
-		uiOpenChat.innerHTML = 'Open Chat';
+		if(channel.type == 0) uiOpenChat.innerHTML = 'Open Chat'; else if(channel.type == 2) uiOpenChat.innerHTML = 'Connect';
 		uiOpenChat.style.width = '20%';
 		uiOpenChat.style.backgroundColor = '#444';
-		scs.appendChild(uiOpenChat);
+		if(channel.type == 2 || channel.type == 0) scs.appendChild(uiOpenChat);
 		
 		$('.l0c4lh057.popup.channel.openChat.' + channel.id + '.type' + channel.type).click((function(){
 			document.getElementById('l0c4lh057 popup outer').style.display = 'none';
