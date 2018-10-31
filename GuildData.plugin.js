@@ -1,4 +1,4 @@
-//META{"name":"GuildData"}*//
+//META{"name":"GuildData","website":"https://twitter.com/l0c4lh057//","source":"https://github.com/l0c4lh057/GuildData/blob/master/GuildData.plugin.js","key":"value"}*//
 
 class GuildData{
 	initConstructor () {}
@@ -16,31 +16,16 @@ class GuildData{
 	
 	
 	start(){
-		/* trying to get independend from BDFDB (guildModule, userModule, memberModule, channelModule, UserMetaStore, channelSelector, getSelectedServer, maybe loadMessage/unloadMessage) */
-		var libraryScript = null;
-		if (typeof BDFDB !== "object" || BDFDB.isLibraryOutdated()) {
-			if (typeof BDFDB === "object") BDFDB = "";
-			libraryScript = document.querySelector('head script[src="https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDFDB.js"]');
-			if (libraryScript) libraryScript.remove();
-			libraryScript = document.createElement("script");
-			libraryScript.setAttribute("type", "text/javascript");
-			libraryScript.setAttribute("src", "https://mwittrien.github.io/BetterDiscordAddons/Plugins/BDFDB.js");
-			document.head.appendChild(libraryScript);
-		}
-		this.startTimeout = setTimeout(() => {this.initialize();}, 30000);
-		if (typeof BDFDB === "object") this.initialize();
-		else libraryScript.addEventListener("load", () => {this.initialize();});
+		this.initialize();
 	}
 	initialize(){
-		BDFDB.loadMessage(this);
-		
-		this.guildModule = BDFDB.WebModules.findByProperties(["getGuild"]);
-		this.userModule = BDFDB.WebModules.findByProperties(["getUser"]);
-		this.memberModule = BDFDB.WebModules.findByProperties(["getMember"]);
-		this.channelModule = BDFDB.WebModules.findByProperties(["getChannel"]);
-		this.UserMetaStore = BDFDB.WebModules.findByProperties(["getStatus", "getOnlineFriendCount"]);
+		this.guildModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getGuild"]);
+		this.userModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getUser"]);
+		this.memberModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getMember"]);
+		this.channelModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getChannel"]);
+		this.UserMetaStore = InternalUtilities.WebpackModules.findByUniqueProperties(["getStatus", "getOnlineFriendCount"]);
 		this.privateChannelActions = InternalUtilities.WebpackModules.findByUniqueProperties(["openPrivateChannel"]);
-		this.channelSelector = BDFDB.WebModules.findByProperties(["selectPrivateChannel"]);
+		this.channelSelector = InternalUtilities.WebpackModules.findByUniqueProperties(["selectPrivateChannel"]);
 		
 		this.css = `
 		.l0c4lh057.popup{
@@ -91,7 +76,7 @@ class GuildData{
 							
 							$(".item-1GzJrl.da-item.l0c4lh057.showonclick").click((function() {
 								$(document.querySelector('.container-2Rl01u.popout-open')).click();
-								self.getServer(BDFDB.getSelectedServer());
+								self.getServer(PluginUtilities.getCurrentServer());
 							}));
 						}
 						exi = true;
@@ -276,7 +261,7 @@ class GuildData{
 							tempInput.select();
 							document.execCommand('copy');
 							document.body.removeChild(tempInput);
-							BDFDB.showToast("Copied '" + document.getElementById(selElement).innerHTML + "'", {type:"success"});
+							PluginUtilities.showToast("Copied '" + document.getElementById(selElement).innerHTML + "'", {type:"success"});
 						}
 						function copyText4Dg3g5(text){
 							var tempInput = document.createElement('textarea');
@@ -285,7 +270,7 @@ class GuildData{
 							tempInput.select();
 							document.execCommand('copy');
 							document.body.removeChild(tempInput);
-							BDFDB.showToast("Copied '" + text + "'", {type:"success"});
+							PluginUtilities.showToast("Copied '" + text + "'", {type:"success"});
 						}`
 			document.body.appendChild(insertedScript);
 		}
@@ -345,7 +330,6 @@ class GuildData{
 		if(document.getElementById('l0c4lh057 script copy')) document.getElementById('l0c4lh057 script copy').outerHTML = '';
 		
 		this.initialized = false;
-		BDFDB.unloadMessage(this);
 	}
 	stopInterval(){
 		window.clearInterval(this.updateInformationTimer);
@@ -374,7 +358,7 @@ class GuildData{
 							
 							$(".item-1GzJrl.da-item.l0c4lh057.showonclick").click((function() {
 								$(document.querySelector('.container-2Rl01u.popout-open')).click();
-								self.getServer(BDFDB.getSelectedServer());
+								self.getServer(PluginUtilities.getCurrentServer());
 							}));
 						}
 						exi = true;
@@ -383,7 +367,7 @@ class GuildData{
 			}
 		});
 		
-		if(document.getElementById('l0c4lh057 popup outer').style.display == 'block') this.getServer(BDFDB.getSelectedServer());
+		if(document.getElementById('l0c4lh057 popup outer').style.display == 'block') this.getServer(PluginUtilities.getCurrentServer());
 	}
 	
 	
@@ -392,11 +376,6 @@ class GuildData{
 	
 	
 	getServer(guild){
-		this.guildModule = BDFDB.WebModules.findByProperties(["getGuild"]);
-		this.userModule = BDFDB.WebModules.findByProperties(["getUser"]);
-		this.memberModule = BDFDB.WebModules.findByProperties(["getMember"]);
-		this.channelModule = BDFDB.WebModules.findByProperties(["getChannel"]);
-		
 		document.getElementById('l0c4lh057 popup sChannelSearch').style.zIndex = '5';
 		document.getElementById('l0c4lh057 popup channel permission').style.zIndex = '5';
 		document.getElementById('l0c4lh057 popup role permission').style.zIndex = '5';
