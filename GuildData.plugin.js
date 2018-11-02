@@ -17,7 +17,7 @@ class GuildData{
 	
 	start(){
 		var self = this;
-		if(typeof PluginUtilities === "undefined"){
+		if(typeof PluginUtilities === "undefined" || typeof InternalUtilities === "undefined"){
 			setTimeout(function(){self.start()}, 1000);
 		}else{
 			PluginUtilities.checkForUpdate(this.getName(), this.getVersion(), "https://raw.githubusercontent.com/l0c4lh057/GuildData/master/GuildData.plugin.js");
@@ -163,21 +163,27 @@ class GuildData{
 			userInformation.innerHTML = '<h3 class="l0c4lh057">User Information</h3>';
 			popupInner.appendChild(userInformation);
 			
+			var roleContainer = document.createElement('div');
+			roleContainer.className = 'l0c4lh057 popup';
+			roleContainer.id = 'l0c4lh057 popup roleContainer';
+			roleContainer.style.right = '0%';
+			roleContainer.style.bottom = '0%';
+			roleContainer.style.width = '47.5%';
+			roleContainer.style.height = '47.5%';
+			roleContainer.style.border = '2px grey solid';
+			roleContainer.style.zIndex = '10';
+			roleContainer.style.borderRadius = '5px';
+			roleContainer.style.position = 'absolute';
+			roleContainer.style.padding = '5px';
+			popupInner.appendChild(roleContainer);
+			
 			var roleSearch = document.createElement('div');
 			roleSearch.className = 'l0c4lh057 popup';
 			roleSearch.id = 'l0c4lh057 popup roleSearch';
-			roleSearch.style.position = 'absolute';
 			roleSearch.style.overflowY = 'auto';
-			roleSearch.style.right = '0%';
-			roleSearch.style.bottom = '0%';
-			roleSearch.style.width = '47.5%';
-			roleSearch.style.height = '47.5%';
-			roleSearch.style.padding = '5px';
-			roleSearch.style.border = '2px grey solid';
-			roleSearch.style.borderRadius = '5px';
-			roleSearch.style.zIndex = '10';
+			roleSearch.style.height = '100%';
 			roleSearch.innerHTML = '<h3 class="l0c4lh057">Role Information</h3>';
-			popupInner.appendChild(roleSearch);
+			roleContainer.appendChild(roleSearch);
 			
 			var rolePermissionInformation = document.createElement('div');
 			rolePermissionInformation.className = 'l0c4lh057 popup';
@@ -495,21 +501,23 @@ class GuildData{
 		var roleSearch = document.getElementById('l0c4lh057 popup roleSearch');
 		roleSearch.innerHTML = `<h3 class="l0c4lh057">Role Information</h3><br>`;
 		var roleString = "";
+		var toAdd = "<div>";
 		for(const rId of Object.keys(guild.roles)){
 			const role = guild.roles[rId];
-			roleSearch.innerHTML += `<div id="l0c4lh057 role ${rId}" class="l0c4lh057 popup role ${rId}">${role.name} (${rId})`;
+			toAdd += `<div id="l0c4lh057 role ${rId}" class="l0c4lh057 popup role ${rId}">${role.name} (${rId})</div>`;
 			roleString += `${role.name} (${rId})\n`;
 		}
+		roleSearch.innerHTML += toAdd + '</div>';
 		var copyRoles = document.createElement('button');
 		copyRoles.id = 'l0c4lh057 popup roles copybtn';
 		copyRoles.onclick = function(){copyText4Dg3g5(roleString.substring(roleString, roleString.length - 1));}
 		copyRoles.innerHTML = "Copy";
 		copyRoles.style.position = 'absolute';
-		copyRoles.style.right = '5px';
 		copyRoles.style.bottom = '5px';
+		copyRoles.style.right = '5px';
 		copyRoles.style.backgroundColor = '#444';
 		copyRoles.style.color = 'lightgray';
-		roleSearch.appendChild(copyRoles);
+		document.getElementById('l0c4lh057 popup roleContainer').appendChild(copyRoles);
 		for(const rId of Object.keys(guild.roles)){
 			const role = guild.roles[rId];
 			$(".l0c4lh057.popup.role." + rId).click((function() {
@@ -569,8 +577,10 @@ class GuildData{
 		if(channel.type == 2 || channel.type == 0) scs.appendChild(uiOpenChat);
 		
 		$('.l0c4lh057.popup.channel.openChat.' + channel.id + '.type' + channel.type).click((function(){
+			self.stopInterval();
 			document.getElementById('l0c4lh057 popup outer').style.display = 'none';
-			self.channelSelector.selectVoiceChannel(channel);
+			//self.channelSelector.selectVoiceChannel(channel);
+			PluginUtilities.showToast("Not implemented yet", {type:"error"});
 		}));
 	}
 	
@@ -605,6 +615,7 @@ class GuildData{
 		var c = `<h3 class="l0c4lh057">Role Information</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${role.name} (${role.id})</div><br><table>
 		<tr><td>Permissions:</td><td>${role.permissions}</td></tr>
 		<tr><td></td><td>${this.getPermissionsFromBase16(role.permissions)}</td></tr>
+		<tr><td>Not allowed:</td><td>${this.getNotPermissionsFromBase16(role.permissions)}</td></tr>
 		<tr><td>Mentionable:</td><td>${role.mentionable}</td></tr>`;
 		if(role.colorString) c += `<tr><td>Color:</td><td>${role.colorString} <p style="display:inline;color:${role.colorString}">(Example)</p></td></tr>`; else c += `<tr><td>Color:</td><td>No color set</td></tr>`;
 		c += `
@@ -662,6 +673,51 @@ class GuildData{
 			var numb = Object.keys(perms)[i];
 			if(base16 >= numb){
 				base16 -= numb;
+				p += perms[numb] + ", ";
+			}
+		}
+		if(p.length > 2) p = p.substring(0, p.length - 2);
+		if(base16 == 0) return p; else return "Invalid permissions: " + b16;
+	}
+	getNotPermissionsFromBase16(base16){
+		var b16 = base16;
+		var p = "";
+		var perms = {
+			1073741824: "Manage Emojis",
+			536870912: "Manage Webhooks",
+			268435456: "Manage Roles",
+			134217728: "Manage Nicknames",
+			67108864: "Change Nickname",
+			33554432: "Use Voice Activity",
+			16777216: "Move Members",
+			8388608: "Deafen Members",
+			4194304: "Mute Members",
+			2097152: "Speak",
+			1048576: "Connect",
+			262144: "Use External Emojis",
+			131072: "Mention @everyone",
+			65536: "Read Message History",
+			32768: "Attach Files",
+			16384: "Embed Links",
+			8192: "Manage Messages",
+			4096: "Send TTS Messages",
+			2048: "Send Messages",
+			1024: "View Channel / Read Messages",
+			256: "Priority Speaker",
+			128: "View Audit Log",
+			64: "Add Reactions",
+			32: "Manage Server",
+			16: "Manage Channels",
+			8: "Administrator",
+			4: "Ban Members",
+			2: "Kick Members",
+			1: "Create Instant Invite"
+		};
+		for(var i = Object.keys(perms).length - 1; i > -1 ; i--){
+			var numb = Object.keys(perms)[i];
+			if(base16 >= numb){
+				base16 -= numb;
+			}else{
 				p += perms[numb] + ", ";
 			}
 		}
@@ -738,7 +794,7 @@ class GuildData{
 		console.log(user);
 		console.log(member);
 		
-		var c = `<h3 class="l0c4lh057">User Information</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><br><table style="margin-bottom:10px;">
+		var c = `<h3 class="l0c4lh057">User Information</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><div style="width:64px;height:64px;background-image:url(${this.getUserAvatarURL(user.id)});background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;"></div><br><table style="margin-bottom:10px;">
 		<tr><td>Nickname:</td><td>${member.nick}</td></tr>
 		<tr><td>Color:</td><td>${member.colorString} <div style="color:${member.colorString};display:inline;">(Example)</div></td></tr>
 		<tr><td>Hoist role:</td><td>`;
@@ -893,6 +949,15 @@ class GuildData{
 	getExplicitContentFilterLevel(level){
 		if(level == 0) return "Disabled"; else if(level == 1) return "Members without role"; else if(level == 2) return "All members";
 		return "Invalid";
+	}
+	
+	getUserAvatarURL(eA=DiscordModules.UserStore.getCurrentUser().id){
+		eA=typeof eA=='number'?eA['toFixed']():eA;
+		var eB=DiscordModules.UserStore;
+		var eC=DiscordModules.ImageResolver;
+		var eD=eB['getUser'](eA);
+		//return((eD&&eD['avatar']?'':'https://discordapp.com')+eC['getUserAvatarURL'](eD))['split']('?size')[0x0];
+		return eC['getUserAvatarURL'](eD)['split']('?size')[0x0];
 	}
 	
 	
