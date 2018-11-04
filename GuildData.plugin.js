@@ -7,7 +7,7 @@ class GuildData{
 
 	getDescription () {return "Displays something about guilds";}
 
-	getVersion () {return "0.0.0.2";}
+	getVersion () {return "0.0.2";}
 
 	getAuthor () {return "l0c4lh057";}
 	
