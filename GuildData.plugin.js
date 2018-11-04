@@ -1,4 +1,4 @@
-//META{"name":"GuildData","website":"https://twitter.com/l0c4lh057//","source":"https://github.com/l0c4lh057/GuildData/blob/master/GuildData.plugin.js"}*//
+//META{"name":"GuildData","displayName":"GuildData","website":"https://twitter.com/l0c4lh057//","source":"https://github.com/l0c4lh057/GuildData/blob/master/GuildData.plugin.js"}*//
 
 class GuildData{
 	initConstructor () {}
@@ -131,37 +131,45 @@ class GuildData{
 			popupInformation.style.borderRadius = '5px';
 			popupInner.appendChild(popupInformation);
 			
+			var userContainer = document.createElement('div');
+			userContainer.className = 'l0c4lh057 popup';
+			userContainer.id = 'l0c4lh057 popup userContainer';
+			userContainer.style.right = '0%';
+			userContainer.style.top = '0%';
+			userContainer.style.width = 'calc(47.5% + 14px)';
+			userContainer.style.height = 'calc(47.5% + 14px)';
+			userContainer.style.position = 'absolute';
+			popupInner.appendChild(userContainer);
+			
 			var userSearch = document.createElement('div');
 			userSearch.className = 'l0c4lh057 popup';
 			userSearch.id = 'l0c4lh057 popup userSearch';
-			userSearch.style.position = 'absolute';
 			userSearch.style.overflowY = 'auto';
-			userSearch.style.right = '0%';
-			userSearch.style.top = '0%';
-			userSearch.style.width = '47.5%';
-			userSearch.style.height = '47.5%';
+			userSearch.style.height = 'calc(100% - 14px)';
 			userSearch.style.padding = '5px';
 			userSearch.style.border = '2px grey solid';
 			userSearch.style.borderRadius = '5px';
 			userSearch.style.zIndex = '10';
+			userSearch.style.position = 'absolute';
+			userSearch.style.top = '0%';
+			userSearch.style.width = 'calc(100% - 14px)';
 			userSearch.innerHTML = '<h3 class="l0c4lh057">User Information</h3>';
-			popupInner.appendChild(userSearch);
+			userContainer.appendChild(userSearch);
 			
 			var userInformation = document.createElement('div');
 			userInformation.className = 'l0c4lh057 popup';
 			userInformation.id = 'l0c4lh057 popup user information';
-			userInformation.style.position = 'absolute';
 			userInformation.style.overflowY = 'auto';
-			userInformation.style.right = '0%';
-			userInformation.style.top = '0%';
-			userInformation.style.width = '47.5%';
-			userInformation.style.height = '47.5%';
+			userInformation.style.height = 'calc(100% - 14px)';
 			userInformation.style.padding = '5px';
 			userInformation.style.border = '2px grey solid';
 			userInformation.style.borderRadius = '5px';
 			userInformation.style.zIndex = '5';
+			userInformation.style.position = 'absolute';
+			userInformation.style.top = '0%';
+			userInformation.style.width = 'calc(100% - 14px)';
 			userInformation.innerHTML = '<h3 class="l0c4lh057">User Information</h3>';
-			popupInner.appendChild(userInformation);
+			userContainer.appendChild(userInformation);
 			
 			var roleContainer = document.createElement('div');
 			roleContainer.className = 'l0c4lh057 popup';
@@ -257,6 +265,7 @@ class GuildData{
 			btnClose.style.fontSize = '150%';
 			btnClose.innerHTML = 'X';
 			btnClose.onclick = function() { 
+				if(document.getElementById('l0c4lh057 popup user openChat')) document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
 				document.getElementById('l0c4lh057 popup outer').style.display = 'none';
 			};
 			popupWindow.appendChild(btnClose);
@@ -393,6 +402,7 @@ class GuildData{
 		document.getElementById('l0c4lh057 popup channel permission').style.zIndex = '5';
 		document.getElementById('l0c4lh057 popup role permission').style.zIndex = '5';
 		document.getElementById('l0c4lh057 popup user information').style.zIndex = '5';
+		if(document.getElementById('l0c4lh057 popup user openChat')) document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
 		
 		this.stopInterval();
 		/* look for unimplemented outputs and add them to ui -> delete this */
@@ -790,11 +800,11 @@ class GuildData{
 		var ui = document.getElementById('l0c4lh057 popup user information');
 		ui.style.zIndex = '15';
 		var activity = this.UserMetaStore.getPrimaryActivity(user.id);
-		console.log(this.UserMetaStore.getActivities(user.id));
-		console.log(user);
-		console.log(member);
+		//console.log(this.UserMetaStore.getActivities(user.id));
+		//console.log(user);
+		//console.log(member);
 		
-		var c = `<h3 class="l0c4lh057">User Information</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><div style="width:64px;height:64px;background-image:url(${this.getUserAvatarURL(user.id)});background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;"></div><br><table style="margin-bottom:10px;">
+		var c = `<h3 class="l0c4lh057">User Information</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><div style="width:64px;height:64px;background-image:url(${this.getUserAvatarURL(user.id)});background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;">
 		<tr><td>Nickname:</td><td>${member.nick}</td></tr>
 		<tr><td>Color:</td><td>${member.colorString} <div style="color:${member.colorString};display:inline;">(Example)</div></td></tr>
 		<tr><td>Hoist role:</td><td>`;
@@ -804,8 +814,8 @@ class GuildData{
 		<tr><td>Created at:</td><td>${user.createdAt.toLocaleString()}</td></tr>
 		<tr><td>Status:</td><td>${this.UserMetaStore.getStatus(user.id)}</td></tr>`;
 		if(!activity) c += `<tr><td>Activity:</td><td>No activity</td></tr>`; else{
-			c += `<tr><td>Activity:</td><td>${this.getActivityType(activity.type)} ${activity.name}</td></tr>`;
-			if(activity.details) c += `<tr><td>Activity details:</td><td>${activity.details}</td></tr>`;                          // Spotify: Song-Name
+			//c += `<tr><td>Activity:</td><td>${this.getActivityType(activity.type)} ${activity.name}</td></tr>`;
+			/*if(activity.details) c += `<tr><td>Activity details:</td><td>${activity.details}</td></tr>`;                          // Spotify: Song-Name
 			if(activity.state) c += `<tr><td>Activity state:</td><td>${activity.state}</td></tr>`;                                // Spotify: Song-Interpret
 			if(activity.assets) if(activity.assets.small_text) c += `<tr><td>Activity small_text:</td><td>${activity.assets.small_text}</td></tr>`;   // 
 			if(activity.assets) if(activity.assets.large_text) c += `<tr><td>Activity large_text:</td><td>${activity.assets.large_text}</td></tr>`;   // Spotify: Album
@@ -819,70 +829,176 @@ class GuildData{
 					c += `<tr><td>Activity duration:</td><td>${durationS}s</td></tr>
 					<tr><td>Activity progress:</td><td>${this.getDurationOfSeconds(progressS)} <progress value="${progress}" max="${duration}" style="height:6px;border-radius:3px;align-self:center;"></progress> ${this.getDurationOfSeconds(durationS)}</td></tr>`;
 				} else if(activity.timestamps.start) c += `<tr><td>Activity duration:</td><td>${this.getDurationOfSeconds(Math.round((Date.now() - activity.timestamps.start) / 1000), 'long')}</td></tr>`;
-			}
+			}*/
 		}
 		c += `</table>`;
-		
+		//console.log(activity);
 		ui.innerHTML = c;
 		if(activity){
 			var container = document.createElement('div');
 			container.style.position = 'absolute';
 			container.style.left = '3%';
-			container.style.maxWidth = '94%';
+			container.style.width = 'calc(94% - 15px)';
 			container.style.height = 'auto';
 			container.style.padding = '5px';
 			container.style.borderRadius = '5px';
 			container.style.border = '2px white solid';
-			container.innerHTML = activity.name;
+			container.innerHTML = "";
 			
-			if(activity.assets) if(activity.assets.large_image){
-				var largeImage = document.createElement('div');
-				if(activity.application_id) largeImage.style.backgroundImage = 'url(https://cdn.discordapp.com/app-assets/' + activity.application_id + '/' + activity.assets.large_image + ')'; else largeImage.style.backgroundImage = 'url(https://i.scdn.co/image/' + activity.assets.large_image.split(':')[1] + ')';
-				largeImage.style.backgroundRepeat = 'no-repeat';
-				largeImage.style.backgroundSize = 'contain';
-				largeImage.style.width = '100%';
-				largeImage.style.height = '100%';
-				largeImage.style.display = 'block';
-				largeImage.style.position = 'absolute';
-				container.appendChild(largeImage);
+			var aTitle = document.createElement('div');
+			aTitle.className = 'headerTextNormal-2mGWX3 headerText-1HLrL7 marginBottom8-AtZOdT da-headerTextNormal da-headerText da-marginBottom8 small-29zrCQ size12-3R0845 height16-2Lv3qA weightBold-2yjlgw';
+			aTitle.innerHTML = this.getActivityType(activity.type) + ' ' + activity.name;
+			container.appendChild(aTitle);
+			
+			
+			var largeImage = document.createElement('div');
+			if(activity.assets){
+				if(activity.assets.large_image){
+					if(activity.application_id)
+						largeImage.style.backgroundImage = 'url(https://cdn.discordapp.com/app-assets/' + activity.application_id + '/' + activity.assets.large_image + ')';
+					else
+						largeImage.style.backgroundImage = 'url(https://i.scdn.co/image/' + activity.assets.large_image.split(':')[1] + ')';
+				}
+			} else
+				largeImage.style.backgroundImage = 'url("/assets/a5eba102f5b5e413df2b65c73f288afa.svg")';
+			largeImage.style.backgroundRepeat = 'no-repeat';
+			largeImage.style.backgroundSize = 'contain';
+			largeImage.style.width = '64px';
+			largeImage.style.height = '64px';
+			largeImage.style.display = 'block';
+			container.appendChild(largeImage);
+				
+			var addTimestamp = false;
+			if(activity.timestamps) {
+				if(activity.timestamps.end && activity.timestamps.start){
+					var duration = activity.timestamps.end - activity.timestamps.start;
+					var durationS = Math.round(duration / 1000);
+					var progress = Date.now() - activity.timestamps.start;
+					if(progress < 0) progress = 0;
+					if(progress > duration) progress = duration;
+					var progressS = Math.round(progress / 1000);
+					var progressPercentage = Math.round(progress / duration * 1000) / 10;
+					var aProgressBar = document.createElement('progress');
+					aProgressBar.value = progress;
+					aProgressBar.max = duration;
+					aProgressBar.style.height = '4px';
+					aProgressBar.style.position = 'relative';
+					aProgressBar.style.width = '96%';
+					aProgressBar.style.left = '2%';
+					aProgressBar.style.borderRadius = '2px';
+					container.appendChild(aProgressBar);
+					var aProgress = document.createElement('div');
+					aProgress.style.left = '2%';
+					aProgress.style.position = 'relative';
+					aProgress.style.display = 'inline';
+					aProgress.innerHTML = this.getDurationOfSeconds(progressS);
+					container.appendChild(aProgress);
+					var aDuration = document.createElement('div');
+					aDuration.style.right = '3%';
+					aDuration.style.position = 'absolute';
+					aDuration.style.display = 'inline';
+					aDuration.innerHTML = this.getDurationOfSeconds(durationS);
+					container.appendChild(aDuration);
+				} else if(activity.timestamps.start)
+					addTimestamp = true;
+			}
+			
+			var iContainer = document.createElement('div');
+			iContainer.style.top = '28px';
+			iContainer.style.position = 'absolute';
+			iContainer.style.left = '74px';
+			iContainer.style.width = 'calc(100% - 70px)';
+			container.appendChild(iContainer);
+			
+			if(activity.details){
+				var aDetails = document.createElement('div');
+				aDetails.style.fontWeight = 'bold';
+				aDetails.style.left = '0px';
+				aDetails.style.top = '0px';
+				aDetails.style.width = '100%';
+				aDetails.style.position = 'relative';
+				aDetails.style.marginBottom = '4px';
+				aDetails.innerHTML = activity.details;
+				iContainer.appendChild(aDetails);
+			}
+			if(activity.state){
+				var aState = document.createElement('div');
+				aState.style.left = '0px';
+				aState.style.top = '0px';
+				aState.style.width = '100%';
+				aState.style.position = 'relative';
+				aState.style.marginBottom = '4px';
+				aState.innerHTML = activity.state;
+				iContainer.appendChild(aState);
+			}
+			if(activity.assets) if(activity.assets.large_text){
+				var aLText = document.createElement('div');
+				aLText.style.left = '0px';
+				aLText.style.top = '0px';
+				aLText.style.width = '100%';
+				aLText.style.position = 'relative';
+				aLText.style.marginBottom = '4px';
+				aLText.innerHTML = activity.assets.large_text;
+				iContainer.appendChild(aLText);
+			}
+			if(addTimestamp){
+				var progress = Date.now() - activity.timestamps.start;
+				if(progress < 0) progress = 0;
+				var progressS = Math.round(progress / 1000);
+				var aTimestamp = document.createElement('div');
+				aTimestamp.style.left = '0px';
+				aTimestamp.style.top = '0px';
+				aTimestamp.style.width = '100%';
+				aTimestamp.style.position = 'relative';
+				aTimestamp.style.marginBottom = '4px';
+				aTimestamp.innerHTML = 'for ' + this.getDurationOfSeconds(progressS, 'long');
+				iContainer.appendChild(aTimestamp);
 			}
 			
 			ui.appendChild(container);
 		}
 		
-		/* automatically update user information once per second, disabled for editing */
-		//if(!this.updateInformationTimer) this.updateInformationTimer = window.setInterval(function(){self.showUserInformation(guild, user, member);}, 1000);
+		/* automatically update user information once per second, disable for editing */
+		if(!this.updateInformationTimer) this.updateInformationTimer = window.setInterval(function(){self.showUserInformation(guild, user, member);}, 1000);
 		
+		if(document.getElementById('l0c4lh057 popup user openChat')) document.getElementById('l0c4lh057 popup user openChat').outerHTML = '';
 		var uiOpenChat = document.createElement('button');
 		uiOpenChat.className = 'l0c4lh057 popup user openChat ' + user.id;
+		uiOpenChat.id = 'l0c4lh057 popup user openChat';
 		uiOpenChat.style.position = 'absolute';
 		uiOpenChat.style.bottom = '5px';
 		uiOpenChat.style.right = '5px';
 		uiOpenChat.innerHTML = 'Open Chat';
 		uiOpenChat.style.width = '20%';
 		uiOpenChat.style.backgroundColor = '#444';
-		if(user != this.userModule.getCurrentUser()) ui.appendChild(uiOpenChat);
+		uiOpenChat.style.zIndex = '20';
+		if(user != this.userModule.getCurrentUser()) document.getElementById('l0c4lh057 popup userContainer').appendChild(uiOpenChat);
 		
-		var uiBack = document.createElement('div');
-		uiBack.className = 'l0c4lh057 popup user back';
-		uiBack.style.position = 'absolute';
-		uiBack.style.top = '6px';
-		uiBack.style.right = '6px';
-		uiBack.style.fontWeight = 'bold';
-		uiBack.style.color = 'red';
-		uiBack.style.cursor = 'default';
-		uiBack.style.fontSize = '150%';
-		uiBack.innerHTML = 'X';
-		ui.appendChild(uiBack);
+		if(!document.getElementById('l0c4lh057 popup user back')){
+			var uiBack = document.createElement('div');
+			uiBack.className = 'l0c4lh057 popup user back';
+			uiBack.id = 'l0c4lh057 popup user back';
+			uiBack.style.position = 'absolute';
+			uiBack.style.top = '6px';
+			uiBack.style.right = '6px';
+			uiBack.style.fontWeight = 'bold';
+			uiBack.style.color = 'red';
+			uiBack.style.cursor = 'default';
+			uiBack.style.fontSize = '150%';
+			uiBack.style.zIndex = '999';
+			uiBack.innerHTML = 'X';
+			document.getElementById('l0c4lh057 popup userContainer').appendChild(uiBack);
+		}
 		
 		$('.l0c4lh057.popup.user.openChat.' + user.id).click((function(){
 			DiscordModules.PrivateChannelActions.ensurePrivateChannel(self.userModule.getCurrentUser().id, self.userModule.getUser(user.id).id).then(function(result){
 				self.stopInterval();
+				document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
 				document.getElementById('l0c4lh057 popup outer').style.display = 'none';
 				self.channelSelector.selectPrivateChannel(self.channelModule.getDMFromUserId(user.id));
 			});
 		}));
-		$('.l0c4lh057.popup.user.back').click((function(){document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; self.stopInterval();}));
+		$('.l0c4lh057.popup.user.back').click((function(){document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0'; self.stopInterval();}));
 		$('.l0c4lh057.popup.close').click((function(){self.stopInterval();}));
 	}
 	
