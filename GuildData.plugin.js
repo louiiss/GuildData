@@ -103,7 +103,7 @@ class GuildData{
 			popupWindow.style.height = '80%';
 			popupWindow.style.borderRadius = '10px';
 			popupWindow.style.boxShadow = '#191919 0px 0px 50px 30px';
-			popupWindow.style.zIndex = '9999999';
+			popupWindow.style.zIndex = '99';
 			document.getElementsByClassName('layer-3QrUeG')[0].appendChild(popupWindow);
 			
 			var popupInner = document.createElement('div');
@@ -168,20 +168,20 @@ class GuildData{
 			roleContainer.id = 'l0c4lh057 popup roleContainer';
 			roleContainer.style.right = '0%';
 			roleContainer.style.bottom = '0%';
-			roleContainer.style.width = '47.5%';
-			roleContainer.style.height = '47.5%';
-			roleContainer.style.border = '2px grey solid';
+			roleContainer.style.width = 'calc(47.5% + 14px)';
+			roleContainer.style.height = 'calc(47.5% + 14px)';
 			roleContainer.style.zIndex = '10';
-			roleContainer.style.borderRadius = '5px';
 			roleContainer.style.position = 'absolute';
-			roleContainer.style.padding = '5px';
 			popupInner.appendChild(roleContainer);
 			
 			var roleSearch = document.createElement('div');
 			roleSearch.className = 'l0c4lh057 popup';
 			roleSearch.id = 'l0c4lh057 popup roleSearch';
 			roleSearch.style.overflowY = 'auto';
-			roleSearch.style.height = '100%';
+			roleSearch.style.height = 'calc(100% - 14px)';
+			roleSearch.style.border = '2px grey solid';
+			roleSearch.style.borderRadius = '5px';
+			roleSearch.style.padding = '5px';
 			roleSearch.innerHTML = '<h3 class="l0c4lh057">Role Information</h3>';
 			roleContainer.appendChild(roleSearch);
 			
@@ -484,12 +484,12 @@ class GuildData{
 		}
 		for(const v of Object.keys(channelsSortedC)){
 			const channel = channelsSortedC[v];
-			channelSearch.innerHTML += `<div id="l0c4lh057 popup channel collection ${channel.id}"><div class="l0c4lh057 popup channel single ${channel.id}">${this.getChannelType(channel.type)}: ${channel.name}</div></div>`;
+			channelSearch.innerHTML += `<div id="l0c4lh057 popup channel collection ${channel.id}"><div class="l0c4lh057 popup channel single ${channel.id}">${this.getChannelIcon(channel.type)}${channel.name}</div></div>`;
 		}
 		for(const v1 of Object.keys(channelsSortedVT)){
 			for(const v2 of Object.keys(channelsSortedVT[v1])){
 				const channel = channelsSortedVT[v1][v2];
-				if(document.getElementById("l0c4lh057 popup channel collection " + channel.parent_id)) document.getElementById("l0c4lh057 popup channel collection " + channel.parent_id).innerHTML += `<div id="l0c4lh057 popup channel collection ${channel.id}" style="margin-left:20px;"><div class="l0c4lh057 popup channel single ${channel.id}">${this.getChannelType(channel.type)}: ${channel.name}</div></div>`;
+				if(document.getElementById("l0c4lh057 popup channel collection " + channel.parent_id)) document.getElementById("l0c4lh057 popup channel collection " + channel.parent_id).innerHTML += `<div id="l0c4lh057 popup channel collection ${channel.id}" style="margin-left:20px;"><div class="l0c4lh057 popup channel single ${channel.id}">${this.getChannelIcon(channel.type)}${channel.name}</div></div>`;
 			}
 		}
 		for(const channel of channels){
@@ -925,6 +925,15 @@ class GuildData{
 		else if(type==4)
 			return "Category"
 		return "Unregistered channel type"
+	}
+	getChannelIcon(type){
+		if(type==0)
+			return `<svg style="display:inline;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" class="colorDefaultText-oas-QM icon-sxakjD da-colorDefaultText da-icon"><path class="foreground-2W-aJk da-foreground" fill="currentColor" d="M2.27333333,12 L2.74666667,9.33333333 L0.08,9.33333333 L0.313333333,8 L2.98,8 L3.68666667,4 L1.02,4 L1.25333333,2.66666667 L3.92,2.66666667 L4.39333333,0 L5.72666667,0 L5.25333333,2.66666667 L9.25333333,2.66666667 L9.72666667,0 L11.06,0 L10.5866667,2.66666667 L13.2533333,2.66666667 L13.02,4 L10.3533333,4 L9.64666667,8 L12.3133333,8 L12.08,9.33333333 L9.41333333,9.33333333 L8.94,12 L7.60666667,12 L8.08,9.33333333 L4.08,9.33333333 L3.60666667,12 L2.27333333,12 L2.27333333,12 Z M5.02,4 L4.31333333,8 L8.31333333,8 L9.02,4 L5.02,4 L5.02,4 Z" transform="translate(1.333 2)"></path></svg>`;
+		else if(type==2)
+			return `<svg name="Speaker" style="display:inline;" class="colorDefaultVoice-3wYlhb icon-sxakjD da-colorDefaultVoice da-icon" background="background-2OVjk_ da-background" width="16" height="16" viewBox="0 0 16 16"><path class="foreground-2W-aJk da-foreground" fill="currentColor" d="M9.33333333,2 L9.33333333,3.37333333 C11.26,3.94666667 12.6666667,5.73333333 12.6666667,7.84666667 C12.6666667,9.96 11.26,11.74 9.33333333,12.3133333 L9.33333333,13.6933333 C12,13.0866667 14,10.7 14,7.84666667 C14,4.99333333 12,2.60666667 9.33333333,2 L9.33333333,2 Z M11,7.84666667 C11,6.66666667 10.3333333,5.65333333 9.33333333,5.16 L9.33333333,10.5133333 C10.3333333,10.04 11,9.02 11,7.84666667 L11,7.84666667 Z M2,5.84666667 L2,9.84666667 L4.66666667,9.84666667 L8,13.18 L8,2.51333333 L4.66666667,5.84666667 L2,5.84666667 L2,5.84666667 Z"></path></svg>`;
+		else if(type==4)
+			return `<svg style="display:inline;position:inherit;" class="iconDefault-3Gr8d2 da-iconDefault iconTransition-2pOJ7l da-iconTransition directionDown-26e7eE" width="20" height="12" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M7 10L12 15 17 10"></path></svg>`;
+		return `Unregistered channel type`;
 	}
 	
 	getVerificationLevel(level){
