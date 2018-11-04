@@ -7,7 +7,7 @@ class GuildData{
 
 	getDescription () {return "Displays something about guilds";}
 
-	getVersion () {return "0.0.2";}
+	getVersion () {return "0.0.3";}
 
 	getAuthor () {return "l0c4lh057";}
 	
@@ -57,6 +57,9 @@ class GuildData{
 		}
 		.l0c4lh057::-webkit-scrollbar-corner{
 			background-color: #444;
+		}
+		.l0c4lh057{
+			-webkit-user-select: text;
 		}
 		`
 		
