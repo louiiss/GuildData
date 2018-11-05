@@ -5,9 +5,9 @@ class GuildData{
 
 	getName () {return "GuildData";}
 
-	getDescription () {return "Displays something about guilds";}
+	getDescription () {return this.local.description;}
 
-	getVersion () {return "0.0.4";}
+	getVersion () {return "0.0.5";}
 
 	getAuthor () {return "l0c4lh057";}
 	
@@ -15,7 +15,66 @@ class GuildData{
 	
 	
 	
+	get defaultSettings(){
+		return {
+			maxUsersShown: 100
+		}
+	}
+	getSettingsPanel() {
+        var panel = $("<form>").addClass("form").css("width", "100%");
+        if (this.initialized) this.generateSettings(panel);
+        return panel[0];
+	}
+
+	generateSettings(panel) {
+		new PluginSettings.ControlGroup(this.local.settings.title, () => {
+			this.saveSettings();
+		}, {
+			shown: true
+		}).appendTo(panel).append(
+			new PluginSettings.Slider(this.local.settings.maxUsersShown.title, this.local.settings.maxUsersShown.description, 10, 1000, 1,
+				this.settings.maxUsersShown, (val) => {
+					this.settings.maxUsersShown = val;
+				}).setLabelUnit(this.local.settings.maxUsersShown.unit)
+		);
+	}
+	
+	get local(){
+		if(!this.strings) this.strings = JSON.parse(`{
+				"de": {
+					"description": "Zeigt Informationen zu Servern an. Wenn du mir beim Übersetzen helfen möchtest, dann wende dich bitte an @l0c4lh057#6731",
+					"startMsg": "wurde gestartet",
+					"showGuildData": "Serverinfos anzeigen",
+					"copied": "Kopiert: ",
+					"settings": {
+						"title": "Einstellungen",
+						"maxUsersShown": {
+							"title": "Maximale Anzahl angezeigter Benutzer",
+							"description": "maximale Anzahl an Nutzern, die in User Information angezeigt werden (mehr Nutzer -> längere Ladezeit), standard: 100",
+							"unit": " Benutzer"
+						}
+					}
+				},
+				"en": {
+					"description": "Shows something about guilds. If you want to help translating, please contact me (@l0c4lh057#6731)",
+					"startMsg": "started",
+					"showGuildData": "Show Guild Data",
+					"copied": "Copied ",
+					"settings": {
+						"title": "Settings",
+						"maxUsersShown": {
+							"title": "Max shown user count",
+							"description": "max amount of users shown in the user information (more users -> longer loading time), default: 100",
+							"unit": " users"
+						}
+					}
+				}
+			}`);
+		return this.strings[this.lang] || this.strings.en;
+	}
+	
 	start(){
+		this.lang = document.documentElement.getAttribute('lang').split('-')[0];
 		var self = this;
 		if(typeof PluginUtilities === "undefined" || typeof InternalUtilities === "undefined"){
 			setTimeout(function(){self.start()}, 1000);
@@ -25,6 +84,10 @@ class GuildData{
 		}
 	}
 	initialize(){
+		this.initialized = true;
+		this.loadSettings();
+		PluginUtilities.showToast(`${this.getName()} ${this.getVersion()} ${this.local.startMsg}`, {type:"success"});
+		
 		this.guildModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getGuild"]);
 		this.userModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getUser"]);
 		this.memberModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getMember"]);
@@ -78,7 +141,7 @@ class GuildData{
 							liste.appendChild(sep);
 							var itm = document.createElement('div');
 							itm.className = 'item-1GzJrl da-item l0c4lh057 showonclick';
-							itm.innerHTML = '<div class="icon-2doZ3q da-icon" style="background-image: url(&quot;/assets/50f8ef2cdb4e7697a4202fb9c6d0e1fc.svg&quot;);"></div><div class="label-1Y-LW5 da-label">Show Guild Data</div>';
+							itm.innerHTML = '<div class="icon-2doZ3q da-icon" style="background-image: url(&quot;/assets/50f8ef2cdb4e7697a4202fb9c6d0e1fc.svg&quot;);"></div><div class="label-1Y-LW5 da-label">' + self.local.showGuildData + '</div>';
 							liste.appendChild(itm);
 							document.getElementsByClassName('popout-3sVMXz da-popout popoutBottom-1YbShG popoutbottom')[0].style.height = (document.getElementsByClassName('popout-3sVMXz da-popout popoutBottom-1YbShG popoutbottom')[0].offsetHeight + sep.offsetHeight + itm.offsetHeight) + 'px';
 							document.getElementsByClassName('menu-Sp6bN1 da-menu')[0].style.height = (document.getElementsByClassName('menu-Sp6bN1 da-menu')[0].offsetHeight + sep.offsetHeight + itm.offsetHeight) + 'px';
@@ -286,7 +349,7 @@ class GuildData{
 							tempInput.select();
 							document.execCommand('copy');
 							document.body.removeChild(tempInput);
-							PluginUtilities.showToast("Copied '" + document.getElementById(selElement).innerHTML + "'", {type:"success"});
+							PluginUtilities.showToast("${this.local.copied} '" + document.getElementById(selElement).innerHTML + "'", {type:"success"});
 						}
 						function copyText4Dg3g5(text){
 							var tempInput = document.createElement('textarea');
@@ -295,8 +358,8 @@ class GuildData{
 							tempInput.select();
 							document.execCommand('copy');
 							document.body.removeChild(tempInput);
-							PluginUtilities.showToast("Copied '" + text + "'", {type:"success"});
-						}`
+							PluginUtilities.showToast("${this.local.copied} '" + text + "'", {type:"success"});
+						}`;
 			document.body.appendChild(insertedScript);
 		}
 		
@@ -319,7 +382,7 @@ class GuildData{
 			if (!CSSRules) return;
 			let CSSRule = CSSRules.item(CSSRules.length - 1);
 			let currentWin = this.currentWindow;
-			let subMenu = new PluginContextMenu.TextItem("Show Guild Data", {
+			let subMenu = new PluginContextMenu.TextItem(this.local.showGuildData, {
 				callback: () => {
 					var guildId = (e.target.parentElement.href.match(/\d+/) || [])[0];
 					this.getServer(this.guildModule.getGuild(guildId));
@@ -744,7 +807,6 @@ class GuildData{
 	
 	showUsers(guild, searchString){
 		searchString = searchString.toLowerCase();
-		/* how do i continue after the members have loaded? (loading async but not returning anything) */
 		var self = this;
 		var members = this.memberModule.getMembers(guild.id);
 		var users = [];
@@ -782,7 +844,7 @@ class GuildData{
 		}
 		
 		userSearch.innerHTML += `<br><br>Found ${membersFound.length} entries for "${searchString}"<br><br>`;
-		if(membersFound.length > 100)
+		if(membersFound.length > this.settings.maxUsersShown)
 			userSearch.innerHTML += `<div>There are ${membersFound.length} entries. Please specify your search.</div>`;
 		else{
 			for(const member of membersFound){
@@ -1245,6 +1307,16 @@ class GuildData{
 	
 	
 	
+	
+	
+	
+	
+	saveSettings() {
+		PluginUtilities.saveSettings(this.getName(), this.settings);
+	}
+	loadSettings() {
+		this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
+	}
 	
 	
 	
