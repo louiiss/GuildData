@@ -7,7 +7,7 @@ class GuildData{
 
 	getDescription () {return "Displays something about guilds";}
 
-	getVersion () {return "0.0.3";}
+	getVersion () {return "0.0.4";}
 
 	getAuthor () {return "l0c4lh057";}
 	
@@ -269,6 +269,7 @@ class GuildData{
 			btnClose.innerHTML = 'X';
 			btnClose.onclick = function() { 
 				if(document.getElementById('l0c4lh057 popup user openChat')) document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
+				if(document.getElementById('l0c4lh057 popup user back')) document.getElementById('l0c4lh057 popup user back').outerHTML = '';
 				document.getElementById('l0c4lh057 popup outer').style.display = 'none';
 			};
 			popupWindow.appendChild(btnClose);
@@ -393,6 +394,7 @@ class GuildData{
 		
 		if(!PluginUtilities.isServer()) return;
 		if(document.getElementById('l0c4lh057 popup outer').style.display == 'block') this.getServer(PluginUtilities.getCurrentServer());
+		if(document.getElementById('l0c4lh057 popup user back')) document.getElementById('l0c4lh057 popup user back').outerHTML = '';
 	}
 	
 	
@@ -408,6 +410,8 @@ class GuildData{
 		if(document.getElementById('l0c4lh057 popup user openChat')) document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
 		
 		this.stopInterval();
+		
+		DiscordModules.GuildActions.requestMembers(guild.id, '', 0);
 		/* look for unimplemented outputs and add them to ui -> delete this */
 		/*console.log(guild);
 		console.log('Guild Name: ' + guild.name);
@@ -452,7 +456,7 @@ class GuildData{
 		document.getElementById('l0c4lh057 popup outer').style.display = 'block';
 		
 		/* copying partly implemented */
-		var tableContent = `<h3 class="l0c4lh057">Guild Information</h3><br>
+		var tableContent = `<h3 class="l0c4lh057" id="l0c4lh057 guild information title">Guild Information</h3><br>
 		<div style="text-align:center;font-size:125%;font-weight:bold;";><p id="l0c4lh057 popup tocopy copyid${guild.name}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.name}');" style="display: inline;">${guild.name}</p> (<p id="l0c4lh057 popup tocopy copyid${guild.id}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.id}');" style="display: inline;">${guild.id}</p>)</div><br><table>
 		<tr><td>Owner:</td><td><p id="l0c4lh057 popup tocopy copyid${this.userModule.getUser(guild.ownerId).tag}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.userModule.getUser(guild.ownerId).tag}');" style="display: inline;">${this.userModule.getUser(guild.ownerId).tag}</p> (<p id="l0c4lh057 popup tocopy copyid${guild.ownerId}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.ownerId}');" style="display: inline;">${guild.ownerId}</p>)</td></tr>
 		<tr><td style="height:9px;" colspan="3"></td></tr>
@@ -739,7 +743,7 @@ class GuildData{
 	}
 	
 	showUsers(guild, searchString){
-		DiscordModules.GuildActions.requestMembers(guild.id, '', 0);
+		searchString = searchString.toLowerCase();
 		/* how do i continue after the members have loaded? (loading async but not returning anything) */
 		var self = this;
 		var members = this.memberModule.getMembers(guild.id);
@@ -773,7 +777,7 @@ class GuildData{
 			membersFound = members;
 		else{
 			for(const member of members){
-				if(this.userModule.getUser(member.userId).tag.includes(searchString)) membersFound.push(member);
+				if(this.userModule.getUser(member.userId).tag.toLowerCase().includes(searchString) || this.getNickname(member.nick).toLowerCase().includes(searchString)) membersFound.push(member);
 			}
 		}
 		
@@ -798,6 +802,11 @@ class GuildData{
 		document.getElementById('l0c4lh057 popup input').value = searchString;
 	}
 	
+	getNickname(nick){
+		if(nick) return nick;
+		return "";
+	}
+	
 	showUserInformation(guild, user, member){
 		var self = this;
 		var ui = document.getElementById('l0c4lh057 popup user information');
@@ -807,38 +816,40 @@ class GuildData{
 		//console.log(user);
 		//console.log(member);
 		
-		var c = `<h3 class="l0c4lh057">User Information</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><div style="width:64px;height:64px;background-image:url(${this.getUserAvatarURL(user.id)});background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;">
-		<tr><td>Nickname:</td><td>${member.nick}</td></tr>
-		<tr><td>Color:</td><td>${member.colorString} <div style="color:${member.colorString};display:inline;">(Example)</div></td></tr>
-		<tr><td>Hoist role:</td><td>`;
-		if(member.hoistRoleId) c += `${guild.roles[member.hoistRoleId].name} (${member.hoistRoleId})</td></tr>`; else c += `No hoist role</td></tr>`;
-		c += `<tr><td>Roles:</td><td>${this.getRolesOfMember(guild, member)}</td></tr>
-		<tr><td>Bot:</td><td>${user.bot}</td></tr>
-		<tr><td>Created at:</td><td>${user.createdAt.toLocaleString()}</td></tr>
-		<tr><td>Status:</td><td>${this.UserMetaStore.getStatus(user.id)}</td></tr>`;
-		if(!activity) c += `<tr><td>Activity:</td><td>No activity</td></tr>`; else{
-			//c += `<tr><td>Activity:</td><td>${this.getActivityType(activity.type)} ${activity.name}</td></tr>`;
-			/*if(activity.details) c += `<tr><td>Activity details:</td><td>${activity.details}</td></tr>`;                          // Spotify: Song-Name
-			if(activity.state) c += `<tr><td>Activity state:</td><td>${activity.state}</td></tr>`;                                // Spotify: Song-Interpret
-			if(activity.assets) if(activity.assets.small_text) c += `<tr><td>Activity small_text:</td><td>${activity.assets.small_text}</td></tr>`;   // 
-			if(activity.assets) if(activity.assets.large_text) c += `<tr><td>Activity large_text:</td><td>${activity.assets.large_text}</td></tr>`;   // Spotify: Album
-			if(activity.timestamps) {
-				if(activity.timestamps.end && activity.timestamps.start){
-					var duration = activity.timestamps.end - activity.timestamps.start;
-					var durationS = Math.round(duration / 1000);
-					var progress = Date.now() - activity.timestamps.start;
-					var progressS = Math.round(progress / 1000);
-					var progressPercentage = Math.round(progress / duration * 1000) / 10;
-					c += `<tr><td>Activity duration:</td><td>${durationS}s</td></tr>
-					<tr><td>Activity progress:</td><td>${this.getDurationOfSeconds(progressS)} <progress value="${progress}" max="${duration}" style="height:6px;border-radius:3px;align-self:center;"></progress> ${this.getDurationOfSeconds(durationS)}</td></tr>`;
-				} else if(activity.timestamps.start) c += `<tr><td>Activity duration:</td><td>${this.getDurationOfSeconds(Math.round((Date.now() - activity.timestamps.start) / 1000), 'long')}</td></tr>`;
-			}*/
-		}
-		c += `</table>`;
-		//console.log(activity);
-		ui.innerHTML = c;
-		if(activity){
+		if(!this.updateInformationTimer){
+			var c = `<h3 class="l0c4lh057">User Information</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><div style="width:64px;height:64px;background-image:url(${this.getUserAvatarURL(user.id)});background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;">
+			<tr><td>Nickname:</td><td id="l0c4lh057 user information table nickname">${member.nick}</td></tr>
+			<tr><td>Color:</td><td id="l0c4lh057 user information table color">${member.colorString} <div style="color:${member.colorString};display:inline;">(Example)</div></td></tr>
+			<tr><td>Hoist role:</td><td id="l0c4lh057 user information table hoistrole">`;
+			if(member.hoistRoleId) c += `${guild.roles[member.hoistRoleId].name} (${member.hoistRoleId})</td></tr>`; else c += `No hoist role</td></tr>`;
+			c += `<tr><td>Roles:</td><td id="l0c4lh057 user information table roles">${this.getRolesOfMember(guild, member)}</td></tr>
+			<tr><td>Bot:</td><td>${user.bot}</td></tr>
+			<tr><td>Created at:</td><td>${user.createdAt.toLocaleString()}</td></tr>
+			<tr><td>Status:</td><td id="l0c4lh057 user information table status">${this.UserMetaStore.getStatus(user.id)}</td></tr>`;
+			if(!activity) c += `<tr><td id="l0c4lh057 user information table activity1">Activity:</td><td id="l0c4lh057 user information table activity2">No activity</td></tr>`; else{
+				c += `<tr><td id="l0c4lh057 user information table activity1"></td><td id="l0c4lh057 user information table activity2"></td></tr>`;
+				//c += `<tr><td>Activity:</td><td>${this.getActivityType(activity.type)} ${activity.name}</td></tr>`;
+				/*if(activity.details) c += `<tr><td>Activity details:</td><td>${activity.details}</td></tr>`;                          // Spotify: Song-Name
+				if(activity.state) c += `<tr><td>Activity state:</td><td>${activity.state}</td></tr>`;                                // Spotify: Song-Interpret
+				if(activity.assets) if(activity.assets.small_text) c += `<tr><td>Activity small_text:</td><td>${activity.assets.small_text}</td></tr>`;   // 
+				if(activity.assets) if(activity.assets.large_text) c += `<tr><td>Activity large_text:</td><td>${activity.assets.large_text}</td></tr>`;   // Spotify: Album
+				if(activity.timestamps) {
+					if(activity.timestamps.end && activity.timestamps.start){
+						var duration = activity.timestamps.end - activity.timestamps.start;
+						var durationS = Math.round(duration / 1000);
+						var progress = Date.now() - activity.timestamps.start;
+						var progressS = Math.round(progress / 1000);
+						var progressPercentage = Math.round(progress / duration * 1000) / 10;
+						c += `<tr><td>Activity duration:</td><td>${durationS}s</td></tr>
+						<tr><td>Activity progress:</td><td>${this.getDurationOfSeconds(progressS)} <progress value="${progress}" max="${duration}" style="height:6px;border-radius:3px;align-self:center;"></progress> ${this.getDurationOfSeconds(durationS)}</td></tr>`;
+					} else if(activity.timestamps.start) c += `<tr><td>Activity duration:</td><td>${this.getDurationOfSeconds(Math.round((Date.now() - activity.timestamps.start) / 1000), 'long')}</td></tr>`;
+				}*/
+			}
+			c += `</table>`;
+			//console.log(activity);
+			ui.innerHTML = c;
 			var container = document.createElement('div');
+			container.id = 'l0c4lh057 user information table activity';
 			container.style.position = 'absolute';
 			container.style.left = '3%';
 			container.style.width = 'calc(94% - 15px)';
@@ -846,123 +857,253 @@ class GuildData{
 			container.style.padding = '5px';
 			container.style.borderRadius = '5px';
 			container.style.border = '2px white solid';
+			container.style.display = 'none';
 			container.innerHTML = "";
 			
-			var aTitle = document.createElement('div');
-			aTitle.className = 'headerTextNormal-2mGWX3 headerText-1HLrL7 marginBottom8-AtZOdT da-headerTextNormal da-headerText da-marginBottom8 small-29zrCQ size12-3R0845 height16-2Lv3qA weightBold-2yjlgw';
-			aTitle.innerHTML = this.getActivityType(activity.type) + ' ' + activity.name;
-			container.appendChild(aTitle);
-			
-			
-			var largeImage = document.createElement('div');
-			if(activity.assets){
-				if(activity.assets.large_image){
-					if(activity.application_id)
-						largeImage.style.backgroundImage = 'url(https://cdn.discordapp.com/app-assets/' + activity.application_id + '/' + activity.assets.large_image + ')';
-					else
-						largeImage.style.backgroundImage = 'url(https://i.scdn.co/image/' + activity.assets.large_image.split(':')[1] + ')';
-				}
-			} else
-				largeImage.style.backgroundImage = 'url("/assets/a5eba102f5b5e413df2b65c73f288afa.svg")';
-			largeImage.style.backgroundRepeat = 'no-repeat';
-			largeImage.style.backgroundSize = 'contain';
-			largeImage.style.width = '64px';
-			largeImage.style.height = '64px';
-			largeImage.style.display = 'block';
-			container.appendChild(largeImage);
+			if(activity){
+				container.style.display = 'initial';
+				var aTitle = document.createElement('div');
+				aTitle.className = 'headerTextNormal-2mGWX3 headerText-1HLrL7 marginBottom8-AtZOdT da-headerTextNormal da-headerText da-marginBottom8 small-29zrCQ size12-3R0845 height16-2Lv3qA weightBold-2yjlgw';
+				aTitle.innerHTML = this.getActivityType(activity.type) + ' ' + activity.name;
+				container.appendChild(aTitle);
 				
-			var addTimestamp = false;
-			if(activity.timestamps) {
-				if(activity.timestamps.end && activity.timestamps.start){
-					var duration = activity.timestamps.end - activity.timestamps.start;
-					var durationS = Math.round(duration / 1000);
+				
+				var largeImage = document.createElement('div');
+				if(activity.assets){
+					if(activity.assets.large_image){
+						if(activity.application_id)
+							largeImage.style.backgroundImage = 'url(https://cdn.discordapp.com/app-assets/' + activity.application_id + '/' + activity.assets.large_image + ')';
+						else
+							largeImage.style.backgroundImage = 'url(https://i.scdn.co/image/' + activity.assets.large_image.split(':')[1] + ')';
+					}
+				} else
+					largeImage.style.backgroundImage = 'url("/assets/a5eba102f5b5e413df2b65c73f288afa.svg")';
+				largeImage.style.backgroundRepeat = 'no-repeat';
+				largeImage.style.backgroundSize = 'contain';
+				largeImage.style.width = '64px';
+				largeImage.style.height = '64px';
+				largeImage.style.display = 'block';
+				container.appendChild(largeImage);
+					
+				var addTimestamp = false;
+				if(activity.timestamps) {
+					if(activity.timestamps.end && activity.timestamps.start){
+						var duration = activity.timestamps.end - activity.timestamps.start;
+						var durationS = Math.round(duration / 1000);
+						var progress = Date.now() - activity.timestamps.start;
+						if(progress < 0) progress = 0;
+						if(progress > duration) progress = duration;
+						var progressS = Math.round(progress / 1000);
+						var progressPercentage = Math.round(progress / duration * 1000) / 10;
+						var aProgressBar = document.createElement('progress');
+						aProgressBar.value = progress;
+						aProgressBar.max = duration;
+						aProgressBar.style.height = '4px';
+						aProgressBar.style.position = 'relative';
+						aProgressBar.style.width = '96%';
+						aProgressBar.style.left = '2%';
+						aProgressBar.style.borderRadius = '2px';
+						container.appendChild(aProgressBar);
+						var aProgress = document.createElement('div');
+						aProgress.style.left = '2%';
+						aProgress.style.position = 'relative';
+						aProgress.style.display = 'inline';
+						aProgress.innerHTML = this.getDurationOfSeconds(progressS);
+						container.appendChild(aProgress);
+						var aDuration = document.createElement('div');
+						aDuration.style.right = '3%';
+						aDuration.style.position = 'absolute';
+						aDuration.style.display = 'inline';
+						aDuration.innerHTML = this.getDurationOfSeconds(durationS);
+						container.appendChild(aDuration);
+					} else if(activity.timestamps.start)
+						addTimestamp = true;
+				}
+				
+				var iContainer = document.createElement('div');
+				iContainer.style.top = '28px';
+				iContainer.style.position = 'absolute';
+				iContainer.style.left = '74px';
+				iContainer.style.width = 'calc(100% - 70px)';
+				container.appendChild(iContainer);
+				
+				if(activity.details){
+					var aDetails = document.createElement('div');
+					aDetails.style.fontWeight = 'bold';
+					aDetails.style.left = '0px';
+					aDetails.style.top = '0px';
+					aDetails.style.width = '100%';
+					aDetails.style.position = 'relative';
+					aDetails.style.marginBottom = '4px';
+					aDetails.innerHTML = activity.details;
+					iContainer.appendChild(aDetails);
+				}
+				if(activity.state){
+					var aState = document.createElement('div');
+					aState.style.left = '0px';
+					aState.style.top = '0px';
+					aState.style.width = '100%';
+					aState.style.position = 'relative';
+					aState.style.marginBottom = '4px';
+					aState.innerHTML = activity.state;
+					iContainer.appendChild(aState);
+				}
+				if(activity.assets) if(activity.assets.large_text){
+					var aLText = document.createElement('div');
+					aLText.style.left = '0px';
+					aLText.style.top = '0px';
+					aLText.style.width = '100%';
+					aLText.style.position = 'relative';
+					aLText.style.marginBottom = '4px';
+					aLText.innerHTML = activity.assets.large_text;
+					iContainer.appendChild(aLText);
+				}
+				if(addTimestamp){
 					var progress = Date.now() - activity.timestamps.start;
 					if(progress < 0) progress = 0;
-					if(progress > duration) progress = duration;
 					var progressS = Math.round(progress / 1000);
-					var progressPercentage = Math.round(progress / duration * 1000) / 10;
-					var aProgressBar = document.createElement('progress');
-					aProgressBar.value = progress;
-					aProgressBar.max = duration;
-					aProgressBar.style.height = '4px';
-					aProgressBar.style.position = 'relative';
-					aProgressBar.style.width = '96%';
-					aProgressBar.style.left = '2%';
-					aProgressBar.style.borderRadius = '2px';
-					container.appendChild(aProgressBar);
-					var aProgress = document.createElement('div');
-					aProgress.style.left = '2%';
-					aProgress.style.position = 'relative';
-					aProgress.style.display = 'inline';
-					aProgress.innerHTML = this.getDurationOfSeconds(progressS);
-					container.appendChild(aProgress);
-					var aDuration = document.createElement('div');
-					aDuration.style.right = '3%';
-					aDuration.style.position = 'absolute';
-					aDuration.style.display = 'inline';
-					aDuration.innerHTML = this.getDurationOfSeconds(durationS);
-					container.appendChild(aDuration);
-				} else if(activity.timestamps.start)
-					addTimestamp = true;
+					var aTimestamp = document.createElement('div');
+					aTimestamp.style.left = '0px';
+					aTimestamp.style.top = '0px';
+					aTimestamp.style.width = '100%';
+					aTimestamp.style.position = 'relative';
+					aTimestamp.style.marginBottom = '4px';
+					aTimestamp.innerHTML = 'for ' + this.getDurationOfSeconds(progressS, 'long');
+					iContainer.appendChild(aTimestamp);
+				}
 			}
-			
-			var iContainer = document.createElement('div');
-			iContainer.style.top = '28px';
-			iContainer.style.position = 'absolute';
-			iContainer.style.left = '74px';
-			iContainer.style.width = 'calc(100% - 70px)';
-			container.appendChild(iContainer);
-			
-			if(activity.details){
-				var aDetails = document.createElement('div');
-				aDetails.style.fontWeight = 'bold';
-				aDetails.style.left = '0px';
-				aDetails.style.top = '0px';
-				aDetails.style.width = '100%';
-				aDetails.style.position = 'relative';
-				aDetails.style.marginBottom = '4px';
-				aDetails.innerHTML = activity.details;
-				iContainer.appendChild(aDetails);
-			}
-			if(activity.state){
-				var aState = document.createElement('div');
-				aState.style.left = '0px';
-				aState.style.top = '0px';
-				aState.style.width = '100%';
-				aState.style.position = 'relative';
-				aState.style.marginBottom = '4px';
-				aState.innerHTML = activity.state;
-				iContainer.appendChild(aState);
-			}
-			if(activity.assets) if(activity.assets.large_text){
-				var aLText = document.createElement('div');
-				aLText.style.left = '0px';
-				aLText.style.top = '0px';
-				aLText.style.width = '100%';
-				aLText.style.position = 'relative';
-				aLText.style.marginBottom = '4px';
-				aLText.innerHTML = activity.assets.large_text;
-				iContainer.appendChild(aLText);
-			}
-			if(addTimestamp){
-				var progress = Date.now() - activity.timestamps.start;
-				if(progress < 0) progress = 0;
-				var progressS = Math.round(progress / 1000);
-				var aTimestamp = document.createElement('div');
-				aTimestamp.style.left = '0px';
-				aTimestamp.style.top = '0px';
-				aTimestamp.style.width = '100%';
-				aTimestamp.style.position = 'relative';
-				aTimestamp.style.marginBottom = '4px';
-				aTimestamp.innerHTML = 'for ' + this.getDurationOfSeconds(progressS, 'long');
-				iContainer.appendChild(aTimestamp);
-			}
-			
 			ui.appendChild(container);
+				
+			/* automatically update user information once per second, disable for editing */
+			if(!this.updateInformationTimer) this.updateInformationTimer = window.setInterval(function(){self.showUserInformation(guild, user, member);}, 1000);
+		}else{
+			document.getElementById('l0c4lh057 user information table nickname').innerHTML = `${member.nick}`;
+			document.getElementById('l0c4lh057 user information table color').innerHTML = `${member.colorString} <div style="color:${member.colorString};display:inline;">(Example)</div>`;
+			if(member.hoistRoleId) document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = `${guild.roles[member.hoistRoleId].name} (${member.hoistRoleId})`; else document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = `No hoist role`;
+			document.getElementById('l0c4lh057 user information table roles').innerHTML = `${this.getRolesOfMember(guild, member)}`;
+			document.getElementById('l0c4lh057 user information table status').innerHTML = `${this.UserMetaStore.getStatus(user.id)}`;
+			if(activity){
+				document.getElementById('l0c4lh057 user information table activity1').innerHTML = ``;
+				document.getElementById('l0c4lh057 user information table activity2').innerHTML = ``;
+				var container = document.getElementById('l0c4lh057 user information table activity');
+				container.style.display = 'initial';
+				container.innerHTML = "";
+				
+				var aTitle = document.createElement('div');
+				aTitle.className = 'headerTextNormal-2mGWX3 headerText-1HLrL7 marginBottom8-AtZOdT da-headerTextNormal da-headerText da-marginBottom8 small-29zrCQ size12-3R0845 height16-2Lv3qA weightBold-2yjlgw';
+				aTitle.innerHTML = this.getActivityType(activity.type) + ' ' + activity.name;
+				container.appendChild(aTitle);
+				
+				
+				var largeImage = document.createElement('div');
+				if(activity.assets){
+					if(activity.assets.large_image){
+						if(activity.application_id)
+							largeImage.style.backgroundImage = 'url(https://cdn.discordapp.com/app-assets/' + activity.application_id + '/' + activity.assets.large_image + ')';
+						else
+							largeImage.style.backgroundImage = 'url(https://i.scdn.co/image/' + activity.assets.large_image.split(':')[1] + ')';
+					}
+				} else
+					largeImage.style.backgroundImage = 'url("/assets/a5eba102f5b5e413df2b65c73f288afa.svg")';
+				largeImage.style.backgroundRepeat = 'no-repeat';
+				largeImage.style.backgroundSize = 'contain';
+				largeImage.style.width = '64px';
+				largeImage.style.height = '64px';
+				largeImage.style.display = 'block';
+				container.appendChild(largeImage);
+					
+				var addTimestamp = false;
+				if(activity.timestamps) {
+					if(activity.timestamps.end && activity.timestamps.start){
+						var duration = activity.timestamps.end - activity.timestamps.start;
+						var durationS = Math.round(duration / 1000);
+						var progress = Date.now() - activity.timestamps.start;
+						if(progress < 0) progress = 0;
+						if(progress > duration) progress = duration;
+						var progressS = Math.round(progress / 1000);
+						var progressPercentage = Math.round(progress / duration * 1000) / 10;
+						var aProgressBar = document.createElement('progress');
+						aProgressBar.value = progress;
+						aProgressBar.max = duration;
+						aProgressBar.style.height = '4px';
+						aProgressBar.style.position = 'relative';
+						aProgressBar.style.width = '96%';
+						aProgressBar.style.left = '2%';
+						aProgressBar.style.borderRadius = '2px';
+						container.appendChild(aProgressBar);
+						var aProgress = document.createElement('div');
+						aProgress.style.left = '2%';
+						aProgress.style.position = 'relative';
+						aProgress.style.display = 'inline';
+						aProgress.innerHTML = this.getDurationOfSeconds(progressS);
+						container.appendChild(aProgress);
+						var aDuration = document.createElement('div');
+						aDuration.style.right = '3%';
+						aDuration.style.position = 'absolute';
+						aDuration.style.display = 'inline';
+						aDuration.innerHTML = this.getDurationOfSeconds(durationS);
+						container.appendChild(aDuration);
+					} else if(activity.timestamps.start)
+						addTimestamp = true;
+				}
+				
+				var iContainer = document.createElement('div');
+				iContainer.style.top = '28px';
+				iContainer.style.position = 'absolute';
+				iContainer.style.left = '74px';
+				iContainer.style.width = 'calc(100% - 70px)';
+				container.appendChild(iContainer);
+				
+				if(activity.details){
+					var aDetails = document.createElement('div');
+					aDetails.style.fontWeight = 'bold';
+					aDetails.style.left = '0px';
+					aDetails.style.top = '0px';
+					aDetails.style.width = '100%';
+					aDetails.style.position = 'relative';
+					aDetails.style.marginBottom = '4px';
+					aDetails.innerHTML = activity.details;
+					iContainer.appendChild(aDetails);
+				}
+				if(activity.state){
+					var aState = document.createElement('div');
+					aState.style.left = '0px';
+					aState.style.top = '0px';
+					aState.style.width = '100%';
+					aState.style.position = 'relative';
+					aState.style.marginBottom = '4px';
+					aState.innerHTML = activity.state;
+					iContainer.appendChild(aState);
+				}
+				if(activity.assets) if(activity.assets.large_text){
+					var aLText = document.createElement('div');
+					aLText.style.left = '0px';
+					aLText.style.top = '0px';
+					aLText.style.width = '100%';
+					aLText.style.position = 'relative';
+					aLText.style.marginBottom = '4px';
+					aLText.innerHTML = activity.assets.large_text;
+					iContainer.appendChild(aLText);
+				}
+				if(addTimestamp){
+					var progress = Date.now() - activity.timestamps.start;
+					if(progress < 0) progress = 0;
+					var progressS = Math.round(progress / 1000);
+					var aTimestamp = document.createElement('div');
+					aTimestamp.style.left = '0px';
+					aTimestamp.style.top = '0px';
+					aTimestamp.style.width = '100%';
+					aTimestamp.style.position = 'relative';
+					aTimestamp.style.marginBottom = '4px';
+					aTimestamp.innerHTML = 'for ' + this.getDurationOfSeconds(progressS, 'long');
+					iContainer.appendChild(aTimestamp);
+				}
+			}else{
+				document.getElementById('l0c4lh057 user information table activity1').innerHTML = `Activity:`;
+				document.getElementById('l0c4lh057 user information table activity2').innerHTML = `No activity`;
+				document.getElementById('l0c4lh057 user information table activity').display = `none`;
+			}
 		}
-		
-		/* automatically update user information once per second, disable for editing */
-		if(!this.updateInformationTimer) this.updateInformationTimer = window.setInterval(function(){self.showUserInformation(guild, user, member);}, 1000);
 		
 		if(document.getElementById('l0c4lh057 popup user openChat')) document.getElementById('l0c4lh057 popup user openChat').outerHTML = '';
 		var uiOpenChat = document.createElement('button');
@@ -991,7 +1132,8 @@ class GuildData{
 			uiBack.style.zIndex = '999';
 			uiBack.innerHTML = 'X';
 			document.getElementById('l0c4lh057 popup userContainer').appendChild(uiBack);
-		}
+		}else
+			document.getElementById('l0c4lh057 popup user back').style.display = 'initial';
 		
 		$('.l0c4lh057.popup.user.openChat.' + user.id).click((function(){
 			DiscordModules.PrivateChannelActions.ensurePrivateChannel(self.userModule.getCurrentUser().id, self.userModule.getUser(user.id).id).then(function(result){
@@ -1001,7 +1143,7 @@ class GuildData{
 				self.channelSelector.selectPrivateChannel(self.channelModule.getDMFromUserId(user.id));
 			});
 		}));
-		$('.l0c4lh057.popup.user.back').click((function(){document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0'; self.stopInterval();}));
+		$('.l0c4lh057.popup.user.back').click((function(){self.stopInterval(); document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0'; document.getElementById('l0c4lh057 popup user back').style.display = 'none'}));
 		$('.l0c4lh057.popup.close').click((function(){self.stopInterval();}));
 	}
 	
