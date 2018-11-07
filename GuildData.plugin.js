@@ -51,8 +51,18 @@ class GuildData{
 						"owner": "Eigentümer",
 						"createdAt": "Erstellt am",
 						"joinedAt": "Beigetreten am",
-						"explicitContentFilter": "Filter für unangemessene Inhalte",
-						"defaultMessageNotifications": "Standard-Benachrichtigungen",
+						"daysAgo": "vor {0} Tagen",
+						"explicitContentFilter": {
+							"title": "Filter für unangemessene Inhalte",
+							"disabled": "Deaktiviert",
+							"membersWithoutRole": "Mitglieder ohne Rolle",
+							"allMessages": "Alle Nachrichten"
+						},
+						"defaultMessageNotifications": {
+							"title": "Standard-Benachrichtigungen",
+							"allMessages": "Alle Nachrichten",
+							"mentionsOnly": "Nur Erwähnungen"
+						},
 						"region": "Standort",
 						"memberCount": "Mitgliederzahl",
 						"channelCount": "Kanalanzahl",
@@ -104,20 +114,54 @@ class GuildData{
 						"activity":{
 							"title": "Aktivität",
 							"noActivity": "Keine Aktivität",
-							"for": "seit",
+							"for": "seit {0}",
 							"playing": "Spielt",
 							"watching": "Schaut",
 							"listening": "Hört",
 							"streaming": "Streamt"
 						}
 					},
-					"roleInfo": "Rolleninformationen",
-					"channelInfo": "Kanalinformationen",
+					"roleInfo": {
+						"title": "Rolleninformationen",
+						"mentionable": "Erwähnbar",
+						"color": {
+							"title": "Farbe",
+							"example": "Beispiel",
+							"noColor": "Keine Farbe eingestellt"
+						},
+						"hoist": "Angepinnt"
+					},
+					"channelInfo": {
+						"title": "Kanalinformationen",
+						"channel": "Kanal",
+						"channelType": {
+							"title": "Kanal-Typ",
+							"category": "Kategorie",
+							"textChannel": "Text-Kanal",
+							"voiceChannel": "Sprach-Kanal"
+						},
+						"topic": "Thema",
+						"position": "Position",
+						"userLimit": "Maximale Nutzer-Zahl",
+						"nsfw": "NSFW",
+						"bitrate": "Bitrate",
+						"slowmode": {
+							"title": "Slowmode",
+							"value": "{0} Sekunden"
+						},
+						"role": "Rolle",
+						"member": "Nutzer",
+						"permissions": {
+							"type": "Typ",
+							"allow": "Erlaubt",
+							"deny": "Verboten"
+						}
+					},
 					"settings": {
 						"title": "Einstellungen",
 						"maxUsersShown": {
 							"title": "Maximale Anzahl angezeigter Benutzer",
-							"description": "maximale Anzahl an Nutzern, die in User Information angezeigt werden (mehr Nutzer -> längere Ladezeit), standard: 100",
+							"description": "maximale Anzahl an Nutzern, die in den Nutzerinformationen angezeigt werden (mehr Nutzer -> längere Ladezeit), standard: 100",
 							"unit": " Benutzer"
 						}
 					},
@@ -153,6 +197,30 @@ class GuildData{
 						"banMembers": "Mitglieder bannen",
 						"kickMembers": "Mitglieder kicken",
 						"createInstantInvite": "Soforteinladung erstellen"
+					},
+					"time": {
+						"short": {
+							"years": "y",
+							"months": "m",
+							"days": "d",
+							"hours": "h",
+							"minutes": "min",
+							"seconds": "s"
+						},
+						"long": {
+							"years": "Jahre",
+							"year": "Jahr",
+							"months": "Monate",
+							"month": "Monat",
+							"days": "Tage",
+							"day": "Tag",
+							"hours": "Stunden",
+							"hour": "Stunde",
+							"minutes": "Minuten",
+							"minute": "Minute",
+							"seconds": "Sekunden",
+							"second": "Sekunde"
+						}
 					}
 				},
 				"en": {
@@ -165,8 +233,18 @@ class GuildData{
 						"owner": "Owner",
 						"createdAt": "Created at",
 						"joinedAt": "Joined at",
-						"explicitContentFilter": "Explicit content filter",
-						"defaultMessageNotifications": "Default message notifications",
+						"daysAgo": "{0} days ago",
+						"explicitContentFilter": {
+							"title": "Explicit content filter",
+							"disabled": "Disabled",
+							"membersWithoutRole": "Members without role",
+							"allMessages": "All messages"
+						},
+						"defaultMessageNotifications": {
+							"title": "Default message notifications",
+							"allMessages": "All messages",
+							"mentionsOnly": "Mentions only"
+						},
 						"region": "Region",
 						"memberCount": "Member count",
 						"channelCount": "Channel count",
@@ -218,15 +296,49 @@ class GuildData{
 						"activity":{
 							"title": "Activity",
 							"noActivity": "No activity",
-							"for": "for",
+							"for": "for {0}",
 							"playing": "Playing",
 							"watching": "Watching",
 							"listening": "Listening",
 							"streaming": "Streaming"
 						}
 					},
-					"roleInfo": "Role Information",
-					"channelInfo": "Channel Information",
+					"roleInfo": {
+						"title": "Role Information",
+						"mentionable": "Mentionable",
+						"color": {
+							"title": "Color",
+							"example": "Example",
+							"noColor": "No color set"
+						},
+						"hoist": "Hoist"
+					},
+					"channelInfo": {
+						"title": "Channel Information",
+						"channel": "Channel",
+						"channelType": {
+							"title": "Channel type",
+							"category": "Category",
+							"textChannel": "Text channel",
+							"voiceChannel": "Voice channel"
+						},
+						"topic": "Topic",
+						"position": "Position",
+						"userLimit": "User limit",
+						"nsfw": "NSFW",
+						"bitrate": "Bitrate",
+						"slowmode": {
+							"title": "Slowmode",
+							"value": "{0} seconds"
+						},
+						"role": "Role",
+						"member": "Member",
+						"permissions": {
+							"type": "Type",
+							"allow": "Allow",
+							"deny": "Deny"
+						}
+					},
 					"settings": {
 						"title": "Settings",
 						"maxUsersShown": {
@@ -267,6 +379,30 @@ class GuildData{
 						"banMembers": "Ban Members",
 						"kickMembers": "Kick Members",
 						"createInstantInvite": "Create Instant Invite"
+					},
+					"time": {
+						"short": {
+							"years": "y",
+							"months": "m",
+							"days": "d",
+							"hours": "h",
+							"minutes": "min",
+							"seconds": "s"
+						},
+						"long": {
+							"years": "years",
+							"year": "year",
+							"months": "months",
+							"month": "month",
+							"days": "days",
+							"day": "day",
+							"hours": "hours",
+							"hour": "hour",
+							"minutes": "minutes",
+							"minute": "minute",
+							"seconds": "seconds",
+							"second": "second"
+						}
 					}
 				}
 			}`);
@@ -463,7 +599,7 @@ class GuildData{
 			roleSearch.style.border = '2px grey solid';
 			roleSearch.style.borderRadius = '5px';
 			roleSearch.style.padding = '5px';
-			roleSearch.innerHTML = `<h3 class="l0c4lh057">${this.local.roleInfo}</h3>`;
+			roleSearch.innerHTML = `<h3 class="l0c4lh057">${this.local.roleInfo.title}</h3>`;
 			roleContainer.appendChild(roleSearch);
 			
 			var rolePermissionInformation = document.createElement('div');
@@ -479,7 +615,7 @@ class GuildData{
 			rolePermissionInformation.style.border = '2px grey solid';
 			rolePermissionInformation.style.borderRadius = '5px';
 			rolePermissionInformation.style.zIndex = '5';
-			rolePermissionInformation.innerHTML = `<h3 class="l0c4lh057">${this.local.roleInfo}</h3>`;
+			rolePermissionInformation.innerHTML = `<h3 class="l0c4lh057">${this.local.roleInfo.title}</h3>`;
 			popupInner.appendChild(rolePermissionInformation);
 			
 			var channelSearch = document.createElement('div');
@@ -495,7 +631,7 @@ class GuildData{
 			channelSearch.style.border = '2px grey solid';
 			channelSearch.style.borderRadius = '5px';
 			channelSearch.style.zIndex = '10';
-			channelSearch.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo}</h3>`;
+			channelSearch.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo.title}</h3>`;
 			popupInner.appendChild(channelSearch);
 			
 			var sChannelSearch = document.createElement('div');
@@ -737,16 +873,16 @@ class GuildData{
 		var tableContent = `<h3 class="l0c4lh057" id="l0c4lh057 guild information title">${this.local.guildInfo.title}</h3><br>
 		<div style="text-align:center;font-size:125%;font-weight:bold;";><p id="l0c4lh057 popup tocopy copyid${guild.name}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.name}');" style="display: inline;">${guild.name}</p> (<p id="l0c4lh057 popup tocopy copyid${guild.id}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.id}');" style="display: inline;">${guild.id}</p>)</div><br><table class="l0c4lh057 popup user information table">
 		<tr><td>${this.local.guildInfo.owner}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.userModule.getUser(guild.ownerId).tag}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.userModule.getUser(guild.ownerId).tag}');" style="display: inline;">${this.userModule.getUser(guild.ownerId).tag}</p> (<p id="l0c4lh057 popup tocopy copyid${guild.ownerId}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.ownerId}');" style="display: inline;">${guild.ownerId}</p>)</td></tr>
-		<tr><td>${this.local.guildInfo.createdAt}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.getSnowflakeCreationDate(guild.id).toLocaleString()}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.getSnowflakeCreationDate(guild.id).toLocaleString()}');" style="display: inline;">${this.getSnowflakeCreationDate(guild.id).toLocaleString()}</p> (<p id="l0c4lh057 popup tocopy copyid${Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10}');" style="display: inline;">${Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10} days ago</p>)</td></tr>
-		<tr><td>${this.local.guildInfo.joinedAt}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.joinedAt.toLocaleString()}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.joinedAt.toLocaleString()}');" style="display: inline;">${guild.joinedAt.toLocaleString()}</p> (<p id="l0c4lh057 popup tocopy copyid${Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10}');" style="display: inline;">${Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10} days ago</p>)</td></tr>
+		<tr><td>${this.local.guildInfo.createdAt}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.getSnowflakeCreationDate(guild.id).toLocaleString()}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.getSnowflakeCreationDate(guild.id).toLocaleString()}');" style="display: inline;">${this.getSnowflakeCreationDate(guild.id).toLocaleString()}</p> (<p id="l0c4lh057 popup tocopy copyid${Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10}');" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
+		<tr><td>${this.local.guildInfo.joinedAt}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.joinedAt.toLocaleString()}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.joinedAt.toLocaleString()}');" style="display: inline;">${guild.joinedAt.toLocaleString()}</p> (<p id="l0c4lh057 popup tocopy copyid${Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10}');" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
 		<tr><td>${this.local.guildInfo.verificationLevel.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.verificationLevel}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.verificationLevel}');" style="display: inline;">${guild.verificationLevel}</p> (<p id="l0c4lh057 popup tocopy copyid${this.getVerificationLevel(guild.verificationLevel)}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.getVerificationLevel(guild.verificationLevel)}');" style="display: inline;">${this.getVerificationLevel(guild.verificationLevel)}</p>)</td></tr>
-		<tr><td>${this.local.guildInfo.explicitContentFilter}:</td><td>${guild.explicitContentFilter} (${this.getExplicitContentFilterLevel(guild.explicitContentFilter)})</td></tr>
-		<tr><td>${this.local.guildInfo.defaultMessageNotifications}:</td><td>${guild.defaultMessageNotifications} (${this.getDefaultMessageNotifications(guild.defaultMessageNotifications)})</td></tr>
+		<tr><td>${this.local.guildInfo.explicitContentFilter.title}:</td><td>${guild.explicitContentFilter} (${this.getExplicitContentFilterLevel(guild.explicitContentFilter)})</td></tr>
+		<tr><td>${this.local.guildInfo.defaultMessageNotifications.title}:</td><td>${guild.defaultMessageNotifications} (${this.getDefaultMessageNotifications(guild.defaultMessageNotifications)})</td></tr>
 		<tr><td>${this.local.guildInfo.region}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.region}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.region}');" style="display: inline;">${guild.region}</p></td></tr>`;
-		tableContent = tableContent + '<tr><td>AFK channel:</td><td>' + (guild.afkChannelId ? ('<p id="l0c4lh057 popup tocopy copyid' + this.channelModule.getChannel(guild.afkChannelId).name + '" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyid' + this.channelModule.getChannel(guild.afkChannelId).name + '\');" style="display: inline;">' + this.channelModule.getChannel(guild.afkChannelId).name + '</p> ' + '(<p id="l0c4lh057 popup tocopy copyid' + guild.afkChannelId + '" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyid' + guild.afkChannelId + '\');" style="display: inline;">' + guild.afkChannelId + '</p>)') : ('<p id="l0c4lh057 popup tocopy copyidNo afk channel" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyidNo afk channel\');" style="display: inline;">No afk channel</p>')) + '</td></tr>';
-		tableContent = tableContent + `<tr><td>${this.local.guildInfo.afkTimeout.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.afkTimeout}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.afkTimeout}');" style="display: inline;">${guild.afkTimeout} ${this.local.guildInfo.afkTimeout.unit}</p> (<p id="l0c4lh057 popup tocopy copyid` + guild.afkTimeout/60 + ` minutes" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid` + guild.afkTimeout/60 + ` minutes');" style="display: inline;">` + guild.afkTimeout/60 + ` minutes</p>)</td></tr>
-		<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td>${this.channelModule.getChannel(guild.systemChannelId)} (${guild.systemChannelId})</td></tr>
-		<tr><td>${this.local.guildInfo.memberCount}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.memberModule.getMembers(guild.id).length}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.memberModule.getMembers(guild.id).length}');" style="display: inline;">${this.memberModule.getMembers(guild.id).length}</p></td></tr>
+		tableContent += `<tr><td>${this.local.guildInfo.afkChannel.title}:</td><td>` + (guild.afkChannelId ? ('<p id="l0c4lh057 popup tocopy copyid' + this.channelModule.getChannel(guild.afkChannelId).name + '" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyid' + this.channelModule.getChannel(guild.afkChannelId).name + '\');" style="display: inline;">' + this.channelModule.getChannel(guild.afkChannelId).name + '</p> ' + '(<p id="l0c4lh057 popup tocopy copyid' + guild.afkChannelId + '" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyid' + guild.afkChannelId + '\');" style="display: inline;">' + guild.afkChannelId + '</p>)') : ('<p id="l0c4lh057 popup tocopy copyidNo afk channel" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyidNo afk channel\');" style="display: inline;">' + this.local.guildInfo.afkChannel.noAfkChannel + '</p>')) + '</td></tr>';
+		tableContent += `<tr><td>${this.local.guildInfo.afkTimeout.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.afkTimeout}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.afkTimeout}');" style="display: inline;">${guild.afkTimeout} ${this.local.guildInfo.afkTimeout.unit}</p> (<p id="l0c4lh057 popup tocopy copyid` + guild.afkTimeout/60 + ` ${this.local.time.long.minutes}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid` + guild.afkTimeout/60 + ` ${this.local.time.long.minutes}');" style="display: inline;">` + guild.afkTimeout/60 + ` ${this.local.time.long.minutes}</p>)</td></tr>`;
+		if(guild.systemChannelId) tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td>${this.channelModule.getChannel(guild.systemChannelId)} (${guild.systemChannelId})</td></tr>`; else tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td>${this.local.guildInfo.systemChannel.noSystemChannel}</td></tr>`;
+		`<tr><td>${this.local.guildInfo.memberCount}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.memberModule.getMembers(guild.id).length}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.memberModule.getMembers(guild.id).length}');" style="display: inline;">${this.memberModule.getMembers(guild.id).length}</p></td></tr>
 		<tr><td>${this.local.guildInfo.channelCount}:</td><td><p id="l0c4lh057 popup tocopy copyid${Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id).length}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id).length}');" style="display: inline;">${Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id).length}</p></td></tr>
 		<tr><td>${this.local.guildInfo.roleCount}:</td><td><p id="l0c4lh057 popup tocopy copyid${Object.keys(guild.roles).length}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Object.keys(guild.roles).length}');" style="display: inline;">${Object.keys(guild.roles).length}</p></td></tr>`;
 		if(Array.from(guild.features).length > 0){
@@ -759,7 +895,7 @@ class GuildData{
 		popup.innerHTML = tableContent;
 		
 		var channelSearch = document.getElementById('l0c4lh057 popup channelSearch');
-		channelSearch.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo}</h3><br>`;
+		channelSearch.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo.title}</h3><br>`;
 		var channels = Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id);
 		var self = this;
 		var channelsSortedC = {};
@@ -789,7 +925,7 @@ class GuildData{
 		}
 		
 		var roleSearch = document.getElementById('l0c4lh057 popup roleSearch');
-		roleSearch.innerHTML = `<h3 class="l0c4lh057">${this.local.roleInfo}</h3><br>`;
+		roleSearch.innerHTML = `<h3 class="l0c4lh057">${this.local.roleInfo.title}</h3><br>`;
 		var roleString = "";
 		var toAdd = "<div>";
 		for(const rId of Object.keys(guild.roles)){
@@ -823,17 +959,17 @@ class GuildData{
 		var self = this;
 		var scs = document.getElementById('l0c4lh057 popup sChannelSearch');
 		scs.style.zIndex = '15';
-		scs.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${channel.name} (${channel.id})</div><br><table>
-		<tr><td>Channel type:</td><td>${channel.type} (${this.getChannelType(channel.type)})</td></tr>
-		<tr><td>Topic:</td><td>${channel.topic}</td></tr>
-		<tr><td>Position:</td><td>${channel.position}</td></tr>
-		<tr><td>User limit:</td><td>${channel.userLimit}</td></tr>
-		<tr><td>NSFW:</td><td>${channel.nsfw}</td></tr>
-		<tr><td>Bitrate:</td><td>${channel.bitrate}</td></tr>
-		<tr><td>Slowmode:</td><td>${channel.rateLimitPerUser} seconds</td></tr></table><br>`;
+		scs.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${channel.name} (${channel.id})</div><br><table>
+		<tr><td>${this.local.channelInfo.channelType.title}:</td><td>${channel.type} (${this.getChannelType(channel.type)})</td></tr>
+		<tr><td>${this.local.channelInfo.topic}:</td><td>${channel.topic}</td></tr>
+		<tr><td>${this.local.channelInfo.position}:</td><td>${channel.position}</td></tr>
+		<tr><td>${this.local.channelInfo.userLimit}:</td><td>${channel.userLimit}</td></tr>
+		<tr><td>${this.local.channelInfo.nsfw}:</td><td>${channel.nsfw}</td></tr>
+		<tr><td>${this.local.channelInfo.bitrate}:</td><td>${channel.bitrate}</td></tr>
+		<tr><td>${this.local.channelInfo.slowmode.title}:</td><td>${this.formatText(this.local.channelInfo.slowmode.value, [channel.rateLimitPerUser])}</td></tr></table><br>`;
 		var permOverwr = Object.values(channel.permissionOverwrites);
 		for(const perm of permOverwr){
-			var c = `<div id="l0c4lh057 popup channel permission ${perm.id}" class="l0c4lh057 popup channel permission ${perm.id}">${perm.type}: `;
+			var c = `<div id="l0c4lh057 popup channel permission ${perm.id}" class="l0c4lh057 popup channel permission ${perm.id}">${this.getPermissionType(perm.type)}: `;
 			if(perm.type == "member") c += `${this.userModule.getUser(perm.id).tag}`; else if(perm.type == "role") c += `${guild.roles[perm.id].name}`;
 			c += ` (${perm.id})</div>`;
 			scs.innerHTML += c;
@@ -877,13 +1013,13 @@ class GuildData{
 	showChannelPermissionInformation(perm, guild, channel){
 		var cp = document.getElementById('l0c4lh057 popup channel permission');
 		cp.style.zIndex = '20';
-		cp.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo}</h3><br>`;
-		if(perm.type == "member") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">Channel: ${channel.name}<br>${this.userModule.getUser(perm.id).tag} (${perm.id})</div>`; else if(perm.type == "role") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">Channel: ${channel.name}<br>${guild.roles[perm.id].name} (${perm.id})</div>`;
+		cp.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo.title}</h3><br>`;
+		if(perm.type == "member") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.channelInfo.channel}: ${channel.name}<br>${this.userModule.getUser(perm.id).tag} (${perm.id})</div>`; else if(perm.type == "role") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.channelInfo.channel}: ${channel.name}<br>${guild.roles[perm.id].name} (${perm.id})</div>`;
 		cp.innerHTML += `<br><table>
-		<tr><td>Type:</td><td>${perm.type}</td></tr>
-		<tr><td>Allow:</td><td>${perm.allow}</td></tr>
+		<tr><td>${this.local.channelInfo.permissions.type}:</td><td>${this.local.channelInfo[perm.type]}</td></tr>
+		<tr><td>${this.local.channelInfo.permissions.allow}:</td><td>${perm.allow}</td></tr>
 		<tr><td></td><td>${this.getPermissionsFromBase16(perm.allow)}</td></tr>
-		<tr><td>Deny:</td><td>${perm.deny}</td></tr>
+		<tr><td>${this.local.channelInfo.permissions.deny}:</td><td>${perm.deny}</td></tr>
 		<tr><td></td><td>${this.getPermissionsFromBase16(perm.deny)}</td></tr></table>`;
 		
 		var cpBack = document.createElement('div');
@@ -902,14 +1038,14 @@ class GuildData{
 	showRolePermissionInformation(role){
 		var rp = document.getElementById('l0c4lh057 popup role permission');
 		rp.style.zIndex = '15';
-		var c = `<h3 class="l0c4lh057">${this.local.roleInfo}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${role.name} (${role.id})</div><br><table>
+		var c = `<h3 class="l0c4lh057">${this.local.roleInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${role.name} (${role.id})</div><br><table>
 		<tr><td>${this.local.permissions.title}:</td><td>${role.permissions}</td></tr>
 		<tr><td></td><td>${this.getPermissionsFromBase16(role.permissions)}</td></tr>
 		<tr><td>${this.local.permissions.notAllowed}:</td><td>${this.getNotPermissionsFromBase16(role.permissions)}</td></tr>
-		<tr><td>Mentionable:</td><td>${role.mentionable}</td></tr>`;
-		if(role.colorString) c += `<tr><td>Color:</td><td>${role.colorString} <p style="display:inline;color:${role.colorString}">(Example)</p></td></tr>`; else c += `<tr><td>Color:</td><td>No color set</td></tr>`;
+		<tr><td>${this.local.roleInfo.mentionable}:</td><td>${role.mentionable}</td></tr>`;
+		if(role.colorString) c += `<tr><td>${this.local.roleInfo.color.title}:</td><td>${role.colorString} <p style="display:inline;color:${role.colorString}">(${this.local.roleInfo.color.example})</p></td></tr>`; else c += `<tr><td>${this.local.roleInfo.color.title}:</td><td>${this.local.roleInfo.color.noColor}</td></tr>`;
 		c += `
-		<tr><td>Hoist (Pinned):</td><td>${role.hoist}</td></table>`
+		<tr><td>${this.local.roleInfo.hoist}:</td><td>${role.hoist}</td></table>`
 		rp.innerHTML = c;
 		
 		var rpBack = document.createElement('div');
@@ -1059,9 +1195,9 @@ class GuildData{
 		//console.log(member);
 		
 		if(!this.updateInformationTimer){
-			var c = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><div style="width:64px;height:64px;background-image:url(${this.getUserAvatarURL(user.id)});background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;">
-			<tr><td>${this.local.userInfo.nickname}:</td><td id="l0c4lh057 user information table nickname">${member.nick}</td></tr>
-			<tr><td>${this.local.userInfo.color.title}:</td><td id="l0c4lh057 user information table color">${member.colorString} <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div></td></tr>
+			var c = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><div style="width:64px;height:64px;background-image:url(${this.getUserAvatarURL(user.id)});background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;">`
+			if(member.nick) c += `<tr><td id="l0c4lh057 user information table nicknameTitle">${this.local.userInfo.nickname}:</td><td id="l0c4lh057 user information table nickname">${member.nick}</td></tr>`; else c += `<tr><td id="l0c4lh057 user information table nicknameTitle"></td><td id="l0c4lh057 user information table nickname"></td></tr>`;
+			c += `<tr><td>${this.local.userInfo.color.title}:</td><td id="l0c4lh057 user information table color">${member.colorString} <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div></td></tr>
 			<tr><td>${this.local.userInfo.hoistRole.title}:</td><td id="l0c4lh057 user information table hoistrole">`;
 			if(member.hoistRoleId) c += `${guild.roles[member.hoistRoleId].name} (${member.hoistRoleId})</td></tr>`; else c += `${this.local.userInfo.hoistRole.noHoistRole}</td></tr>`;
 			c += `<tr><td>${this.local.userInfo.roles}:</td><td id="l0c4lh057 user information table roles">${this.getRolesOfMember(guild, member)}</td></tr>
@@ -1187,6 +1323,15 @@ class GuildData{
 					aState.style.position = 'relative';
 					aState.style.marginBottom = '4px';
 					aState.innerHTML = activity.state;
+					
+					if(activity.party){
+						if(activity.party.size){
+							if(activity.party.size[0] && activity.party.size[1]){
+								aState.innerHTML += ` (${activity.party.size[0]}/${activity.party.size[1]})`;
+							}
+						}
+					}
+					
 					iContainer.appendChild(aState);
 				}
 				if(activity.assets) if(activity.assets.large_text){
@@ -1209,16 +1354,59 @@ class GuildData{
 					aTimestamp.style.width = '100%';
 					aTimestamp.style.position = 'relative';
 					aTimestamp.style.marginBottom = '4px';
-					aTimestamp.innerHTML = this.local.userInfo.activity.for + ' ' + this.getDurationOfSeconds(progressS, 'long');
+					aTimestamp.innerHTML = this.formatText(this.local.userInfo.activity.for, this.getDurationOfSeconds(progressS, 'long'));
 					iContainer.appendChild(aTimestamp);
 				}
 			}
 			ui.appendChild(container);
+		
+			if(document.getElementById('l0c4lh057 popup user openChat')) document.getElementById('l0c4lh057 popup user openChat').outerHTML = '';
+			var uiOpenChat = document.createElement('button');
+			uiOpenChat.className = 'l0c4lh057 popup user openChat ' + user.id;
+			uiOpenChat.id = 'l0c4lh057 popup user openChat';
+			uiOpenChat.style.position = 'absolute';
+			uiOpenChat.style.bottom = '5px';
+			uiOpenChat.style.right = '5px';
+			uiOpenChat.innerHTML = 'Open Chat';
+			uiOpenChat.style.width = '20%';
+			uiOpenChat.style.backgroundColor = '#444';
+			uiOpenChat.style.zIndex = '20';
+			if(user == this.userModule.getCurrentUser()) uiOpenChat.style.display = 'none';
+			document.getElementById('l0c4lh057 popup userContainer').appendChild(uiOpenChat);
 				
 			/* automatically update user information once per second, disable for editing */
 			if(!this.updateInformationTimer) this.updateInformationTimer = window.setInterval(function(){self.showUserInformation(guild, user, member);}, 1000);
+			
+			if(!document.getElementById('l0c4lh057 popup user back')){
+				var uiBack = document.createElement('div');
+				uiBack.className = 'l0c4lh057 popup user back';
+				uiBack.id = 'l0c4lh057 popup user back';
+				uiBack.style.position = 'absolute';
+				uiBack.style.top = '6px';
+				uiBack.style.right = '6px';
+				uiBack.style.fontWeight = 'bold';
+				uiBack.style.color = 'red';
+				uiBack.style.cursor = 'default';
+				uiBack.style.fontSize = '150%';
+				uiBack.style.zIndex = '999';
+				uiBack.innerHTML = 'X';
+				document.getElementById('l0c4lh057 popup userContainer').appendChild(uiBack);
+			}else
+				document.getElementById('l0c4lh057 popup user back').style.display = 'initial';
+			
+			$('.l0c4lh057.popup.user.openChat.' + user.id).click((function(){
+				DiscordModules.PrivateChannelActions.ensurePrivateChannel(self.userModule.getCurrentUser().id, self.userModule.getUser(user.id).id).then(function(result){
+					self.stopInterval();
+					document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
+					document.getElementById('l0c4lh057 popup outer').style.display = 'none';
+					self.channelSelector.selectPrivateChannel(self.channelModule.getDMFromUserId(user.id));
+				});
+			}));
+			$('.l0c4lh057.popup.user.back').click((function(){self.stopInterval(); document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0'; document.getElementById('l0c4lh057 popup user back').style.display = 'none'}));
+			$('.l0c4lh057.popup.close').click((function(){self.stopInterval();}));
 		}else{
-			document.getElementById('l0c4lh057 user information table nickname').innerHTML = `${member.nick}`;
+			if(member.nick){document.getElementById('l0c4lh057 user information table nicknameTitle').innerHTML = `${this.local.userInfo.nickname}:`; document.getElementById('l0c4lh057 user information table nickname').innerHTML = `${member.nick}`;}
+			else{document.getElementById('l0c4lh057 user information table nicknameTitle').innerHTML = ``; document.getElementById('l0c4lh057 user information table nickname').innerHTML = ``;}
 			document.getElementById('l0c4lh057 user information table color').innerHTML = `${member.colorString} <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div>`;
 			if(member.hoistRoleId) document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = `${guild.roles[member.hoistRoleId].name} (${member.hoistRoleId})`; else document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = this.local.userInfo.hoistRole.noHoistRole;
 			document.getElementById('l0c4lh057 user information table roles').innerHTML = `${this.getRolesOfMember(guild, member)}`;
@@ -1314,6 +1502,15 @@ class GuildData{
 					aState.style.position = 'relative';
 					aState.style.marginBottom = '4px';
 					aState.innerHTML = activity.state;
+					
+					if(activity.party){
+						if(activity.party.size){
+							if(activity.party.size[0] && activity.party.size[1]){
+								aState.innerHTML += ` (${activity.party.size[0]}/${activity.party.size[1]})`;
+							}
+						}
+					}
+					
 					iContainer.appendChild(aState);
 				}
 				if(activity.assets) if(activity.assets.large_text){
@@ -1336,56 +1533,15 @@ class GuildData{
 					aTimestamp.style.width = '100%';
 					aTimestamp.style.position = 'relative';
 					aTimestamp.style.marginBottom = '4px';
-					aTimestamp.innerHTML = this.local.userInfo.activity.for + ' ' + this.getDurationOfSeconds(progressS, 'long');
+					aTimestamp.innerHTML = this.formatText(this.local.userInfo.activity.for, this.getDurationOfSeconds(progressS, 'long'));
 					iContainer.appendChild(aTimestamp);
 				}
 			}else{
 				document.getElementById('l0c4lh057 user information table activity1').innerHTML = `${this.local.userInfo.activity.title}:`;
 				document.getElementById('l0c4lh057 user information table activity2').innerHTML = `${this.local.userInfo.activity.noActivity}`;
-				document.getElementById('l0c4lh057 user information table activity').display = `none`;
+				document.getElementById('l0c4lh057 user information table activity').style.display = `none`;
 			}
 		}
-		
-		if(document.getElementById('l0c4lh057 popup user openChat')) document.getElementById('l0c4lh057 popup user openChat').outerHTML = '';
-		var uiOpenChat = document.createElement('button');
-		uiOpenChat.className = 'l0c4lh057 popup user openChat ' + user.id;
-		uiOpenChat.id = 'l0c4lh057 popup user openChat';
-		uiOpenChat.style.position = 'absolute';
-		uiOpenChat.style.bottom = '5px';
-		uiOpenChat.style.right = '5px';
-		uiOpenChat.innerHTML = 'Open Chat';
-		uiOpenChat.style.width = '20%';
-		uiOpenChat.style.backgroundColor = '#444';
-		uiOpenChat.style.zIndex = '20';
-		if(user != this.userModule.getCurrentUser()) document.getElementById('l0c4lh057 popup userContainer').appendChild(uiOpenChat);
-		
-		if(!document.getElementById('l0c4lh057 popup user back')){
-			var uiBack = document.createElement('div');
-			uiBack.className = 'l0c4lh057 popup user back';
-			uiBack.id = 'l0c4lh057 popup user back';
-			uiBack.style.position = 'absolute';
-			uiBack.style.top = '6px';
-			uiBack.style.right = '6px';
-			uiBack.style.fontWeight = 'bold';
-			uiBack.style.color = 'red';
-			uiBack.style.cursor = 'default';
-			uiBack.style.fontSize = '150%';
-			uiBack.style.zIndex = '999';
-			uiBack.innerHTML = 'X';
-			document.getElementById('l0c4lh057 popup userContainer').appendChild(uiBack);
-		}else
-			document.getElementById('l0c4lh057 popup user back').style.display = 'initial';
-		
-		$('.l0c4lh057.popup.user.openChat.' + user.id).click((function(){
-			DiscordModules.PrivateChannelActions.ensurePrivateChannel(self.userModule.getCurrentUser().id, self.userModule.getUser(user.id).id).then(function(result){
-				self.stopInterval();
-				document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
-				document.getElementById('l0c4lh057 popup outer').style.display = 'none';
-				self.channelSelector.selectPrivateChannel(self.channelModule.getDMFromUserId(user.id));
-			});
-		}));
-		$('.l0c4lh057.popup.user.back').click((function(){self.stopInterval(); document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0'; document.getElementById('l0c4lh057 popup user back').style.display = 'none'}));
-		$('.l0c4lh057.popup.close').click((function(){self.stopInterval();}));
 	}
 	
 	getDurationOfSeconds(seconds, joinParam){
@@ -1398,11 +1554,11 @@ class GuildData{
 			if(hours > 23){
 				var days = Math.floor(hours / 24);
 				hours -= 24 * days;
-				if(joinParam == ':') return [days, ("0" + hours).slice(-2), ("0" + minutes).slice(-2), ("0" + seconds).slice(-2)].join(joinParam); else return days + 'd ' + hours + 'h ' + minutes + 'min ' + seconds + 's';
+				if(joinParam == ':') return [days, ("0" + hours).slice(-2), ("0" + minutes).slice(-2), ("0" + seconds).slice(-2)].join(joinParam); else return days + `${this.local.time.short.days} ` + hours + `${this.local.time.short.hours} ` + minutes + `${this.local.time.short.minutes} ` + seconds + `${this.local.time.short.seconds}`;
 			}
-			if(joinParam == ':') return [hours, ("0" + minutes).slice(-2), ("0" + seconds).slice(-2)].join(joinParam); else return hours + 'h ' + minutes + 'min ' + seconds + 's';
+			if(joinParam == ':') return [hours, ("0" + minutes).slice(-2), ("0" + seconds).slice(-2)].join(joinParam); else return hours + `${this.local.time.short.hours} ` + minutes + `${this.local.time.short.minutes} ` + seconds + `${this.local.time.short.seconds}`;
 		}
-		if(joinParam == ':') return [minutes, ("0" + seconds).slice(-2)].join(joinParam); else return minutes + 'min ' + seconds + 's';
+		if(joinParam == ':') return [minutes, ("0" + seconds).slice(-2)].join(joinParam); else return minutes + `${this.local.time.short.minutes} ` + seconds + `${this.local.time.short.seconds}`;
 	}
 	
 	getActivityType(type){
@@ -1421,12 +1577,15 @@ class GuildData{
 	
 	getChannelType(type){
 		if(type==0)
-			return "Text channel"
+			return this.local.channelInfo.channelType.textChannel;
 		else if(type==2)
-			return "Voice channel"
+			return this.local.channelInfo.channelType.voiceChannel;
 		else if(type==4)
-			return "Category"
+			return this.local.channelInfo.channelType.category;
 		return "Unregistered channel type"
+	}
+	getPermissionType(type){
+		return this.local.channelInfo[type];
 	}
 	getChannelIcon(type, isNsfw = false){
 		if(type==0){
@@ -1453,12 +1612,12 @@ class GuildData{
 	}
 	
 	getDefaultMessageNotifications(defMesNot){
-		if(defMesNot == 0) return "All messages"; else if(defMesNot == 1) return "Only mentions";
+		if(defMesNot == 0) return this.local.guildInfo.defaultMessageNotifications.allMessages; else if(defMesNot == 1) return this.local.guildInfo.defaultMessageNotifications.mentionsOnly;
 		return "Invalid";
 	}
 	
 	getExplicitContentFilterLevel(level){
-		if(level == 0) return "Disabled"; else if(level == 1) return "Members without role"; else if(level == 2) return "All members";
+		if(level == 0) return this.local.guildInfo.explicitContentFilter.disabled; else if(level == 1) return this.local.guildInfo.explicitContentFilter.membersWithoutRole; else if(level == 2) return this.local.guildInfo.explicitContentFilter.allMessages;
 		return "Invalid";
 	}
 	
