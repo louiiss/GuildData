@@ -7,7 +7,7 @@ class GuildData{
 
 	getDescription () {return this.local.description;}
 
-	getVersion () {return "0.0.6";}
+	getVersion () {return "0.0.7";}
 
 	getAuthor () {return "l0c4lh057";}
 	
