@@ -7,7 +7,7 @@ class GuildData{
 
 	getDescription () {return this.local.description;}
 
-	getVersion () {return "0.0.7";}
+	getVersion () {return "0.0.8";}
 
 	getAuthor () {return "l0c4lh057";}
 	
@@ -86,6 +86,17 @@ class GuildData{
 						"systemChannel": {
 							"title": "System-Kanal",
 							"noSystemChannel": "Kein System-Kanal"
+						},
+						"features": "Features",
+						"relationships": {
+							"friends": {
+								"title": "Freunde",
+								"value": "{0} Freunde"
+							},
+							"blocked": {
+								"title": "Blockiert",
+								"value": "{0} blockierte Nutzer"
+							}
 						}
 					},
 					"userInfo": {
@@ -268,6 +279,17 @@ class GuildData{
 						"systemChannel": {
 							"title": "System Channel",
 							"noSystemChannel": "No system channel"
+						},
+						"features": "Features",
+						"relationships": {
+							"friends": {
+								"title": "Friends",
+								"value": "{0} friends"
+							},
+							"blocked": {
+								"title": "Blocked",
+								"value": "{0} blocked users"
+							}
 						}
 					},
 					"userInfo": {
@@ -431,6 +453,7 @@ class GuildData{
 		this.UserMetaStore = InternalUtilities.WebpackModules.findByUniqueProperties(["getStatus", "getOnlineFriendCount"]);
 		this.privateChannelActions = InternalUtilities.WebpackModules.findByUniqueProperties(["openPrivateChannel"]);
 		this.channelSelector = InternalUtilities.WebpackModules.findByUniqueProperties(["selectPrivateChannel"]);
+		this.relationshipStore = InternalUtilities.WebpackModules.findByUniqueProperties(['isBlocked', 'getFriendIDs']);
 		
 		this.css = `
 		.l0c4lh057.popup{
@@ -717,6 +740,16 @@ class GuildData{
 		BdApi.injectCSS(this.getName(), this.css);
 		
 		this.addContextMenuEvent();
+		
+		if(!this.settings.lastUsedVersion){ // started the first time
+			this.alertText('Installed', 'Thanks for using GuildData<br><br>(Better description coming soon, can you please help me to write one? idk what to write...)');
+			this.settings.lastUsedVersion = this.getVersion();
+			this.saveSettings();
+		}else if(this.settings.lastUsedVersion != this.getVersion()){ // updated
+			this.alertText('Version updated', `You updated from version ${this.settings.lastUsedVersion} to version ${this.getVersion()}<br><br>Changelog coming soon, if I'm finally not too dumb anymore`);
+			this.settings.lastUsedVersion = this.getVersion();
+			this.saveSettings();
+		}
 	}
 	
 	addContextMenuEvent() {
@@ -790,7 +823,7 @@ class GuildData{
 							liste.appendChild(sep);
 							var itm = document.createElement('div');
 							itm.className = 'item-1GzJrl da-item l0c4lh057 showonclick';
-							itm.innerHTML = '<div class="icon-2doZ3q da-icon" style="background-image: url(&quot;/assets/50f8ef2cdb4e7697a4202fb9c6d0e1fc.svg&quot;);"></div><div class="label-1Y-LW5 da-label">Show Guild Data</div>';
+							itm.innerHTML = `<div class="icon-2doZ3q da-icon" style="background-image: url(&quot;/assets/50f8ef2cdb4e7697a4202fb9c6d0e1fc.svg&quot;);"></div><div class="label-1Y-LW5 da-label">${self.local.showGuildData}</div>`;
 							liste.appendChild(itm);
 							document.getElementsByClassName('popout-3sVMXz da-popout popoutBottom-1YbShG popoutbottom')[0].style.height = (document.getElementsByClassName('popout-3sVMXz da-popout popoutBottom-1YbShG popoutbottom')[0].offsetHeight + sep.offsetHeight + itm.offsetHeight) + 'px';
 							document.getElementsByClassName('menu-Sp6bN1 da-menu')[0].style.height = (document.getElementsByClassName('menu-Sp6bN1 da-menu')[0].offsetHeight + sep.offsetHeight + itm.offsetHeight) + 'px';
@@ -889,8 +922,10 @@ class GuildData{
 			var features = "";
 			guild.features.forEach(v => features += v + ', ');
 			features = features.substring(0, features.length - 2);
-			tableContent += `<tr><td>Features</td><td>${features}</td></tr>`;
+			tableContent += `<tr><td>${this.local.guildInfo.features}:</td><td>${features}</td></tr>`;
 		}
+		tableContent += `<tr><td>${this.local.guildInfo.relationships.friends.title}:</td><td id="l0c4lh057 popup guild relationships friends">${this.formatText(this.local.guildInfo.relationships.friends.value, [this.getGuildFriends(guild.id).length])}</td></tr>`;
+		tableContent += `<tr><td>${this.local.guildInfo.relationships.blocked.title}:</td><td id="l0c4lh057 popup guild relationships blocked">${this.formatText(this.local.guildInfo.relationships.blocked.value, [this.getGuildBlocked(guild.id).length])}</td></tr>`;
 		tableContent = tableContent + `</table>`;
 		popup.innerHTML = tableContent;
 		
@@ -952,7 +987,33 @@ class GuildData{
 		}
 		
 		this.showUsers(guild, '');
-		//BDFDB.getUserAvatar(id); -> user avatar
+	}
+	
+	getGuildFriends(guildId){
+		var relationships = this.relationshipStore.getRelationships();
+		var guildFriends = [];
+		for(const userId in relationships){
+			const gMember = DiscordModules.GuildMemberStore.getMember(guildId, userId);
+			if(gMember){
+				const gUser = this.userModule.getUser(userId);
+				if(relationships[userId] == 1)
+					guildFriends.push(gUser);
+			}
+		}
+		return guildFriends;
+	}
+	getGuildBlocked(guildId){
+		var relationships = this.relationshipStore.getRelationships();
+		var guildBlocked = [];
+		for(const userId in relationships){
+			const gMember = DiscordModules.GuildMemberStore.getMember(guildId, userId);
+			if(gMember){
+				const gUser = this.userModule.getUser(userId);
+				if(relationships[userId] == 2)
+					guildBlocked.push(gUser);
+			}
+		}
+		return guildBlocked;
 	}
 	
 	showSingleChannelInformation(channel, guild){
@@ -1670,7 +1731,37 @@ class GuildData{
 	
 	
 	
-	
+	alertText(e, t) {
+		let a = $(`<div class="bd-modal-wrapper theme-dark">
+						<div class="bd-backdrop backdrop-1wrmKB"></div>
+						<div class="bd-modal modal-1UGdnR">
+							<div class="bd-modal-inner inner-1JeGVc" style="width:auto;max-width:70%;max-height:100%;">
+								<div class="header header-1R_AjF">
+									<div class="title">${e}</div>
+								</div>
+								<div class="bd-modal-body">
+									<div class="scroller-wrap fade">
+										<div class="scroller">
+											${t}
+										</div>
+									</div>
+								</div>
+								<div class="footer footer-2yfCgX">
+									<button type="button">Okay</button>
+								</div>
+							</div>
+						</div>
+					</div>`);
+		a.find(".footer button").on("click", () => {
+			a.addClass("closing"), setTimeout(() => {
+				a.remove()
+			}, 300)
+		}), a.find(".bd-backdrop").on("click", () => {
+			a.addClass("closing"), setTimeout(() => {
+				a.remove()
+			}, 300)
+		}), a.appendTo("#app-mount")
+	}
 	
 	
 	getSnowflakeCreationDate(id) {
