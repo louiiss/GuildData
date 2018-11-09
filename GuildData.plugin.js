@@ -7,7 +7,7 @@ class GuildData{
 
 	getDescription () {return this.local.description;}
 
-	getVersion () {return "0.0.8";}
+	getVersion () {return "0.0.9";}
 
 	getAuthor () {return "l0c4lh057";}
 	
@@ -17,7 +17,8 @@ class GuildData{
 	
 	get defaultSettings(){
 		return {
-			maxUsersShown: 100
+			maxUsersShown: 100,
+			showChangelogOnUpdate: true
 		}
 	}
 	getSettingsPanel() {
@@ -32,11 +33,58 @@ class GuildData{
 		}, {
 			shown: true
 		}).appendTo(panel).append(
+			new PluginSettings.Checkbox(this.local.settings.showChangelogOnUpdate.title, this.local.settings.showChangelogOnUpdate.description, this.settings.showChangelogOnUpdate,
+				(val) => {
+					this.settings.showChangelogOnUpdate = val;
+				})
+		).append(
 			new PluginSettings.Slider(this.local.settings.maxUsersShown.title, this.local.settings.maxUsersShown.description, 10, 1000, 1,
 				this.settings.maxUsersShown, (val) => {
 					this.settings.maxUsersShown = val;
 				}).setLabelUnit(this.local.settings.maxUsersShown.unit)
 		);
+	}
+	
+	get changelog(){
+		return JSON.parse(`{
+			"0.0.9": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"Changelog (English only)",
+						"Option to toggle if you want the changelog to be shown on update",
+						"Displays animated user avatars in user information"
+					]
+				},
+				{
+					"title": "Changes",
+					"type": "changes",
+					"items": [
+						"Version number",
+						"Position and size of the four panels, now based on percentage and pixels, not only percentage -> not fcked up with weird width/height ratios",
+						"Improved welcome message (thank you @Daddy#0001)"
+					]
+				},
+				{
+					"title": "Question",
+					"type": "request",
+					"items": [
+						"Are the colors good? If not, please write me some colors I could use. (I also have <div style='color:orange;display:inline;'>orange</div> for fixes)",
+						"Should I have improved and changes as different groups? Then I would need a color for improvements.",
+						"Should I add the changelog for previous versions here? I could but I think no one cares"
+					]
+				}
+			]
+		}`);
+	}
+	get colors(){
+		return JSON.parse(`{
+			"added": "lightgreen",
+			"fixes": "orange",
+			"changes": "green",
+			"request": "red"
+		}`);
 	}
 	
 	get local(){
@@ -174,6 +222,10 @@ class GuildData{
 							"title": "Maximale Anzahl angezeigter Benutzer",
 							"description": "maximale Anzahl an Nutzern, die in den Nutzerinformationen angezeigt werden (mehr Nutzer -> längere Ladezeit), standard: 100",
 							"unit": " Benutzer"
+						},
+						"showChangelogOnUpdate": {
+							"title": "Änderungsprotokoll nach Update anzeigen",
+							"description": "Zeigt das Änderungsprotokoll nach dem ersten Start des Plugins an, wenn du es geupdatet hast."
 						}
 					},
 					"permissions": {
@@ -367,6 +419,10 @@ class GuildData{
 							"title": "Max shown user count",
 							"description": "max amount of users shown in the user information (more users -> longer loading time), default: 100",
 							"unit": " users"
+						},
+						"showChangelogOnUpdate": {
+							"title": "Show changelog on update",
+							"description": "Shows the changelog on plugin start, when you have updated it."
 						}
 					},
 					"permissions": {
@@ -535,7 +591,7 @@ class GuildData{
 			popupWindow.style.height = '80%';
 			popupWindow.style.borderRadius = '10px';
 			popupWindow.style.boxShadow = '#191919 0px 0px 50px 30px';
-			popupWindow.style.zIndex = '99';
+			popupWindow.style.zIndex = '101';
 			document.getElementsByClassName('layer-3QrUeG')[0].appendChild(popupWindow);
 			
 			var popupInner = document.createElement('div');
@@ -543,10 +599,10 @@ class GuildData{
 			popupInner.id = 'l0c4lh057 popup inner';
 			popupInner.style.position = 'absolute';
 			popupInner.style.overflowY = 'auto';
-			popupInner.style.left = '5%';
-			popupInner.style.top = '5%';
-			popupInner.style.width = '90%';
-			popupInner.style.height = '90%';
+			popupInner.style.left = '50px';
+			popupInner.style.top = '50px';
+			popupInner.style.width = 'calc(100% - 100px)';
+			popupInner.style.height = 'calc(100% - 100px)';
 			popupWindow.appendChild(popupInner);
 			
 			var popupInformation = document.createElement('div');
@@ -556,8 +612,8 @@ class GuildData{
 			popupInformation.style.overflowY = 'auto';
 			popupInformation.style.left = '0%';
 			popupInformation.style.top = '0%';
-			popupInformation.style.width = '47.5%';
-			popupInformation.style.height = '47.5%';
+			popupInformation.style.width = 'calc(50% - 25px)';
+			popupInformation.style.height = 'calc(50% - 25px)';
 			popupInformation.style.padding = '5px';
 			popupInformation.style.border = '2px grey solid';
 			popupInformation.style.borderRadius = '5px';
@@ -568,8 +624,8 @@ class GuildData{
 			userContainer.id = 'l0c4lh057 popup userContainer';
 			userContainer.style.right = '0%';
 			userContainer.style.top = '0%';
-			userContainer.style.width = 'calc(47.5% + 14px)';
-			userContainer.style.height = 'calc(47.5% + 14px)';
+			userContainer.style.width = 'calc(calc(50% - 25px) + 14px)';
+			userContainer.style.height = 'calc(calc(50% - 25px) + 14px)';
 			userContainer.style.position = 'absolute';
 			popupInner.appendChild(userContainer);
 			
@@ -608,8 +664,8 @@ class GuildData{
 			roleContainer.id = 'l0c4lh057 popup roleContainer';
 			roleContainer.style.right = '0%';
 			roleContainer.style.bottom = '0%';
-			roleContainer.style.width = 'calc(47.5% + 14px)';
-			roleContainer.style.height = 'calc(47.5% + 14px)';
+			roleContainer.style.width = 'calc(calc(50% - 25px) + 14px)';
+			roleContainer.style.height = 'calc(calc(50% - 25px) + 14px)';
 			roleContainer.style.zIndex = '10';
 			roleContainer.style.position = 'absolute';
 			popupInner.appendChild(roleContainer);
@@ -632,8 +688,8 @@ class GuildData{
 			rolePermissionInformation.style.position = 'absolute';
 			rolePermissionInformation.style.right = '0%';
 			rolePermissionInformation.style.bottom = '0%';
-			rolePermissionInformation.style.width = '47.5%';
-			rolePermissionInformation.style.height = '47.5%';
+			rolePermissionInformation.style.width = 'calc(50% - 25px)';
+			rolePermissionInformation.style.height = 'calc(50% - 25px)';
 			rolePermissionInformation.style.padding = '5px';
 			rolePermissionInformation.style.border = '2px grey solid';
 			rolePermissionInformation.style.borderRadius = '5px';
@@ -648,8 +704,8 @@ class GuildData{
 			channelSearch.style.overflowY = 'auto';
 			channelSearch.style.left = '0%';
 			channelSearch.style.bottom = '0%';
-			channelSearch.style.width = '47.5%';
-			channelSearch.style.height = '47.5%';
+			channelSearch.style.width = 'calc(50% - 25px)';
+			channelSearch.style.height = 'calc(50% - 25px)';
 			channelSearch.style.padding = '5px';
 			channelSearch.style.border = '2px grey solid';
 			channelSearch.style.borderRadius = '5px';
@@ -664,8 +720,8 @@ class GuildData{
 			sChannelSearch.style.overflowY = 'auto';
 			sChannelSearch.style.left = '0%';
 			sChannelSearch.style.bottom = '0%';
-			sChannelSearch.style.width = '47.5%';
-			sChannelSearch.style.height = '47.5%';
+			sChannelSearch.style.width = 'calc(50% - 25px)';
+			sChannelSearch.style.height = 'calc(50% - 25px)';
 			sChannelSearch.style.padding = '5px';
 			sChannelSearch.style.border = '2px grey solid';
 			sChannelSearch.style.borderRadius = '5px';
@@ -679,8 +735,8 @@ class GuildData{
 			channelPermission.style.overflowY = 'auto';
 			channelPermission.style.left = '0%';
 			channelPermission.style.bottom = '0%';
-			channelPermission.style.width = '47.5%';
-			channelPermission.style.height = '47.5%';
+			channelPermission.style.width = 'calc(50% - 25px)';
+			channelPermission.style.height = 'calc(50% - 25px)';
 			channelPermission.style.padding = '5px';
 			channelPermission.style.border = '2px grey solid';
 			channelPermission.style.borderRadius = '5px';
@@ -742,14 +798,45 @@ class GuildData{
 		this.addContextMenuEvent();
 		
 		if(!this.settings.lastUsedVersion){ // started the first time
-			this.alertText('Installed', 'Thanks for using GuildData<br><br>(Better description coming soon, can you please help me to write one? idk what to write...)');
+			this.showWelcomeMessage();
 			this.settings.lastUsedVersion = this.getVersion();
 			this.saveSettings();
 		}else if(this.settings.lastUsedVersion != this.getVersion()){ // updated
-			this.alertText('Version updated', `You updated from version ${this.settings.lastUsedVersion} to version ${this.getVersion()}<br><br>Changelog coming soon, if I'm finally not too dumb anymore`);
+			if(this.settings.showChangelogOnUpdate) this.showChangelog(this.settings.lastUsedVersion, this.getVersion());
 			this.settings.lastUsedVersion = this.getVersion();
 			this.saveSettings();
 		}
+	}
+	
+	showWelcomeMessage(){
+		var self = this;
+		this.alertText('Welcome', `<p>GuildData is a plugin that displays the Guild Information such as the owner, when the server was created, when you joined, their verification level, etc. As well as user, channel, and role information which is very detailed.</p>
+		<p>To use this plugin, rigth click a guild in the guild list and click on the item "${this.local.showGuildData}" in the context menu. You can also click on the name of a guild above the channel list and click the button with the text "${this.local.showGuildData}" there.</p>
+		<button class="l0c4lh057 welcomemessage showchangelog" style="position:absolute;bottom:5px;right:5px;background-color:#677bc4;color:#fff">Show Changelog</button>`);
+		$(".l0c4lh057.welcomemessage.showchangelog").click(function() {
+			self.showChangelog();
+		});
+	}
+	showChangelog(oldVersion, newVersion){
+		var c = ``;
+		var t = 'Changelog';
+		if(oldVersion && newVersion){
+			c = `<p style="font-size:150%;">You updated from version ${oldVersion} to version ${newVersion}<br>`;
+			t = 'Version updated';
+		}
+		for(const v in this.changelog){
+			c += `<div><div style="font-size:140%;padding-bottom:10px;">${v}</div><div style="padding-left:10px;">`;
+			for(const v2 of this.changelog[v]){
+				c += `<div style="padding-bottom:7px;"><div style="color:${this.colors[v2.type]};padding-bottom:3px;">${v2.title}</div><ul style="list-style:none;">`;
+				for(const v3 of v2.items){
+					c += `<li><div style="padding-left:10px;padding-top:3px;">- ${v3}</div></li>`;
+				}
+				c += `</ul></div>`;
+			}
+			c += `</div></div>`;
+		}
+		
+		this.alertText(t, c);
 	}
 	
 	addContextMenuEvent() {
@@ -1207,7 +1294,7 @@ class GuildData{
 		popupSearchBtn.className = 'l0c4lh057 popup user searchbtn';
 		popupSearchBtn.style.position = 'absolute';
 		popupSearchBtn.style.right = '5px';
-		popupSearchBtn.style.width = '20%';
+		popupSearchBtn.style.width = 'calc(25% - 20px)';
 		popupSearchBtn.style.backgroundColor = '#444';
 		popupSearchBtn.style.height = popupInput.offsetHeight + 'px';
 		userSearch.appendChild(popupSearchBtn);
@@ -1256,7 +1343,7 @@ class GuildData{
 		//console.log(member);
 		
 		if(!this.updateInformationTimer){
-			var c = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><div style="width:64px;height:64px;background-image:url(${this.getUserAvatarURL(user.id)});background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;">`
+			var c = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><div id="l0c4lh057 popup user information avatar" style="width:64px;height:64px;background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;background-image:url('${this.getUserAvatarURL(user.id, 64, false)}')"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;">`
 			if(member.nick) c += `<tr><td id="l0c4lh057 user information table nicknameTitle">${this.local.userInfo.nickname}:</td><td id="l0c4lh057 user information table nickname">${member.nick}</td></tr>`; else c += `<tr><td id="l0c4lh057 user information table nicknameTitle"></td><td id="l0c4lh057 user information table nickname"></td></tr>`;
 			c += `<tr><td>${this.local.userInfo.color.title}:</td><td id="l0c4lh057 user information table color">${member.colorString} <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div></td></tr>
 			<tr><td>${this.local.userInfo.hoistRole.title}:</td><td id="l0c4lh057 user information table hoistrole">`;
@@ -1285,8 +1372,10 @@ class GuildData{
 				}*/
 			}
 			c += `</table>`;
-			//console.log(activity);
 			ui.innerHTML = c;
+			this.setProfilePicture(user.id, 64, 'l0c4lh057 popup user information avatar')
+			//console.log(activity);
+			
 			var container = document.createElement('div');
 			container.id = 'l0c4lh057 user information table activity';
 			container.style.position = 'absolute';
@@ -1682,16 +1771,30 @@ class GuildData{
 		return "Invalid";
 	}
 	
-	getUserAvatarURL(eA=DiscordModules.UserStore.getCurrentUser().id){
+	getUserAvatarURL(eA=DiscordModules.UserStore.getCurrentUser().id, size=64, asGif=false){
 		eA=typeof eA=='number'?eA['toFixed']():eA;
 		var eB=DiscordModules.UserStore;
 		var eC=DiscordModules.ImageResolver;
 		var eD=eB['getUser'](eA);
 		//return((eD&&eD['avatar']?'':'https://discordapp.com')+eC['getUserAvatarURL'](eD))['split']('?size')[0x0];
-		return eC['getUserAvatarURL'](eD)['split']('?size')[0x0];
+		var eE=eC['getUserAvatarURL'](eD)['split']('?size')[0x0];
+		var eF=eE.substring(0, eE.length - 4) + 'gif';
+		if(asGif) return eF + '?size=' + size;
+		return eE + '?size=' + size;
 	}
 	
-	
+	setProfilePicture(userId, size, elementId) {
+		var self = this;
+		$.ajax({
+			url:self.getUserAvatarURL(userId, size, true),
+			error: function(){
+				if(document.getElementById(elementId)) document.getElementById(elementId).style.backgroundImage = 'url("' + self.getUserAvatarURL(userId, size, false) + '")';
+			},
+			success: function(){
+				if(document.getElementById(elementId)) document.getElementById(elementId).style.backgroundImage = 'url("' + self.getUserAvatarURL(userId, size, true) + '")';
+			}
+		});
+	}
 	
 	
 	
