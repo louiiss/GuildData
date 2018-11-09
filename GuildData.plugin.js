@@ -7,7 +7,7 @@ class GuildData{
 
 	getDescription () {return this.local.description;}
 
-	getVersion () {return "0.0.9";}
+	getVersion () {return "0.1.0";}
 
 	getAuthor () {return "l0c4lh057";}
 	
@@ -65,14 +65,21 @@ class GuildData{
 						"Position and size of the four panels, now based on percentage and pixels, not only percentage -> not fcked up with weird width/height ratios",
 						"Improved welcome message (thank you @Daddy#0001)"
 					]
+				}
+			],
+			"0.1.0": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"Link to the GitHub page with all changes in the changelog"
+					]
 				},
 				{
-					"title": "Question",
-					"type": "request",
+					"title": "Changes",
+					"type": "changes",
 					"items": [
-						"Are the colors good? If not, please write me some colors I could use. (I also have <div style='color:orange;display:inline;'>orange</div> for fixes)",
-						"Should I have improved and changes as different groups? Then I would need a color for improvements.",
-						"Should I add the changelog for previous versions here? I could but I think no one cares"
+						"Versions are now displayed as 'v0.1.0' instead of '0.1.0' in the changelog"
 					]
 				}
 			]
@@ -825,7 +832,7 @@ class GuildData{
 			t = 'Version updated';
 		}
 		for(const v in this.changelog){
-			c += `<div><div style="font-size:140%;padding-bottom:10px;">${v}</div><div style="padding-left:10px;">`;
+			c += `<div><div style="font-size:140%;padding-bottom:10px;">v${v}</div><div style="padding-left:10px;">`;
 			for(const v2 of this.changelog[v]){
 				c += `<div style="padding-bottom:7px;"><div style="color:${this.colors[v2.type]};padding-bottom:3px;">${v2.title}</div><ul style="list-style:none;">`;
 				for(const v3 of v2.items){
@@ -835,6 +842,7 @@ class GuildData{
 			}
 			c += `</div></div>`;
 		}
+		c += `<br><br><div style="font-size:125%;color:lightsalmon">Here are only the changes of the last three versions. To get a list of all changes, visit this page: <a href="https://github.com/l0c4lh057/GuildData/blob/master/changelog" target="_blank">https://github.com/l0c4lh057/GuildData/blob/master/changelog</a></div>`;
 		
 		this.alertText(t, c);
 	}
