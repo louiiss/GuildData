@@ -1,0 +1,16 @@
+v0.0.1 to v0.0.8: look in the commits, I wrote the changes there. maybe I'll add them here later
+
+v0.0.9
+  Added
+    - Changelog (English only)
+    - Option to toggle if you want the changelog to be shown on update
+    - Displays animated user avatars in user information
+  Changes
+    - Position and size of the four panels, now based on percentage and pixels, not only percentage -> not fcked up with weird width/height ratios
+    - Improved welcome message (thank you @Daddy#0001)
+
+v0.1.0
+  Added
+    - Link to the GitHub page with all changes in the changelog
+  Changes
+    - Versions are now displayed as "v0.1.0" instead of "0.1.0" in the changelog
