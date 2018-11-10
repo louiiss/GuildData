@@ -7,7 +7,7 @@ class GuildData{
 
 	getDescription () {return this.local.description;}
 
-	getVersion () {return "0.1.0";}
+	getVersion () {return "0.1.1";}
 
 	getAuthor () {return "l0c4lh057";}
 	
@@ -82,6 +82,25 @@ class GuildData{
 						"Versions are now displayed as 'v0.1.0' instead of '0.1.0' in the changelog"
 					]
 				}
+			],
+			"0.1.1": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"Highlighting of the current version in the changelog",
+						"More German translations",
+						"If you click on how many friends/blocked users there are in a guild, you get a list of them. If you click one of them, they're shown in the user information"
+					]
+				},
+				{
+					"title": "Changes",
+					"type": "changes",
+					"items": [
+						"Slightly increased the delay for adding the menu item when clicking on the guild name above the channel list, so it should always work",
+						"The activity field now has a margin of 25px (bottom), so the '${this.local.userInfo.openChat}' button isn't covering it anymore"
+					]
+				}
 			]
 		}`);
 	}
@@ -146,11 +165,13 @@ class GuildData{
 						"relationships": {
 							"friends": {
 								"title": "Freunde",
-								"value": "{0} Freunde"
+								"value": "{0} Freunde",
+								"noUsers": "Du hast keine Freunde auf diesem Server."
 							},
 							"blocked": {
 								"title": "Blockiert",
-								"value": "{0} blockierte Nutzer"
+								"value": "{0} blockierte Nutzer",
+								"noUsers": "Du hast kein Mitglied dieses Servers blockiert."
 							}
 						}
 					},
@@ -185,7 +206,9 @@ class GuildData{
 							"watching": "Schaut",
 							"listening": "Hört",
 							"streaming": "Streamt"
-						}
+						},
+						"searchUser": "Suchen",
+						"openChat": "Chat öffnen"
 					},
 					"roleInfo": {
 						"title": "Rolleninformationen",
@@ -195,7 +218,8 @@ class GuildData{
 							"example": "Beispiel",
 							"noColor": "Keine Farbe eingestellt"
 						},
-						"hoist": "Angepinnt"
+						"hoist": "Angepinnt",
+						"copy": "Kopieren"
 					},
 					"channelInfo": {
 						"title": "Kanalinformationen",
@@ -221,7 +245,9 @@ class GuildData{
 							"type": "Typ",
 							"allow": "Erlaubt",
 							"deny": "Verboten"
-						}
+						},
+						"openChat": "Chat öffnen",
+						"connect": "Verbinden"
 					},
 					"settings": {
 						"title": "Einstellungen",
@@ -343,11 +369,13 @@ class GuildData{
 						"relationships": {
 							"friends": {
 								"title": "Friends",
-								"value": "{0} friends"
+								"value": "{0} friends",
+								"noUsers": "There are no friends in this guild"
 							},
 							"blocked": {
 								"title": "Blocked",
-								"value": "{0} blocked users"
+								"value": "{0} blocked users",
+								"noUsers": "There are no blocked users in this guild"
 							}
 						}
 					},
@@ -382,7 +410,9 @@ class GuildData{
 							"watching": "Watching",
 							"listening": "Listening",
 							"streaming": "Streaming"
-						}
+						},
+						"searchUser": "Search User",
+						"openChat": "Open Chat"
 					},
 					"roleInfo": {
 						"title": "Role Information",
@@ -392,7 +422,8 @@ class GuildData{
 							"example": "Example",
 							"noColor": "No color set"
 						},
-						"hoist": "Hoist"
+						"hoist": "Hoist",
+						"copy": "Copy"
 					},
 					"channelInfo": {
 						"title": "Channel Information",
@@ -418,7 +449,9 @@ class GuildData{
 							"type": "Type",
 							"allow": "Allow",
 							"deny": "Deny"
-						}
+						},
+						"openChat": "Open Chat",
+						"connect": "Connect"
 					},
 					"settings": {
 						"title": "Settings",
@@ -612,19 +645,35 @@ class GuildData{
 			popupInner.style.height = 'calc(100% - 100px)';
 			popupWindow.appendChild(popupInner);
 			
-			var popupInformation = document.createElement('div');
-			popupInformation.className = 'l0c4lh057 popup';
-			popupInformation.id = 'l0c4lh057 popup information';
-			popupInformation.style.position = 'absolute';
-			popupInformation.style.overflowY = 'auto';
-			popupInformation.style.left = '0%';
-			popupInformation.style.top = '0%';
-			popupInformation.style.width = 'calc(50% - 25px)';
-			popupInformation.style.height = 'calc(50% - 25px)';
-			popupInformation.style.padding = '5px';
-			popupInformation.style.border = '2px grey solid';
-			popupInformation.style.borderRadius = '5px';
-			popupInner.appendChild(popupInformation);
+			var guildInformation = document.createElement('div');
+			guildInformation.className = 'l0c4lh057 popup';
+			guildInformation.id = 'l0c4lh057 popup guild information';
+			guildInformation.style.position = 'absolute';
+			guildInformation.style.overflowY = 'auto';
+			guildInformation.style.left = '0%';
+			guildInformation.style.top = '0%';
+			guildInformation.style.width = 'calc(50% - 25px)';
+			guildInformation.style.height = 'calc(50% - 25px)';
+			guildInformation.style.padding = '5px';
+			guildInformation.style.border = '2px grey solid';
+			guildInformation.style.borderRadius = '5px';
+			guildInformation.style.zIndex = '5';
+			popupInner.appendChild(guildInformation);
+			
+			var guildRelations = document.createElement('div');
+			guildRelations.className = 'l0c4lh057 popup';
+			guildRelations.id = 'l0c4lh057 popup guild relations';
+			guildRelations.style.position = 'absolute';
+			guildRelations.style.overflowY = 'auto';
+			guildRelations.style.left = '0%';
+			guildRelations.style.top = '0%';
+			guildRelations.style.width = 'calc(50% - 25px)';
+			guildRelations.style.height = 'calc(50% - 25px)';
+			guildRelations.style.padding = '5px';
+			guildRelations.style.border = '2px grey solid';
+			guildRelations.style.borderRadius = '5px';
+			guildRelations.style.zIndex = '0';
+			popupInner.appendChild(guildRelations);
 			
 			var userContainer = document.createElement('div');
 			userContainer.className = 'l0c4lh057 popup';
@@ -764,6 +813,7 @@ class GuildData{
 				if(document.getElementById('l0c4lh057 popup user openChat')) document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
 				if(document.getElementById('l0c4lh057 popup user back')) document.getElementById('l0c4lh057 popup user back').outerHTML = '';
 				document.getElementById('l0c4lh057 popup outer').style.display = 'none';
+				document.getElementById('l0c4lh057 popup guild relations').style.zIndex = '0';
 			};
 			popupWindow.appendChild(btnClose);
 		}
@@ -832,7 +882,9 @@ class GuildData{
 			t = 'Version updated';
 		}
 		for(const v in this.changelog){
-			c += `<div><div style="font-size:140%;padding-bottom:10px;">v${v}</div><div style="padding-left:10px;">`;
+			c += `<div`
+			if(v == this.getVersion()) c += ` style="background-color:#2d2d31;border:2px #a7a7a7;border-style:solid;border-radius:7px;padding:5px;"`;
+			c += `><div style="font-size:140%;padding-bottom:10px;">v${v}</div><div style="padding-left:10px;">`;
 			for(const v2 of this.changelog[v]){
 				c += `<div style="padding-bottom:7px;"><div style="color:${this.colors[v2.type]};padding-bottom:3px;">${v2.title}</div><ul style="list-style:none;">`;
 				for(const v3 of v2.items){
@@ -904,8 +956,8 @@ class GuildData{
 	}
 	onSwitch(){
 		var self = this;
-		$('.container-2Rl01u').unbind('click');
-		$(".container-2Rl01u").click(function() {
+		$('.container-2Rl01u.da-container').unbind('click');
+		$(".container-2Rl01u.da-container").click(function() {
 			if(!document.getElementsByClassName('container-2Rl01u da-container popout-open')[0]){
 				var exi = false;
 				var checkExist = setInterval(function() {
@@ -930,7 +982,7 @@ class GuildData{
 						}
 						exi = true;
 					}
-				}, 110);
+				}, 150);
 			}
 		});
 		
@@ -949,6 +1001,7 @@ class GuildData{
 		document.getElementById('l0c4lh057 popup channel permission').style.zIndex = '5';
 		document.getElementById('l0c4lh057 popup role permission').style.zIndex = '5';
 		document.getElementById('l0c4lh057 popup user information').style.zIndex = '5';
+		document.getElementById('l0c4lh057 popup guild relations').style.zIndex = '0';
 		if(document.getElementById('l0c4lh057 popup user openChat')) document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
 		
 		this.stopInterval();
@@ -994,7 +1047,7 @@ class GuildData{
 			}
 			console.log(channel);
 		}*/
-		var popup = document.getElementById('l0c4lh057 popup information');
+		var popup = document.getElementById('l0c4lh057 popup guild information');
 		document.getElementById('l0c4lh057 popup outer').style.display = 'block';
 		
 		/* copying partly implemented */
@@ -1019,8 +1072,8 @@ class GuildData{
 			features = features.substring(0, features.length - 2);
 			tableContent += `<tr><td>${this.local.guildInfo.features}:</td><td>${features}</td></tr>`;
 		}
-		tableContent += `<tr><td>${this.local.guildInfo.relationships.friends.title}:</td><td id="l0c4lh057 popup guild relationships friends">${this.formatText(this.local.guildInfo.relationships.friends.value, [this.getGuildFriends(guild.id).length])}</td></tr>`;
-		tableContent += `<tr><td>${this.local.guildInfo.relationships.blocked.title}:</td><td id="l0c4lh057 popup guild relationships blocked">${this.formatText(this.local.guildInfo.relationships.blocked.value, [this.getGuildBlocked(guild.id).length])}</td></tr>`;
+		tableContent += `<tr><td>${this.local.guildInfo.relationships.friends.title}:</td><td id="l0c4lh057 popup guild relationships friends" class="l0c4lh057 popup guild relationships friends">${this.formatText(this.local.guildInfo.relationships.friends.value, [this.getGuildFriends(guild.id).length])}</td></tr>`;
+		tableContent += `<tr><td>${this.local.guildInfo.relationships.blocked.title}:</td><td id="l0c4lh057 popup guild relationships blocked" class="l0c4lh057 popup guild relationships blocked">${this.formatText(this.local.guildInfo.relationships.blocked.value, [this.getGuildBlocked(guild.id).length])}</td></tr>`;
 		tableContent = tableContent + `</table>`;
 		popup.innerHTML = tableContent;
 		
@@ -1067,7 +1120,7 @@ class GuildData{
 		var copyRoles = document.createElement('button');
 		copyRoles.id = 'l0c4lh057 popup roles copybtn';
 		copyRoles.onclick = function(){copyText4Dg3g5(roleString.substring(roleString, roleString.length - 1));}
-		copyRoles.innerHTML = "Copy";
+		copyRoles.innerHTML = this.local.roleInfo.copy;
 		copyRoles.style.position = 'absolute';
 		copyRoles.style.bottom = '5px';
 		copyRoles.style.right = '5px';
@@ -1080,6 +1133,13 @@ class GuildData{
 				self.showRolePermissionInformation(role);
 			}));
 		}
+		
+		$(".l0c4lh057.popup.guild.relationships.friends").click((function(){
+			self.showRelations(guild, "friends");
+		}));
+		$(".l0c4lh057.popup.guild.relationships.blocked").click((function(){
+			self.showRelations(guild, "blocked");
+		}));
 		
 		this.showUsers(guild, '');
 	}
@@ -1109,6 +1169,51 @@ class GuildData{
 			}
 		}
 		return guildBlocked;
+	}
+	
+	showRelations(guild, type){
+		var self = this;
+		var gr = document.getElementById('l0c4lh057 popup guild relations');
+		gr.style.zIndex = '10';
+		var c = `<h3 class="l0c4lh057" id="l0c4lh057 guild information title">${this.local.guildInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.guildInfo.relationships[type].title}</div><br><div>`;
+		if(type == "friends"){
+			var users = this.getGuildFriends(guild.id);
+			for(const u of users)
+				c += `<div class="l0c4lh057 popup guildinfo relations ${u.id}">${u.tag} (${u.id})</div>`;
+			if(users.length == 0)
+				c += `<div>${this.local.guildInfo.relationships[type].noUsers}</div>`;
+			gr.innerHTML = c + '</div>';
+			for(const u of users)
+				$(`.l0c4lh057.popup.guildinfo.relations.${u.id}`).click((function(){
+					self.stopInterval();
+					self.showUserInformation(guild, u, self.memberModule.getMember(guild.id, u.id));
+				}));
+		}
+		else if(type == "blocked"){
+			var users = this.getGuildBlocked(guild.id);
+			for(const u of users)
+				c += `<div class="l0c4lh057 popup guildinfo relations ${u.id}">${u.tag} (${u.id})</div>`;
+			if(users.length == 0)
+				c += `<div>${this.local.guildInfo.relationships[type].noUsers}</div>`;
+			gr.innerHTML = c + '</div>';
+			for(const u of users)
+				$(`.l0c4lh057.popup.guildinfo.relations.${u.id}`).click((function(){
+					self.stopInterval();
+					self.showUserInformation(guild, u, self.memberModule.getMember(guild.id, u.id));
+				}));
+		}
+		
+		var grBack = document.createElement('div');
+		grBack.style.position = 'absolute';
+		grBack.style.top = '6px';
+		grBack.style.right = '6px';
+		grBack.style.fontWeight = 'bold';
+		grBack.style.color = 'red';
+		grBack.style.cursor = 'default';
+		grBack.style.fontSize = '150%';
+		grBack.innerHTML = 'X';
+		grBack.onclick = function(){document.getElementById('l0c4lh057 popup guild relations').style.zIndex = '0';}
+		gr.appendChild(grBack);
 	}
 	
 	showSingleChannelInformation(channel, guild){
@@ -1153,7 +1258,7 @@ class GuildData{
 		uiOpenChat.style.position = 'absolute';
 		uiOpenChat.style.bottom = '5px';
 		uiOpenChat.style.right = '5px';
-		if(channel.type == 0) uiOpenChat.innerHTML = 'Open Chat'; else if(channel.type == 2) uiOpenChat.innerHTML = 'Connect';
+		if(channel.type == 0) uiOpenChat.innerHTML = this.local.channelInfo.openChat; else if(channel.type == 2) uiOpenChat.innerHTML = this.local.channelInfo.connect;
 		uiOpenChat.style.width = '20%';
 		uiOpenChat.style.backgroundColor = '#444';
 		if(channel.type == 2 || channel.type == 0) scs.appendChild(uiOpenChat);
@@ -1298,7 +1403,7 @@ class GuildData{
 		userSearch.appendChild(popupInput);
 		
 		var popupSearchBtn = document.createElement('button');
-		popupSearchBtn.innerHTML = 'Search User';
+		popupSearchBtn.innerHTML = this.local.userInfo.searchUser;
 		popupSearchBtn.className = 'l0c4lh057 popup user searchbtn';
 		popupSearchBtn.style.position = 'absolute';
 		popupSearchBtn.style.right = '5px';
@@ -1394,6 +1499,7 @@ class GuildData{
 			container.style.borderRadius = '5px';
 			container.style.border = '2px white solid';
 			container.style.display = 'none';
+			container.style.marginBottom = '25px';
 			container.innerHTML = "";
 			
 			if(activity){
@@ -1525,7 +1631,7 @@ class GuildData{
 			uiOpenChat.style.position = 'absolute';
 			uiOpenChat.style.bottom = '5px';
 			uiOpenChat.style.right = '5px';
-			uiOpenChat.innerHTML = 'Open Chat';
+			uiOpenChat.innerHTML = this.local.userInfo.openChat;
 			uiOpenChat.style.width = '20%';
 			uiOpenChat.style.backgroundColor = '#444';
 			uiOpenChat.style.zIndex = '20';
@@ -1557,6 +1663,7 @@ class GuildData{
 					self.stopInterval();
 					document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
 					document.getElementById('l0c4lh057 popup outer').style.display = 'none';
+					document.getElementById('l0c4lh057 popup guild relations').style.zIndex = '0';
 					self.channelSelector.selectPrivateChannel(self.channelModule.getDMFromUserId(user.id));
 				});
 			}));
