@@ -14,3 +14,12 @@ v0.1.0
     - Link to the GitHub page with all changes in the changelog
   Changes
     - Versions are now displayed as "v0.1.0" instead of "0.1.0" in the changelog
+
+v0.1.1
+  Added
+    - Highlighting of the current version in the changelog
+    - More German translations
+    - If you click on how many friends/blocked users there are in a guild, you get a list of them. If you click one of them, they're shown in the user information
+  Changes
+    - Slightly increased the delay for adding the menu item when clicking on the guild name above the channel list, so it should always work
+    - The activity field now has a margin of 25px (bottom), so the 'Open Chat' button isn't covering it anymore
