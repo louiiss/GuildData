@@ -7,7 +7,7 @@ class GuildData{
 
 	getDescription () {return this.local.description;}
 
-	getVersion () {return "0.1.1";}
+	getVersion () {return "1.0.0";}
 
 	getAuthor () {return "l0c4lh057";}
 	
@@ -47,26 +47,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"0.0.9": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"Changelog (English only)",
-						"Option to toggle if you want the changelog to be shown on update",
-						"Displays animated user avatars in user information"
-					]
-				},
-				{
-					"title": "Changes",
-					"type": "changes",
-					"items": [
-						"Version number",
-						"Position and size of the four panels, now based on percentage and pixels, not only percentage -> not fcked up with weird width/height ratios",
-						"Improved welcome message (thank you @Daddy#0001)"
-					]
-				}
-			],
 			"0.1.0": [
 				{
 					"title": "Added",
@@ -101,6 +81,42 @@ class GuildData{
 						"The activity field now has a margin of 25px (bottom), so the '${this.local.userInfo.openChat}' button isn't covering it anymore"
 					]
 				}
+			],
+			"1.0.0": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"The static content of the changelog (title, the notice where to find all changes) is now translatable",
+						"Showing guild icon",
+						"Showing acronym of guilds",
+						"The buttons '${this.local.channelInfo.openChat}' and '${this.local.channelInfo.connect}' in the channel info have a function now"
+					]
+				},
+				{
+					"title": "Changes",
+					"type": "changes",
+					"items": [
+						"Version number and category title in the changelog are now bold",
+						"Changelog title (last and current version) is now bold and centered",
+						"<div style='font-size:125%;display:inline;color:greenyellow'>I think this plugin is completed now. Of course I won't stop improving it, but in the current state you can call it finished. I still have some ideas what to add, but not that many as I had at the beginning. That is why I made this jump from version 0.1.1 to 1.0.0. I think there may be less updates from now.</div>"
+					]
+				},
+				{
+					"title": "Planned",
+					"type": "planned",
+					"items": [
+						"Button in the settings to show the changelog",
+						"Option to change the language manually in the settings"
+					]
+				},
+				{
+					"title": "Request",
+					"type": "request",
+					"items": [
+						"If you still have some ideas what to add, please write me."
+					]
+				}
 			]
 		}`);
 	}
@@ -109,8 +125,9 @@ class GuildData{
 			"added": "lightgreen",
 			"fixes": "orange",
 			"changes": "green",
-			"request": "red"
-		}`);
+			"request": "red",
+			"planned": "#faa61a"
+		}`); // red: #f04747, blue: #7289da, green: #43b581, yellow: #faa61a
 	}
 	
 	get local(){
@@ -123,6 +140,7 @@ class GuildData{
 					"guildInfo": {
 						"title": "Serverinformationen",
 						"owner": "Eigentümer",
+						"acronym": "Akronym",
 						"createdAt": "Erstellt am",
 						"joinedAt": "Beigetreten am",
 						"daysAgo": "vor {0} Tagen",
@@ -317,6 +335,14 @@ class GuildData{
 							"seconds": "Sekunden",
 							"second": "Sekunde"
 						}
+					},
+					"changelog": {
+						"title": "Changelog",
+						"updated": {
+							"title": "Version geupdatet",
+							"additionalContent": "Du hast von Version {0} zu Version {1} geupdated"
+						},
+						"fullChangelogInfo": "Hier werden nur die Änderungen der letzten drei Versionen angezeigt. Um das komplette Änderungsprotokoll einzusehen, schau auf diese Website: {0}"
 					}
 				},
 				"en": {
@@ -327,6 +353,7 @@ class GuildData{
 					"guildInfo": {
 						"title": "Guild Information",
 						"owner": "Owner",
+						"acronym": "Acronym",
 						"createdAt": "Created at",
 						"joinedAt": "Joined at",
 						"daysAgo": "{0} days ago",
@@ -521,6 +548,14 @@ class GuildData{
 							"seconds": "seconds",
 							"second": "second"
 						}
+					},
+					"changelog": {
+						"title": "Changelog",
+						"updated": {
+							"title": "Version updated",
+							"additionalContent": "You updated from version {0} to version {1}"
+						},
+						"fullChangelogInfo": "Here are only the changes of the last three versions. To get a list of all changes, visit this page: {0}"
 					}
 				}
 			}`);
@@ -548,7 +583,8 @@ class GuildData{
 		this.channelModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getChannel"]);
 		this.UserMetaStore = InternalUtilities.WebpackModules.findByUniqueProperties(["getStatus", "getOnlineFriendCount"]);
 		this.privateChannelActions = InternalUtilities.WebpackModules.findByUniqueProperties(["openPrivateChannel"]);
-		this.channelSelector = InternalUtilities.WebpackModules.findByUniqueProperties(["selectPrivateChannel"]);
+		this.channelActions = InternalUtilities.WebpackModules.findByUniqueProperties(["selectPrivateChannel"]);
+		this.channelSelector = InternalUtilities.WebpackModules.findByUniqueProperties(["selectGuild", "selectChannel"]);
 		this.relationshipStore = InternalUtilities.WebpackModules.findByUniqueProperties(['isBlocked', 'getFriendIDs']);
 		
 		this.css = `
@@ -712,7 +748,7 @@ class GuildData{
 			userInformation.style.position = 'absolute';
 			userInformation.style.top = '0%';
 			userInformation.style.width = 'calc(100% - 14px)';
-		userInformation.innerHTML = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3>`;
+			userInformation.innerHTML = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3>`;
 			userContainer.appendChild(userInformation);
 			
 			var roleContainer = document.createElement('div');
@@ -876,17 +912,17 @@ class GuildData{
 	}
 	showChangelog(oldVersion, newVersion){
 		var c = ``;
-		var t = 'Changelog';
+		var t = this.local.changelog.title;
 		if(oldVersion && newVersion){
-			c = `<p style="font-size:150%;">You updated from version ${oldVersion} to version ${newVersion}<br>`;
-			t = 'Version updated';
+			c = `<p style="font-size:150%;font-weight:700;text-align:center;">${this.formatText(this.local.changelog.updated.additionalContent, [oldVersion, newVersion])}<br>`;
+			t = this.local.changelog.updated.title;
 		}
 		for(const v in this.changelog){
 			c += `<div`
 			if(v == this.getVersion()) c += ` style="background-color:#2d2d31;border:2px #a7a7a7;border-style:solid;border-radius:7px;padding:5px;"`;
-			c += `><div style="font-size:140%;padding-bottom:10px;">v${v}</div><div style="padding-left:10px;">`;
+			c += `><div style="font-size:140%;padding-bottom:10px;font-weight:900;">v${v}</div><div style="padding-left:10px;">`;
 			for(const v2 of this.changelog[v]){
-				c += `<div style="padding-bottom:7px;"><div style="color:${this.colors[v2.type]};padding-bottom:3px;">${v2.title}</div><ul style="list-style:none;">`;
+				c += `<div style="padding-bottom:7px;"><div style="color:${this.colors[v2.type]};padding-bottom:3px;font-weight:600;">${v2.title}</div><ul style="list-style:none;">`;
 				for(const v3 of v2.items){
 					c += `<li><div style="padding-left:10px;padding-top:3px;">- ${v3}</div></li>`;
 				}
@@ -894,7 +930,7 @@ class GuildData{
 			}
 			c += `</div></div>`;
 		}
-		c += `<br><br><div style="font-size:125%;color:lightsalmon">Here are only the changes of the last three versions. To get a list of all changes, visit this page: <a href="https://github.com/l0c4lh057/GuildData/blob/master/changelog" target="_blank">https://github.com/l0c4lh057/GuildData/blob/master/changelog</a></div>`;
+		c += `<br><br><div style="font-size:125%;color:lightsalmon">${this.formatText(this.local.changelog.fullChangelogInfo, '<a href="https://github.com/l0c4lh057/GuildData/blob/master/changelog" target="_blank">https://github.com/l0c4lh057/GuildData/blob/master/changelog</a>')}</div>`;
 		
 		this.alertText(t, c);
 	}
@@ -1052,8 +1088,11 @@ class GuildData{
 		
 		/* copying partly implemented */
 		var tableContent = `<h3 class="l0c4lh057" id="l0c4lh057 guild information title">${this.local.guildInfo.title}</h3><br>
-		<div style="text-align:center;font-size:125%;font-weight:bold;";><p id="l0c4lh057 popup tocopy copyid${guild.name}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.name}');" style="display: inline;">${guild.name}</p> (<p id="l0c4lh057 popup tocopy copyid${guild.id}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.id}');" style="display: inline;">${guild.id}</p>)</div><br><table class="l0c4lh057 popup user information table">
+		<div style="text-align:center;font-size:125%;font-weight:bold;";><p id="l0c4lh057 popup tocopy copyid${guild.name}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.name}');" style="display: inline;">${guild.name}</p> (<p id="l0c4lh057 popup tocopy copyid${guild.id}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.id}');" style="display: inline;">${guild.id}</p>)</div><br>`;
+		if(guild.icon) tableContent += `<div style="width:25%;padding-top:25%;background-image:url('${this.getGuildIcon(guild)}');background-size:contain;margin-left:auto;margin-right:auto;background-repeat:no-repeat;"></div>`;
+		tableContent += `<table class="l0c4lh057 popup user information table" style="width:100%;">
 		<tr><td>${this.local.guildInfo.owner}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.userModule.getUser(guild.ownerId).tag}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.userModule.getUser(guild.ownerId).tag}');" style="display: inline;">${this.userModule.getUser(guild.ownerId).tag}</p> (<p id="l0c4lh057 popup tocopy copyid${guild.ownerId}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.ownerId}');" style="display: inline;">${guild.ownerId}</p>)</td></tr>
+		<tr><td>${this.local.guildInfo.acronym}:</td><td>${guild.acronym}</td></tr>
 		<tr><td>${this.local.guildInfo.createdAt}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.getSnowflakeCreationDate(guild.id).toLocaleString()}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.getSnowflakeCreationDate(guild.id).toLocaleString()}');" style="display: inline;">${this.getSnowflakeCreationDate(guild.id).toLocaleString()}</p> (<p id="l0c4lh057 popup tocopy copyid${Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10}');" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
 		<tr><td>${this.local.guildInfo.joinedAt}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.joinedAt.toLocaleString()}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.joinedAt.toLocaleString()}');" style="display: inline;">${guild.joinedAt.toLocaleString()}</p> (<p id="l0c4lh057 popup tocopy copyid${Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10}');" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
 		<tr><td>${this.local.guildInfo.verificationLevel.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.verificationLevel}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.verificationLevel}');" style="display: inline;">${guild.verificationLevel}</p> (<p id="l0c4lh057 popup tocopy copyid${this.getVerificationLevel(guild.verificationLevel)}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.getVerificationLevel(guild.verificationLevel)}');" style="display: inline;">${this.getVerificationLevel(guild.verificationLevel)}</p>)</td></tr>
@@ -1265,9 +1304,11 @@ class GuildData{
 		
 		$('.l0c4lh057.popup.channel.openChat.' + channel.id + '.type' + channel.type).click((function(){
 			self.stopInterval();
+			if(this.className.endsWith('type0'))
+				self.channelSelector.selectChannel(guild.id, channel.id);
+			else if(this.className.endsWith('type2'))
+				self.channelActions.selectVoiceChannel(guild.id, channel.id);
 			document.getElementById('l0c4lh057 popup outer').style.display = 'none';
-			//self.channelSelector.selectVoiceChannel(channel);
-			PluginUtilities.showToast("Not implemented yet", {type:"error"});
 		}));
 	}
 	
@@ -1664,7 +1705,7 @@ class GuildData{
 					document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
 					document.getElementById('l0c4lh057 popup outer').style.display = 'none';
 					document.getElementById('l0c4lh057 popup guild relations').style.zIndex = '0';
-					self.channelSelector.selectPrivateChannel(self.channelModule.getDMFromUserId(user.id));
+					self.channelActions.selectPrivateChannel(self.channelModule.getDMFromUserId(user.id));
 				});
 			}));
 			$('.l0c4lh057.popup.user.back').click((function(){self.stopInterval(); document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0'; document.getElementById('l0c4lh057 popup user back').style.display = 'none'}));
@@ -1909,6 +1950,10 @@ class GuildData{
 				if(document.getElementById(elementId)) document.getElementById(elementId).style.backgroundImage = 'url("' + self.getUserAvatarURL(userId, size, true) + '")';
 			}
 		});
+	}
+	
+	getGuildIcon(guild){
+		return `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp`
 	}
 	
 	
