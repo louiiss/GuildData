@@ -23,3 +23,18 @@ v0.1.1
   Changes
     - Slightly increased the delay for adding the menu item when clicking on the guild name above the channel list, so it should always work
     - The activity field now has a margin of 25px (bottom), so the 'Open Chat' button isn't covering it anymore
+
+v1.0.0
+  Added
+    - The static content of the changelog (title, the notice where to find all changes) is now translatable
+    - Showing guild icon
+    - Showing acronym of guilds
+    - The buttons 'Open Chat' and 'Connect' in the channel info have a function now
+  Changes
+    - Version number and category title in the changelog are now bold
+    - Changelog title (last and current version) is now bold and centered
+    - I think this plugin is completed now. Of course I won't stop improving it, but in the current state you can call it finished. I still have some ideas what to add, but not that many as I had at the beginning. That is why I made this jump from version 0.1.1 to 1.0.0. I think there may be less updates from now.
+  Planned
+    - Button in the settings to show the changelog
+    - Option to change the language manually in the settings
+
