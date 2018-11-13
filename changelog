@@ -38,3 +38,19 @@ v1.0.0
     - Button in the settings to show the changelog
     - Option to change the language manually in the settings
 
+v1.1.0
+  Added
+    - Button to show changelog in the settings
+    - Option to select the language of the plugin
+    - More click events to copy the shown text (not finished yet)
+    - Guild emojis are now shown in the guild info
+    - Option to stop loading the information on guild change
+  Fixed
+    - Channel/role/member count is now visible in the guild info again
+    - Fixed the position of the search result in user information in English language
+    - Fixed the 'Kopieren' button. It got created every time the popup opened but never got deleted
+    - Not reloading the information anymore when you change the channel (not the guild)
+  Changes
+    - Removed some comments in the code that were from the first prototype of this plugin or some functions
+    - Not loading the information of another guild if you selected a guild that is not the one you have currently loaded
+
