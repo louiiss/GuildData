@@ -7,7 +7,7 @@ class GuildData{
 
 	getDescription () {return this.local.description;}
 
-	getVersion () {return "1.0.0";}
+	getVersion () {return "1.1.0";}
 
 	getAuthor () {return "l0c4lh057";}
 	
@@ -18,16 +18,26 @@ class GuildData{
 	get defaultSettings(){
 		return {
 			maxUsersShown: 100,
-			showChangelogOnUpdate: true
+			showChangelogOnUpdate: true,
+			language: "auto",
+			updateInformationOnGuildChange: true
 		}
 	}
 	getSettingsPanel() {
-        var panel = $("<form>").addClass("form").css("width", "100%");
-        if (this.initialized) this.generateSettings(panel);
-        return panel[0];
+		var panel = $("<form>").addClass("form").css("width", "100%");
+		if (this.initialized) this.generateSettings(panel);
+		return panel[0];
 	}
 
 	generateSettings(panel) {
+		const defaultForm = 
+			`<div class="l0c4lh057 settings item" style="margin-top:0px;">
+				<div class="l0c4lh057 settings wrapper" style="position:relative;padding-right:5px;">
+					<h3 class="l0c4lh057 settings title ui-form-title h3 margin-reset margin-reset ui-flex-child"></h3>
+					<div class="l0c4lh057 settings content" style="position:absolute;top:0px;right:0px;"></div>
+				</div>
+				<div class="l0c4lh057 settings description ui-form-text style-description margin-top-4" style="flex:1 1 auto;"></div>
+			</div>`;
 		new PluginSettings.ControlGroup(this.local.settings.title, () => {
 			this.saveSettings();
 		}, {
@@ -38,31 +48,77 @@ class GuildData{
 					this.settings.showChangelogOnUpdate = val;
 				})
 		).append(
+			new PluginSettings.Checkbox(this.local.settings.updateInformationOnGuildChange.title, this.local.settings.updateInformationOnGuildChange.description, this.settings.updateInformationOnGuildChange,
+				(val) => {
+					this.settings.updateInformationOnGuildChange = val;
+				})
+		).append(
 			new PluginSettings.Slider(this.local.settings.maxUsersShown.title, this.local.settings.maxUsersShown.description, 10, 1000, 1,
 				this.settings.maxUsersShown, (val) => {
 					this.settings.maxUsersShown = val;
-				}).setLabelUnit(this.local.settings.maxUsersShown.unit)
+				}, {width: '170px'}).setLabelUnit(this.local.settings.maxUsersShown.unit)
+		).append(
+			$(defaultForm)
+			.find(".description")
+			.html(this.local.settings.selectLanguage.description)
+			.parent()
+			.find(".wrapper")
+			.find(".title")
+			.html(this.local.settings.selectLanguage.title)
+			.parent()
+			.find(".content")
+			.append(
+				$(`<select type="select" id="l0c4lh057 settings select selectLanguage">`)
+				.toggleClass('l0c4lh057 settings select selectLanguage')
+				.css({
+					'float': 'right'
+				})
+				.html(this.local.settings.selectLanguage)
+				.append(
+					$(`<option type="option"` + (this.settings.language == "auto" ? " selected" : "") + ` value="auto">${this.local.settings.selectLanguage.entries["auto"]}</option>`)
+				)
+				.append(
+					$(`<option type="option"` + (this.settings.language == "de" ? " selected" : "") + ` value="de">${this.local.settings.selectLanguage.entries["de"]}</option>`)
+				)
+				.append(
+					$(`<option type="option"` + (this.settings.language == "en" ? " selected" : "") + ` value="en">${this.local.settings.selectLanguage.entries["en"]}</option>`)
+				)
+				.change((val) => {
+					if(val.target.value != "auto") this.lang = val.target.value; else this.lang = document.documentElement.getAttribute('lang').split('-')[0];
+					this.settings.language = val.target.value;
+					this.saveSettings();
+					this.insertScript();
+				})
+			)
+			.parent()
+			.parent()
+		).append(
+			$(defaultForm)
+			.find(".description")
+			.css({
+				"margin-top": "20px"
+			})
+			.parent()
+			.find(".wrapper")
+			.find(".content")
+			.append(
+				$(`<button type="button">`)
+				.toggleClass('l0c4lh057 settings button showChangelog')
+				.css({
+					'float': 'right'
+				})
+				.html(this.local.settings.showChangelog)
+				.click(() => {
+					this.showChangelog();
+				})
+			)
+			.parent()
+			.parent()
 		);
 	}
 	
 	get changelog(){
 		return JSON.parse(`{
-			"0.1.0": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"Link to the GitHub page with all changes in the changelog"
-					]
-				},
-				{
-					"title": "Changes",
-					"type": "changes",
-					"items": [
-						"Versions are now displayed as 'v0.1.0' instead of '0.1.0' in the changelog"
-					]
-				}
-			],
 			"0.1.1": [
 				{
 					"title": "Added",
@@ -99,15 +155,38 @@ class GuildData{
 					"items": [
 						"Version number and category title in the changelog are now bold",
 						"Changelog title (last and current version) is now bold and centered",
-						"<div style='font-size:125%;display:inline;color:greenyellow'>I think this plugin is completed now. Of course I won't stop improving it, but in the current state you can call it finished. I still have some ideas what to add, but not that many as I had at the beginning. That is why I made this jump from version 0.1.1 to 1.0.0. I think there may be less updates from now.</div>"
+						"I think this plugin is completed now. Of course I won't stop improving it, but in the current state you can call it finished. I still have some ideas what to add, but not that many as I had at the beginning. That is why I made this jump from version 0.1.1 to 1.0.0. I think there may be less updates from now."
+					]
+				}
+			],
+			"1.1.0": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"Button to show changelog in the settings",
+						"Option to select the language of the plugin",
+						"More click events to copy the shown text (not finished yet)",
+						"Guild emojis are now shown in the guild info",
+						"Option to stop loading the information on guild change"
 					]
 				},
 				{
-					"title": "Planned",
-					"type": "planned",
+					"title": "Fixed",
+					"type": "fixes",
 					"items": [
-						"Button in the settings to show the changelog",
-						"Option to change the language manually in the settings"
+						"Channel/role/member count is now visible in the guild info again",
+						"Fixed the position of the search result in user information in English language",
+						"Fixed the '${this.local.roleInfo.copy}' button. It got created every time the popup opened but never got deleted",
+						"Not reloading the information anymore when you change the channel (not the guild)"
+					]
+				},
+				{
+					"title": "Changes",
+					"type": "changes",
+					"items": [
+						"Removed some comments in the code that were from the first prototype of this plugin or some functions",
+						"Not loading the information of another guild if you selected a guild that is not the one you have currently loaded"
 					]
 				},
 				{
@@ -126,7 +205,7 @@ class GuildData{
 			"fixes": "orange",
 			"changes": "green",
 			"request": "red",
-			"planned": "#faa61a"
+			"planned": "#7289da"
 		}`); // red: #f04747, blue: #7289da, green: #43b581, yellow: #faa61a
 	}
 	
@@ -134,9 +213,9 @@ class GuildData{
 		if(!this.strings) this.strings = JSON.parse(`{
 				"de": {
 					"description": "Zeigt Informationen zu Servern an. Wenn du mir beim Übersetzen helfen möchtest, dann wende dich bitte an @l0c4lh057#6731 (ID: 226677096091484160)",
-					"startMsg": "wurde gestartet",
+					"startMsg": "{0} wurde gestartet",
 					"showGuildData": "Serverinfos anzeigen",
-					"copied": "'{0}' kopiert",
+					"copied": "\\"{0}\\" kopiert",
 					"guildInfo": {
 						"title": "Serverinformationen",
 						"owner": "Eigentümer",
@@ -156,9 +235,18 @@ class GuildData{
 							"mentionsOnly": "Nur Erwähnungen"
 						},
 						"region": "Standort",
-						"memberCount": "Mitgliederzahl",
-						"channelCount": "Kanalanzahl",
-						"roleCount": "Rollenanzahl",
+						"memberCount": {
+							"title": "Mitgliederzahl",
+							"value": "{0} Mitglieder"
+						},
+						"channelCount": {
+							"title": "Kanalanzahl",
+							"value": "{0} Kanäle"
+						},
+						"roleCount": {
+							"title": "Rollenanzahl",
+							"value": "{0} Rollen"
+						},
 						"verificationLevel": {
 							"title": "Verifizierungs-Level",
 							"unrestricted": "Keine Verifizierung benötigt",
@@ -195,7 +283,7 @@ class GuildData{
 					},
 					"userInfo": {
 						"title": "Nutzerinformationen",
-						"usersFound": "{0} Nutzer für '{1}' gefunden",
+						"usersFound": "{0} Nutzer für \\"{1}\\" gefunden",
 						"tooManyUsers": "Es wurden {0} Nutzer gefunden. Bitte erhöhe die Genauigkeit deiner Suche.",
 						"nickname": "Nickname",
 						"color": {
@@ -277,6 +365,20 @@ class GuildData{
 						"showChangelogOnUpdate": {
 							"title": "Änderungsprotokoll nach Update anzeigen",
 							"description": "Zeigt das Änderungsprotokoll nach dem ersten Start des Plugins an, wenn du es geupdatet hast."
+						},
+						"updateInformationOnGuildChange": {
+							"title": "Infos beim Serverwechsel neu laden",
+							"description": "Lädt, wenn du den Server wechselst, die Infos zum neuen aktuellen Server"
+						},
+						"showChangelog": "Änderungsprotokoll anzeigen",
+						"selectLanguage": {
+							"title": "Sprache auswählen",
+							"description": "Ändert die Sprache, die im Plugin verwendet wird",
+							"entries": {
+								"auto": "Automatisch erkennen",
+								"de": "Deutsch",
+								"en": "Englisch"
+							}
 						}
 					},
 					"permissions": {
@@ -337,19 +439,27 @@ class GuildData{
 						}
 					},
 					"changelog": {
-						"title": "Changelog",
+						"title": "Änderungsprotokoll",
 						"updated": {
 							"title": "Version geupdatet",
 							"additionalContent": "Du hast von Version {0} zu Version {1} geupdated"
 						},
 						"fullChangelogInfo": "Hier werden nur die Änderungen der letzten drei Versionen angezeigt. Um das komplette Änderungsprotokoll einzusehen, schau auf diese Website: {0}"
+					},
+					"emojis": {
+						"title": "Server-Emojis",
+						"value": "{0} Emojis",
+						"animated": "Animiert",
+						"managed": "Gemanaged",
+						"requireColons": "Erfordert Doppelpunkt",
+						"whitelist": "Gewhitelistete Rollen"
 					}
 				},
 				"en": {
 					"description": "Shows something about guilds. If you want to help translating, please contact @l0c4lh057#6731 (id: 226677096091484160)",
-					"startMsg": "started",
+					"startMsg": "{0} started",
 					"showGuildData": "Show Guild Data",
-					"copied": "Copied '{0}'",
+					"copied": "Copied \\"{0}\\"",
 					"guildInfo": {
 						"title": "Guild Information",
 						"owner": "Owner",
@@ -369,9 +479,18 @@ class GuildData{
 							"mentionsOnly": "Mentions only"
 						},
 						"region": "Region",
-						"memberCount": "Member count",
-						"channelCount": "Channel count",
-						"roleCount": "Role count",
+						"memberCount": {
+							"title": "Member count",
+							"value": "{0} members"
+						},
+						"channelCount": {
+							"title": "Channel count",
+							"value": "{0} channels"
+						},
+						"roleCount": {
+							"title": "Role count",
+							"value": "{0} roles"
+						},
 						"verificationLevel": {
 							"title": "Verification level",
 							"unrestricted": "Unrestricted",
@@ -408,7 +527,7 @@ class GuildData{
 					},
 					"userInfo": {
 						"title": "User Information",
-						"usersFound": "<br><br>Found {0} entries for '{1}'",
+						"usersFound": "Found {0} entries for \\"{1}\\"",
 						"tooManyUsers": "There are {0} entries. Please specify your search.",
 						"nickname": "Nickname",
 						"color": {
@@ -490,6 +609,20 @@ class GuildData{
 						"showChangelogOnUpdate": {
 							"title": "Show changelog on update",
 							"description": "Shows the changelog on plugin start, when you have updated it."
+						},
+						"updateInformationOnGuildChange": {
+							"title": "Show Information On Guild Change",
+							"description": "When you change the guild, the information will automatically update to the new current guild"
+						},
+						"showChangelog": "Show Changelog",
+						"selectLanguage": {
+							"title": "Select language",
+							"description": "Change the language that is used in the plugin",
+							"entries": {
+								"auto": "Detect automatically",
+								"de": "German",
+								"en": "English"
+							}
 						}
 					},
 					"permissions": {
@@ -556,6 +689,14 @@ class GuildData{
 							"additionalContent": "You updated from version {0} to version {1}"
 						},
 						"fullChangelogInfo": "Here are only the changes of the last three versions. To get a list of all changes, visit this page: {0}"
+					},
+					"emojis": {
+						"title": "Guild Emojis",
+						"value": "{0} emojis",
+						"animated": "Animated",
+						"managed": "Managed",
+						"requireColons": "Require Colons",
+						"whitelist": "Whitelisted Roles"
 					}
 				}
 			}`);
@@ -563,7 +704,6 @@ class GuildData{
 	}
 	
 	start(){
-		this.lang = document.documentElement.getAttribute('lang').split('-')[0];
 		var self = this;
 		if(typeof PluginUtilities === "undefined" || typeof InternalUtilities === "undefined"){
 			setTimeout(function(){self.start()}, 1000);
@@ -575,7 +715,9 @@ class GuildData{
 	initialize(){
 		this.initialized = true;
 		this.loadSettings();
-		PluginUtilities.showToast(`${this.getName()} ${this.getVersion()} ${this.local.startMsg}`, {type:"success"});
+		this.lang = document.documentElement.getAttribute('lang').split('-')[0];
+		if(this.settings.language != "auto") this.lang = this.settings.language;
+		PluginUtilities.showToast(`${this.formatText(this.local.startMsg, [this.getName() + ' ' + this.getVersion()])}`, {type:"success"});
 		
 		this.guildModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getGuild"]);
 		this.userModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getUser"]);
@@ -586,6 +728,7 @@ class GuildData{
 		this.channelActions = InternalUtilities.WebpackModules.findByUniqueProperties(["selectPrivateChannel"]);
 		this.channelSelector = InternalUtilities.WebpackModules.findByUniqueProperties(["selectGuild", "selectChannel"]);
 		this.relationshipStore = InternalUtilities.WebpackModules.findByUniqueProperties(['isBlocked', 'getFriendIDs']);
+		this.emojiUtils = InternalUtilities.WebpackModules.findByUniqueProperties(['getGuildEmoji']);
 		
 		this.css = `
 		.l0c4lh057.popup{
@@ -615,7 +758,7 @@ class GuildData{
 		.l0c4lh057{
 			-webkit-user-select: text;
 		}
-		.l0c4lh057 > table > tbody > tr:nth-child(even){
+		.l0c4lh057 > table > tbody > tr:nth-child(even), .l0c4lh057.popup.gEmoji.role{
 			background-color: #2b2b2b;
 		}
 		.l0c4lh057 > table{
@@ -644,10 +787,10 @@ class GuildData{
 							document.getElementsByClassName('popout-3sVMXz da-popout popoutBottom-1YbShG popoutbottom')[0].style.height = (document.getElementsByClassName('popout-3sVMXz da-popout popoutBottom-1YbShG popoutbottom')[0].offsetHeight + sep.offsetHeight + itm.offsetHeight) + 'px';
 							document.getElementsByClassName('menu-Sp6bN1 da-menu')[0].style.height = (document.getElementsByClassName('menu-Sp6bN1 da-menu')[0].offsetHeight + sep.offsetHeight + itm.offsetHeight) + 'px';
 							
-							$(".item-1GzJrl.da-item.l0c4lh057.showonclick").click((function() {
+							$(".item-1GzJrl.da-item.l0c4lh057.showonclick").click(function() {
 								$(document.querySelector('.container-2Rl01u.popout-open')).click();
 								self.getServer(PluginUtilities.getCurrentServer());
-							}));
+							});
 						}
 						exi = true;
 					}
@@ -710,6 +853,36 @@ class GuildData{
 			guildRelations.style.borderRadius = '5px';
 			guildRelations.style.zIndex = '0';
 			popupInner.appendChild(guildRelations);
+			
+			var guildEmojis = document.createElement('div');
+			guildEmojis.className = 'l0c4lh057 popup';
+			guildEmojis.id = 'l0c4lh057 popup guild emojis';
+			guildEmojis.style.position = 'absolute';
+			guildEmojis.style.overflowY = 'auto';
+			guildEmojis.style.left = '0%';
+			guildEmojis.style.top = '0%';
+			guildEmojis.style.width = 'calc(50% - 25px)';
+			guildEmojis.style.height = 'calc(50% - 25px)';
+			guildEmojis.style.padding = '5px';
+			guildEmojis.style.border = '2px grey solid';
+			guildEmojis.style.borderRadius = '5px';
+			guildEmojis.style.zIndex = '0';
+			popupInner.appendChild(guildEmojis);
+			
+			var guildEmojiInfo = document.createElement('div');
+			guildEmojiInfo.className = 'l0c4lh057 popup';
+			guildEmojiInfo.id = 'l0c4lh057 popup guild emojiinfo';
+			guildEmojiInfo.style.position = 'absolute';
+			guildEmojiInfo.style.overflowY = 'auto';
+			guildEmojiInfo.style.left = '0%';
+			guildEmojiInfo.style.top = '0%';
+			guildEmojiInfo.style.width = 'calc(50% - 25px)';
+			guildEmojiInfo.style.height = 'calc(50% - 25px)';
+			guildEmojiInfo.style.padding = '5px';
+			guildEmojiInfo.style.border = '2px grey solid';
+			guildEmojiInfo.style.borderRadius = '5px';
+			guildEmojiInfo.style.zIndex = '0';
+			popupInner.appendChild(guildEmojiInfo);
 			
 			var userContainer = document.createElement('div');
 			userContainer.className = 'l0c4lh057 popup';
@@ -854,37 +1027,7 @@ class GuildData{
 			popupWindow.appendChild(btnClose);
 		}
 		
-		if(!document.getElementById('l0c4lh057 script copy')){
-			var insertedScript = document.createElement('script');
-			insertedScript.id = 'l0c4lh057 script copy';
-			insertedScript.innerHTML = `
-						function formatText4Dg3g5(source, params) {
-							if(typeof params === "string") params = [params];
-							$.each(params,function (i, n) {
-								source = source.replace(new RegExp("\\\\{" + i + "\\\\}", "g"), n);
-							})
-							return source;
-						}
-						function copySelectedElement4Dg3g5(selElement){
-							var tempInput = document.createElement('INPUT');
-							document.body.appendChild(tempInput);
-							tempInput.setAttribute('value', document.getElementById(selElement).innerHTML)
-							tempInput.select();
-							document.execCommand('copy');
-							document.body.removeChild(tempInput);
-							PluginUtilities.showToast(formatText4Dg3g5("${this.local.copied}", document.getElementById(selElement).innerHTML), {type:"success"});
-						}
-						function copyText4Dg3g5(text){
-							var tempInput = document.createElement('textarea');
-							document.body.appendChild(tempInput);
-							tempInput.innerHTML = text;
-							tempInput.select();
-							document.execCommand('copy');
-							document.body.removeChild(tempInput);
-							PluginUtilities.showToast(formatText4Dg3g5("${this.local.copied}", text), {type:"success"});
-						}`;
-			document.body.appendChild(insertedScript);
-		}
+		this.insertScript();
 		
 		BdApi.injectCSS(this.getName(), this.css);
 		
@@ -936,10 +1079,10 @@ class GuildData{
 	}
 	
 	addContextMenuEvent() {
-        $(document).on('contextmenu.' + this.getName(), (e) => {
-            this.addContextMenuItems(e);
-        })
-    }
+		$(document).on('contextmenu.' + this.getName(), (e) => {
+			this.addContextMenuItems(e);
+		})
+	}
 	
 	addContextMenuItems(e) {
 		if(e.target.parentElement.href){
@@ -970,7 +1113,40 @@ class GuildData{
 			if (context.classList.contains("plugin-context-menu")) return;
 			$(context).find('.itemGroup-1tL0uz').last().append(testGroup.element);
 		}
-    }
+	}
+	
+	insertScript(){
+		if(document.getElementById('l0c4lh057 script copy')) document.getElementById('l0c4lh057 script copy').outerHTML = '';
+		var insertedScript = document.createElement('script');
+		insertedScript.id = 'l0c4lh057 script copy';
+		insertedScript.innerHTML = `
+					function formatText4Dg3g5(source, params) {
+						if(typeof params === "string") params = [params];
+						$.each(params,function (i, n) {
+							source = source.replace(new RegExp("\\\\{" + i + "\\\\}", "g"), n);
+						})
+						return source;
+					}
+					function copySelectedElement4Dg3g5(selElement){
+						var tempInput = document.createElement('INPUT');
+						document.body.appendChild(tempInput);
+						tempInput.setAttribute('value', document.getElementById(selElement).innerHTML)
+						tempInput.select();
+						document.execCommand('copy');
+						document.body.removeChild(tempInput);
+						PluginUtilities.showToast(formatText4Dg3g5("${this.local.copied.replace(/"/g, '\\"')}", document.getElementById(selElement).innerHTML), {type:"success"});
+					}
+					function copyText4Dg3g5(text){
+						var tempInput = document.createElement('textarea');
+						document.body.appendChild(tempInput);
+						tempInput.innerHTML = text;
+						tempInput.select();
+						document.execCommand('copy');
+						document.body.removeChild(tempInput);
+						PluginUtilities.showToast(formatText4Dg3g5("${this.local.copied.replace(/"/g, '\\"')}", text), {type:"success"});
+					}`;
+		document.body.appendChild(insertedScript);
+	}
 	
 	stop(){
 		$('.container-2Rl01u').unbind('click');
@@ -1011,10 +1187,10 @@ class GuildData{
 							document.getElementsByClassName('popout-3sVMXz da-popout popoutBottom-1YbShG popoutbottom')[0].style.height = (document.getElementsByClassName('popout-3sVMXz da-popout popoutBottom-1YbShG popoutbottom')[0].offsetHeight + sep.offsetHeight + itm.offsetHeight) + 'px';
 							document.getElementsByClassName('menu-Sp6bN1 da-menu')[0].style.height = (document.getElementsByClassName('menu-Sp6bN1 da-menu')[0].offsetHeight + sep.offsetHeight + itm.offsetHeight) + 'px';
 							
-							$(".item-1GzJrl.da-item.l0c4lh057.showonclick").click((function() {
+							$(".item-1GzJrl.da-item.l0c4lh057.showonclick").click(function() {
 								$(document.querySelector('.container-2Rl01u.popout-open')).click();
 								self.getServer(PluginUtilities.getCurrentServer());
-							}));
+							});
 						}
 						exi = true;
 					}
@@ -1023,6 +1199,9 @@ class GuildData{
 		});
 		
 		if(!PluginUtilities.isServer()) return;
+		if(this.lastShownGuild == PluginUtilities.getCurrentServer().id) return;
+		if(!this.settings.updateInformationOnGuildChange) return;
+		if(!this.informationOfCurrentGuild) return;
 		if(document.getElementById('l0c4lh057 popup outer').style.display == 'block') this.getServer(PluginUtilities.getCurrentServer());
 		if(document.getElementById('l0c4lh057 popup user back')) document.getElementById('l0c4lh057 popup user back').outerHTML = '';
 	}
@@ -1033,78 +1212,44 @@ class GuildData{
 	
 	
 	getServer(guild){
+		this.lastShownGuild = guild.id;
+		this.informationOfCurrentGuild = (PluginUtilities.getCurrentServer().id == guild.id);
+		
 		document.getElementById('l0c4lh057 popup sChannelSearch').style.zIndex = '5';
 		document.getElementById('l0c4lh057 popup channel permission').style.zIndex = '5';
 		document.getElementById('l0c4lh057 popup role permission').style.zIndex = '5';
 		document.getElementById('l0c4lh057 popup user information').style.zIndex = '5';
 		document.getElementById('l0c4lh057 popup guild relations').style.zIndex = '0';
+		document.getElementById('l0c4lh057 popup guild emojis').style.zIndex = '0';
+		document.getElementById('l0c4lh057 popup guild emojiinfo').style.zIndex = '0';
 		if(document.getElementById('l0c4lh057 popup user openChat')) document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
 		
 		this.stopInterval();
 		
 		DiscordModules.GuildActions.requestMembers(guild.id, '', 0);
-		/* look for unimplemented outputs and add them to ui -> delete this */
-		/*console.log(guild);
-		console.log('Guild Name: ' + guild.name);
-		console.log('Guild ID: ' + guild.id);
-		console.log('Owner ID: ' + guild.ownerId + ' (' + this.userModule.getUser(guild.ownerId).tag + ')');
-		console.log('Guild Region: ' + guild.region);
-		console.log('Verification Level: ' + guild.verificationLevel);
-		console.log('AFK-Channel ID: ' + guild.afkChannelId);
-		console.log('AFK Timeout: ' + guild.afkTimeout);
-		console.log('Created At: ' + this.getSnowflakeCreationDate(guild.id).toLocaleString() + ' (' + Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10 + ' days ago)');
-		console.log('Joined At: ' + guild.joinedAt.toLocaleString() + ' (' + Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10 + ' days ago)');
-		console.log('Role Count: ' + Object.keys(guild.roles).length);
-		/* alle Roles anzeigen
-		for(var role of Object.values(guild.roles)){
-			console.log('Role: ' + role.id + ' - ' + role.name);
-		}*
-		console.log('Member Count: ' + this.memberModule.getMembers(guild.id).length);
-		/* alle User anzeigen
-		for(var user of this.memberModule.getMembers(guild.id)){
-			if(user.nick)
-				console.log('User: ' + user.userId + ' - ' + this.userModule.getUser(user.userId).tag + ' (' + user.nick + ')');
-			else
-				console.log('User: ' + user.userId + ' - ' + this.userModule.getUser(user.userId).tag);
-			console.log('  Permissions: ' + user.permissions);
-		}*
-		console.log('Channel Count: ' + Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id).length);
-		console.log(Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id));
-		/* alle Channels anzeigen
-		for(var channel of Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id)){
-			console.log('Channel: ' + channel.id + ' - ' + channel.name + ' (' + this.getChannelType(channel.type) + ')');
-			// channel.parent_id -> Kategorie (auch von versteckten Channeln)
-			// permissionOverwrites -> geänderte Berechtigungen
-			for(var perm of Object.values(channel.permissionOverwrites)){
-				if(perm.type == "member")
-					console.log(perm.id + ' - ' + perm.type + ' "' + this.userModule.getUser(perm.id).tag + '" (' + perm.allow + ' | ' + perm.deny + ')');
-				else if(perm.type == "role")
-					console.log(perm.id + ' - ' + perm.type + ' "' + guild.roles[perm.id].name + '" (' + perm.allow + ' | ' + perm.deny + ')');
-			}
-			console.log(channel);
-		}*/
+		
 		var popup = document.getElementById('l0c4lh057 popup guild information');
 		document.getElementById('l0c4lh057 popup outer').style.display = 'block';
 		
-		/* copying partly implemented */
 		var tableContent = `<h3 class="l0c4lh057" id="l0c4lh057 guild information title">${this.local.guildInfo.title}</h3><br>
 		<div style="text-align:center;font-size:125%;font-weight:bold;";><p id="l0c4lh057 popup tocopy copyid${guild.name}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.name}');" style="display: inline;">${guild.name}</p> (<p id="l0c4lh057 popup tocopy copyid${guild.id}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.id}');" style="display: inline;">${guild.id}</p>)</div><br>`;
-		if(guild.icon) tableContent += `<div style="width:25%;padding-top:25%;background-image:url('${this.getGuildIcon(guild)}');background-size:contain;margin-left:auto;margin-right:auto;background-repeat:no-repeat;"></div>`;
+		if(guild.icon) tableContent += `<div style="width:25%;padding-top:25%;background-image:url('${this.getGuildIcon(guild)}');background-size:contain;margin-left:auto;margin-right:auto;background-repeat:no-repeat;" onclick="copyText4Dg3g5('${this.getGuildIcon(guild)}')"></div>`;
 		tableContent += `<table class="l0c4lh057 popup user information table" style="width:100%;">
 		<tr><td>${this.local.guildInfo.owner}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.userModule.getUser(guild.ownerId).tag}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.userModule.getUser(guild.ownerId).tag}');" style="display: inline;">${this.userModule.getUser(guild.ownerId).tag}</p> (<p id="l0c4lh057 popup tocopy copyid${guild.ownerId}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.ownerId}');" style="display: inline;">${guild.ownerId}</p>)</td></tr>
 		<tr><td>${this.local.guildInfo.acronym}:</td><td>${guild.acronym}</td></tr>
 		<tr><td>${this.local.guildInfo.createdAt}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.getSnowflakeCreationDate(guild.id).toLocaleString()}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.getSnowflakeCreationDate(guild.id).toLocaleString()}');" style="display: inline;">${this.getSnowflakeCreationDate(guild.id).toLocaleString()}</p> (<p id="l0c4lh057 popup tocopy copyid${Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10}');" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
 		<tr><td>${this.local.guildInfo.joinedAt}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.joinedAt.toLocaleString()}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.joinedAt.toLocaleString()}');" style="display: inline;">${guild.joinedAt.toLocaleString()}</p> (<p id="l0c4lh057 popup tocopy copyid${Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10}');" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
 		<tr><td>${this.local.guildInfo.verificationLevel.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.verificationLevel}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.verificationLevel}');" style="display: inline;">${guild.verificationLevel}</p> (<p id="l0c4lh057 popup tocopy copyid${this.getVerificationLevel(guild.verificationLevel)}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.getVerificationLevel(guild.verificationLevel)}');" style="display: inline;">${this.getVerificationLevel(guild.verificationLevel)}</p>)</td></tr>
-		<tr><td>${this.local.guildInfo.explicitContentFilter.title}:</td><td>${guild.explicitContentFilter} (${this.getExplicitContentFilterLevel(guild.explicitContentFilter)})</td></tr>
-		<tr><td>${this.local.guildInfo.defaultMessageNotifications.title}:</td><td>${guild.defaultMessageNotifications} (${this.getDefaultMessageNotifications(guild.defaultMessageNotifications)})</td></tr>
+		<tr><td>${this.local.guildInfo.explicitContentFilter.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.explicitContentFilter}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.explicitContentFilter}');" style="display: inline;">${guild.explicitContentFilter}</p> (<p id="l0c4lh057 popup tocopy copyid${this.getExplicitContentFilterLevel(guild.explicitContentFilter)}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.getExplicitContentFilterLevel(guild.explicitContentFilter)}');" style="display: inline;">${this.getExplicitContentFilterLevel(guild.explicitContentFilter)}</p>)</td></tr>
+		<tr><td>${this.local.guildInfo.defaultMessageNotifications.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.defaultMessageNotifications}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.defaultMessageNotifications}');" style="display: inline;">${guild.defaultMessageNotifications}</p> (<p id="l0c4lh057 popup tocopy copyid${this.getDefaultMessageNotifications(guild.defaultMessageNotifications)}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.getDefaultMessageNotifications(guild.defaultMessageNotifications)}');" style="display: inline;">${this.getDefaultMessageNotifications(guild.defaultMessageNotifications)}</p>)</td></tr>
 		<tr><td>${this.local.guildInfo.region}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.region}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.region}');" style="display: inline;">${guild.region}</p></td></tr>`;
 		tableContent += `<tr><td>${this.local.guildInfo.afkChannel.title}:</td><td>` + (guild.afkChannelId ? ('<p id="l0c4lh057 popup tocopy copyid' + this.channelModule.getChannel(guild.afkChannelId).name + '" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyid' + this.channelModule.getChannel(guild.afkChannelId).name + '\');" style="display: inline;">' + this.channelModule.getChannel(guild.afkChannelId).name + '</p> ' + '(<p id="l0c4lh057 popup tocopy copyid' + guild.afkChannelId + '" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyid' + guild.afkChannelId + '\');" style="display: inline;">' + guild.afkChannelId + '</p>)') : ('<p id="l0c4lh057 popup tocopy copyidNo afk channel" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyidNo afk channel\');" style="display: inline;">' + this.local.guildInfo.afkChannel.noAfkChannel + '</p>')) + '</td></tr>';
 		tableContent += `<tr><td>${this.local.guildInfo.afkTimeout.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${guild.afkTimeout}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${guild.afkTimeout}');" style="display: inline;">${guild.afkTimeout} ${this.local.guildInfo.afkTimeout.unit}</p> (<p id="l0c4lh057 popup tocopy copyid` + guild.afkTimeout/60 + ` ${this.local.time.long.minutes}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid` + guild.afkTimeout/60 + ` ${this.local.time.long.minutes}');" style="display: inline;">` + guild.afkTimeout/60 + ` ${this.local.time.long.minutes}</p>)</td></tr>`;
-		if(guild.systemChannelId) tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td>${this.channelModule.getChannel(guild.systemChannelId)} (${guild.systemChannelId})</td></tr>`; else tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td>${this.local.guildInfo.systemChannel.noSystemChannel}</td></tr>`;
-		`<tr><td>${this.local.guildInfo.memberCount}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.memberModule.getMembers(guild.id).length}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.memberModule.getMembers(guild.id).length}');" style="display: inline;">${this.memberModule.getMembers(guild.id).length}</p></td></tr>
-		<tr><td>${this.local.guildInfo.channelCount}:</td><td><p id="l0c4lh057 popup tocopy copyid${Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id).length}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id).length}');" style="display: inline;">${Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id).length}</p></td></tr>
-		<tr><td>${this.local.guildInfo.roleCount}:</td><td><p id="l0c4lh057 popup tocopy copyid${Object.keys(guild.roles).length}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Object.keys(guild.roles).length}');" style="display: inline;">${Object.keys(guild.roles).length}</p></td></tr>`;
+		if(guild.systemChannelId) tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td class="l0c4lh057 popup guildinfo systemchannel showsystemchannel ${guild.systemChannelId}">${this.channelModule.getChannel(guild.systemChannelId)} (${guild.systemChannelId})</td></tr>`; else tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.local.guildInfo.systemChannel.noSystemChannel}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.local.guildInfo.systemChannel.noSystemChannel}');" style="display: inline;">${this.local.guildInfo.systemChannel.noSystemChannel}</p></td></tr>`;
+		tableContent += `<tr><td>${this.local.guildInfo.title}:</td><td class="l0c4lh057 popup guildinfo emojicount">${this.formatText(this.local.emojis.value, [this.emojiUtils.getGuildEmoji(guild.id).length])}</td></tr>
+		<tr><td>${this.local.guildInfo.memberCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${this.memberModule.getMembers(guild.id).length}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${this.memberModule.getMembers(guild.id).length}');" style="display: inline;">${this.formatText(this.local.guildInfo.memberCount.value, [this.memberModule.getMembers(guild.id).length])}</p></td></tr>
+		<tr><td>${this.local.guildInfo.channelCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id).length}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id).length}');" style="display: inline;">${this.formatText(this.local.guildInfo.channelCount.value, [Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id).length])}</p></td></tr>
+		<tr><td>${this.local.guildInfo.roleCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyid${Object.keys(guild.roles).length}" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyid${Object.keys(guild.roles).length}');" style="display: inline;">${this.formatText(this.local.guildInfo.roleCount.value, [Object.keys(guild.roles).length])}</p></td></tr>`;
 		if(Array.from(guild.features).length > 0){
 			var features = "";
 			guild.features.forEach(v => features += v + ', ');
@@ -1141,9 +1286,9 @@ class GuildData{
 			}
 		}
 		for(const channel of channels){
-			$(".l0c4lh057.popup.channel.single." + channel.id).click((function() {
+			$(".l0c4lh057.popup.channel.single." + channel.id).click(function() {
 				self.showSingleChannelInformation(channel, guild);
-			}));
+			});
 		}
 		
 		var roleSearch = document.getElementById('l0c4lh057 popup roleSearch');
@@ -1156,6 +1301,8 @@ class GuildData{
 			roleString += `${role.name} (${rId})\n`;
 		}
 		roleSearch.innerHTML += toAdd + '</div>';
+		
+		if(document.getElementById('l0c4lh057 popup roles copybtn')) document.getElementById('l0c4lh057 popup roles copybtn').outerHTML = '';
 		var copyRoles = document.createElement('button');
 		copyRoles.id = 'l0c4lh057 popup roles copybtn';
 		copyRoles.onclick = function(){copyText4Dg3g5(roleString.substring(roleString, roleString.length - 1));}
@@ -1168,19 +1315,97 @@ class GuildData{
 		document.getElementById('l0c4lh057 popup roleContainer').appendChild(copyRoles);
 		for(const rId of Object.keys(guild.roles)){
 			const role = guild.roles[rId];
-			$(".l0c4lh057.popup.role." + rId).click((function() {
+			$(".l0c4lh057.popup.role." + rId).click(function(){
 				self.showRolePermissionInformation(role);
-			}));
+			});
 		}
 		
-		$(".l0c4lh057.popup.guild.relationships.friends").click((function(){
+		$(".l0c4lh057.popup.guild.relationships.friends").click(function(){
 			self.showRelations(guild, "friends");
-		}));
-		$(".l0c4lh057.popup.guild.relationships.blocked").click((function(){
+		});
+		$(".l0c4lh057.popup.guild.relationships.blocked").click(function(){
 			self.showRelations(guild, "blocked");
-		}));
+		});
+		$(".l0c4lh057.popup.guildinfo.emojicount").click(function(){
+			self.showGuildEmojis(guild);
+		});
+		if(guild.systemChannelId) $(`.l0c4lh057.popup.guildinfo.systemchannel.showsystemchannel.${guild.systemChannelId}`).click(function(){
+			self.showSingleChannelInformation(Array.filter(Object.values(channels), c => c.id == guild.systemChannelId)[0], guild);
+		});
 		
 		this.showUsers(guild, '');
+	}
+	
+	showGuildEmojis(guild){
+		var self = this;
+		var ge = document.getElementById('l0c4lh057 popup guild emojis');
+		ge.style.zIndex = '10';
+		var emojis = this.emojiUtils.getGuildEmoji(guild.id);
+		var c = `<h3 class="l0c4lh057" id="l0c4lh057 guild title">${this.local.guildInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.emojis.title}</div><br><div>`;
+		for(const e of emojis){
+			c += `<div class="l0c4lh057 popup guildinfo gEmoji ${e.id}" style="margin-bottom:3px;"><img class="emoji" src="${e.url}"><div style="margin-left:5px;display:inline;">${e.name} (${e.id})</div></div>`;
+		}
+		ge.innerHTML = c + '</div>';
+		
+		for(const e of emojis)
+			$(`.l0c4lh057.popup.guildinfo.gEmoji.${e.id}`).click(function(){
+				self.showGuildEmoji(guild, e);
+			});
+		
+		var geBack = document.createElement('div');
+		geBack.style.position = 'absolute';
+		geBack.style.top = '6px';
+		geBack.style.right = '6px';
+		geBack.style.fontWeight = 'bold';
+		geBack.style.color = 'red';
+		geBack.style.cursor = 'default';
+		geBack.style.fontSize = '150%';
+		geBack.innerHTML = 'X';
+		geBack.onclick = function(){document.getElementById('l0c4lh057 popup guild emojis').style.zIndex = '0';}
+		ge.appendChild(geBack);
+	}
+	
+	showGuildEmoji(guild, emoji){
+		var self = this;
+		var ge = document.getElementById('l0c4lh057 popup guild emojiinfo');
+		ge.style.zIndex = '15';
+		
+		var c = `<h3 class="l0c4lh057" id="l0c4lh057 guild title">${this.local.guildInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.emojis.title}<br>${emoji.name} (${emoji.id})</div><br>`;
+		if(emoji.url) c += `<div style="width:25%;padding-top:25%;background-image:url('${emoji.url}');margin-left:auto;margin-right:auto;background-repeat:no-repeat;background-size:contain;"></div>`;
+		c += `<table class="l0c4lh057 popup emojiinfo table" style="width:100%;">
+		<tr><td>${this.local.emojis.animated}:</td><td>${emoji.animated}</td></tr>
+		<tr><td>${this.local.emojis.managed}:</td><td>${emoji.managed}</td></tr>
+		<tr><td>${this.local.emojis.requireColons}:</td><td>${emoji.require_colons}</td></tr>`;
+		
+		if(emoji.roles.length > 0){
+			c += `<tr><td>${this.local.emojis.whitelist}:</td><td>`;
+			for(const r of emoji.roles){
+				let role = guild.roles[r];
+				c += `<div class="l0c4lh057 popup gEmoji ${emoji.id} role ${r}">${role.name} (${r})</div>`;
+			}
+			c += "</td></tr>";
+		}
+		
+		ge.innerHTML = c + '</table>';
+		
+		for(const r of emoji.roles){
+			let role = guild.roles[r];
+			$(`.l0c4lh057.popup.gEmoji.${emoji.id}.role.${r}`).click(function(){
+				self.showRolePermissionInformation(role);
+			});
+		}
+		
+		var geBack = document.createElement('div');
+		geBack.style.position = 'absolute';
+		geBack.style.top = '6px';
+		geBack.style.right = '6px';
+		geBack.style.fontWeight = 'bold';
+		geBack.style.color = 'red';
+		geBack.style.cursor = 'default';
+		geBack.style.fontSize = '150%';
+		geBack.innerHTML = 'X';
+		geBack.onclick = function(){document.getElementById('l0c4lh057 popup guild emojiinfo').style.zIndex = '0';}
+		ge.appendChild(geBack);
 	}
 	
 	getGuildFriends(guildId){
@@ -1223,10 +1448,10 @@ class GuildData{
 				c += `<div>${this.local.guildInfo.relationships[type].noUsers}</div>`;
 			gr.innerHTML = c + '</div>';
 			for(const u of users)
-				$(`.l0c4lh057.popup.guildinfo.relations.${u.id}`).click((function(){
+				$(`.l0c4lh057.popup.guildinfo.relations.${u.id}`).click(function(){
 					self.stopInterval();
 					self.showUserInformation(guild, u, self.memberModule.getMember(guild.id, u.id));
-				}));
+				});
 		}
 		else if(type == "blocked"){
 			var users = this.getGuildBlocked(guild.id);
@@ -1236,10 +1461,10 @@ class GuildData{
 				c += `<div>${this.local.guildInfo.relationships[type].noUsers}</div>`;
 			gr.innerHTML = c + '</div>';
 			for(const u of users)
-				$(`.l0c4lh057.popup.guildinfo.relations.${u.id}`).click((function(){
+				$(`.l0c4lh057.popup.guildinfo.relations.${u.id}`).click(function(){
 					self.stopInterval();
 					self.showUserInformation(guild, u, self.memberModule.getMember(guild.id, u.id));
-				}));
+				});
 		}
 		
 		var grBack = document.createElement('div');
@@ -1275,9 +1500,9 @@ class GuildData{
 			scs.innerHTML += c;
 		}
 		for(const perm of permOverwr){
-			$(".l0c4lh057.popup.channel.permission." + perm.id).click((function() {
+			$(".l0c4lh057.popup.channel.permission." + perm.id).click(function() {
 				self.showChannelPermissionInformation(perm, guild, channel);
-			}));
+			});
 		}
 		
 		var sCsBack = document.createElement('div');
@@ -1302,14 +1527,14 @@ class GuildData{
 		uiOpenChat.style.backgroundColor = '#444';
 		if(channel.type == 2 || channel.type == 0) scs.appendChild(uiOpenChat);
 		
-		$('.l0c4lh057.popup.channel.openChat.' + channel.id + '.type' + channel.type).click((function(){
+		$('.l0c4lh057.popup.channel.openChat.' + channel.id + '.type' + channel.type).click(function(){
 			self.stopInterval();
 			if(this.className.endsWith('type0'))
 				self.channelSelector.selectChannel(guild.id, channel.id);
 			else if(this.className.endsWith('type2'))
 				self.channelActions.selectVoiceChannel(guild.id, channel.id);
 			document.getElementById('l0c4lh057 popup outer').style.display = 'none';
-		}));
+		});
 	}
 	
 	showChannelPermissionInformation(perm, guild, channel){
@@ -1472,13 +1697,13 @@ class GuildData{
 		}
 		
 		if(membersFound.length <= this.settings.maxUsersShown) for(const member of membersFound){
-			$(".l0c4lh057.popup.user." + member.userId).click((function() {
+			$(".l0c4lh057.popup.user." + member.userId).click(function() {
 				self.showUserInformation(guild, self.userModule.getUser(member.userId), member);
-			}));
+			});
 		}
-		$(".l0c4lh057.popup.user.searchbtn").click((function() {
+		$(".l0c4lh057.popup.user.searchbtn").click(function() {
 			self.showUsers(guild, document.getElementById('l0c4lh057 popup input').value);
-		}));
+		});
 		document.getElementById('l0c4lh057 popup input').value = searchString;
 	}
 	
@@ -1492,9 +1717,6 @@ class GuildData{
 		var ui = document.getElementById('l0c4lh057 popup user information');
 		ui.style.zIndex = '15';
 		var activity = this.UserMetaStore.getPrimaryActivity(user.id);
-		//console.log(this.UserMetaStore.getActivities(user.id));
-		//console.log(user);
-		//console.log(member);
 		
 		if(!this.updateInformationTimer){
 			var c = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><div id="l0c4lh057 popup user information avatar" style="width:64px;height:64px;background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;background-image:url('${this.getUserAvatarURL(user.id, 64, false)}')"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;">`
@@ -1506,29 +1728,12 @@ class GuildData{
 			<tr><td>${this.local.userInfo.isBot}:</td><td>${user.bot}</td></tr>
 			<tr><td>${this.local.userInfo.createdAt}:</td><td>${user.createdAt.toLocaleString()}</td></tr>
 			<tr><td>${this.local.userInfo.status.title}:</td><td id="l0c4lh057 user information table status">${this.local.userInfo.status[this.UserMetaStore.getStatus(user.id)]}</td></tr>`;
-			if(!activity) c += `<tr><td id="l0c4lh057 user information table activity1">${this.local.userInfo.activity.title}:</td><td id="l0c4lh057 user information table activity2">${this.local.userInfo.activity.noActivity}</td></tr>`; else{
-				c += `<tr><td id="l0c4lh057 user information table activity1"></td><td id="l0c4lh057 user information table activity2"></td></tr>`;
-				//c += `<tr><td>Activity:</td><td>${this.getActivityType(activity.type)} ${activity.name}</td></tr>`;
-				/*if(activity.details) c += `<tr><td>Activity details:</td><td>${activity.details}</td></tr>`;                          // Spotify: Song-Name
-				if(activity.state) c += `<tr><td>Activity state:</td><td>${activity.state}</td></tr>`;                                // Spotify: Song-Interpret
-				if(activity.assets) if(activity.assets.small_text) c += `<tr><td>Activity small_text:</td><td>${activity.assets.small_text}</td></tr>`;   // 
-				if(activity.assets) if(activity.assets.large_text) c += `<tr><td>Activity large_text:</td><td>${activity.assets.large_text}</td></tr>`;   // Spotify: Album
-				if(activity.timestamps) {
-					if(activity.timestamps.end && activity.timestamps.start){
-						var duration = activity.timestamps.end - activity.timestamps.start;
-						var durationS = Math.round(duration / 1000);
-						var progress = Date.now() - activity.timestamps.start;
-						var progressS = Math.round(progress / 1000);
-						var progressPercentage = Math.round(progress / duration * 1000) / 10;
-						c += `<tr><td>Activity duration:</td><td>${durationS}s</td></tr>
-						<tr><td>Activity progress:</td><td>${this.getDurationOfSeconds(progressS)} <progress value="${progress}" max="${duration}" style="height:6px;border-radius:3px;align-self:center;"></progress> ${this.getDurationOfSeconds(durationS)}</td></tr>`;
-					} else if(activity.timestamps.start) c += `<tr><td>Activity duration:</td><td>${this.getDurationOfSeconds(Math.round((Date.now() - activity.timestamps.start) / 1000), 'long')}</td></tr>`;
-				}*/
-			}
+			if(!activity) c += `<tr><td id="l0c4lh057 user information table activity1">${this.local.userInfo.activity.title}:</td><td id="l0c4lh057 user information table activity2">${this.local.userInfo.activity.noActivity}</td></tr>`;
+			else c += `<tr><td id="l0c4lh057 user information table activity1"></td><td id="l0c4lh057 user information table activity2"></td></tr>`;
+			
 			c += `</table>`;
 			ui.innerHTML = c;
 			this.setProfilePicture(user.id, 64, 'l0c4lh057 popup user information avatar')
-			//console.log(activity);
 			
 			var container = document.createElement('div');
 			container.id = 'l0c4lh057 user information table activity';
@@ -1699,7 +1904,7 @@ class GuildData{
 			}else
 				document.getElementById('l0c4lh057 popup user back').style.display = 'initial';
 			
-			$('.l0c4lh057.popup.user.openChat.' + user.id).click((function(){
+			$('.l0c4lh057.popup.user.openChat.' + user.id).click(function(){
 				DiscordModules.PrivateChannelActions.ensurePrivateChannel(self.userModule.getCurrentUser().id, self.userModule.getUser(user.id).id).then(function(result){
 					self.stopInterval();
 					document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0';
@@ -1707,9 +1912,9 @@ class GuildData{
 					document.getElementById('l0c4lh057 popup guild relations').style.zIndex = '0';
 					self.channelActions.selectPrivateChannel(self.channelModule.getDMFromUserId(user.id));
 				});
-			}));
-			$('.l0c4lh057.popup.user.back').click((function(){self.stopInterval(); document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0'; document.getElementById('l0c4lh057 popup user back').style.display = 'none'}));
-			$('.l0c4lh057.popup.close').click((function(){self.stopInterval();}));
+			});
+			$('.l0c4lh057.popup.user.back').click(function(){self.stopInterval(); document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0'; document.getElementById('l0c4lh057 popup user back').style.display = 'none'});
+			$('.l0c4lh057.popup.close').click(function(){self.stopInterval();});
 		}else{
 			if(member.nick){document.getElementById('l0c4lh057 user information table nicknameTitle').innerHTML = `${this.local.userInfo.nickname}:`; document.getElementById('l0c4lh057 user information table nickname').innerHTML = `${member.nick}`;}
 			else{document.getElementById('l0c4lh057 user information table nicknameTitle').innerHTML = ``; document.getElementById('l0c4lh057 user information table nickname').innerHTML = ``;}
@@ -1932,7 +2137,6 @@ class GuildData{
 		var eB=DiscordModules.UserStore;
 		var eC=DiscordModules.ImageResolver;
 		var eD=eB['getUser'](eA);
-		//return((eD&&eD['avatar']?'':'https://discordapp.com')+eC['getUserAvatarURL'](eD))['split']('?size')[0x0];
 		var eE=eC['getUserAvatarURL'](eD)['split']('?size')[0x0];
 		var eF=eE.substring(0, eE.length - 4) + 'gif';
 		if(asGif) return eF + '?size=' + size;
@@ -1944,10 +2148,16 @@ class GuildData{
 		$.ajax({
 			url:self.getUserAvatarURL(userId, size, true),
 			error: function(){
-				if(document.getElementById(elementId)) document.getElementById(elementId).style.backgroundImage = 'url("' + self.getUserAvatarURL(userId, size, false) + '")';
+				if(document.getElementById(elementId)){
+					document.getElementById(elementId).style.backgroundImage = 'url("' + self.getUserAvatarURL(userId, size, false) + '")';
+					document.getElementById(elementId).onclick = function(){copyText4Dg3g5(`${self.getUserAvatarURL(userId, size, false)}`)};
+				}
 			},
 			success: function(){
-				if(document.getElementById(elementId)) document.getElementById(elementId).style.backgroundImage = 'url("' + self.getUserAvatarURL(userId, size, true) + '")';
+				if(document.getElementById(elementId)){
+					document.getElementById(elementId).style.backgroundImage = 'url("' + self.getUserAvatarURL(userId, size, true) + '")';
+					document.getElementById(elementId).onclick = function(){copyText4Dg3g5(`${self.getUserAvatarURL(userId, size, true)}`)};
+				}
 			}
 		});
 	}
@@ -1995,7 +2205,7 @@ class GuildData{
 	
 	
 	alertText(e, t) {
-		let a = $(`<div class="bd-modal-wrapper theme-dark">
+		let a = $(`<div class="bd-modal-wrapper theme-dark" style="z-index:9999;">
 						<div class="bd-backdrop backdrop-1wrmKB"></div>
 						<div class="bd-modal modal-1UGdnR">
 							<div class="bd-modal-inner inner-1JeGVc" style="width:auto;max-width:70%;max-height:100%;">
