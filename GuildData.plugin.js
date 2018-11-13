@@ -7,7 +7,7 @@ class GuildData{
 
 	getDescription () {return this.local.description;}
 
-	getVersion () {return "1.1.0";}
+	getVersion () {return "1.1.1";}
 
 	getAuthor () {return "l0c4lh057";}
 	
@@ -194,6 +194,22 @@ class GuildData{
 					"type": "request",
 					"items": [
 						"If you still have some ideas what to add, please write me."
+					]
+				}
+			],
+			"1.1.1": [
+				{
+					"title": "Fixed",
+					"type": "fixes",
+					"items": [
+						"You can open the guild info again if you are currently in a private channel"
+					]
+				},
+				{
+					"title": "Changed",
+					"type": "changes",
+					"items": [
+						"Minor translation improvements"
 					]
 				}
 			]
@@ -403,7 +419,7 @@ class GuildData{
 						"manageMessages": "Nachrichten verwalten",
 						"sendTtsMessages": "TTS-Nachrichten senden",
 						"sendMessages": "Nachrichten senden",
-						"viewChannelReadMessages": "Read Text Channel & See Voice Channel",
+						"viewChannelReadMessages": "Kanal anzeigen",
 						"prioritySpeaker": "Priority Speaker",
 						"viewAuditLog": "Audit-Log anzeigen",
 						"addReactions": "Reaktionen hinzufügen",
@@ -640,14 +656,14 @@ class GuildData{
 						"speak": "Speak",
 						"connect": "Connect",
 						"useExternalEmojis": "Use External Emojis",
-						"mentionEveryone": "Mention @everyone",
+						"mentionEveryone": "Mention Everyone",
 						"readMessageHistory": "Read Message History",
 						"attachFiles": "Attach Files",
 						"embedLinks": "Embed Links",
 						"manageMessages": "Manage Messages",
 						"sendTtsMessages": "Send TTS Messages",
 						"sendMessages": "Send Messages",
-						"viewChannelReadMessages": "View Channel / Read Messages",
+						"viewChannelReadMessages": "View Channel",
 						"prioritySpeaker": "Priority Speaker",
 						"viewAuditLog": "View Audit Log",
 						"addReactions": "Add Reactions",
@@ -729,6 +745,7 @@ class GuildData{
 		this.channelSelector = InternalUtilities.WebpackModules.findByUniqueProperties(["selectGuild", "selectChannel"]);
 		this.relationshipStore = InternalUtilities.WebpackModules.findByUniqueProperties(['isBlocked', 'getFriendIDs']);
 		this.emojiUtils = InternalUtilities.WebpackModules.findByUniqueProperties(['getGuildEmoji']);
+		this.DiscordPerms = Object.assign({}, DiscordModules.DiscordConstants.Permissions);
 		
 		this.css = `
 		.l0c4lh057.popup{
@@ -1213,7 +1230,7 @@ class GuildData{
 	
 	getServer(guild){
 		this.lastShownGuild = guild.id;
-		this.informationOfCurrentGuild = (PluginUtilities.getCurrentServer().id == guild.id);
+		if(PluginUtilities.isServer()) this.informationOfCurrentGuild = (PluginUtilities.getCurrentServer().id == guild.id); else this.informationOfCurrentGuild = false;
 		
 		document.getElementById('l0c4lh057 popup sChannelSearch').style.zIndex = '5';
 		document.getElementById('l0c4lh057 popup channel permission').style.zIndex = '5';
