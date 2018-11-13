@@ -48,7 +48,7 @@ v1.1.0
   Fixed
     - Channel/role/member count is now visible in the guild info again
     - Fixed the position of the search result in user information in English language
-    - Fixed the 'Kopieren' button. It got created every time the popup opened but never got deleted
+    - Fixed the 'Copy' button in role information. It got created every time the popup opened but never got deleted
     - Not reloading the information anymore when you change the channel (not the guild)
   Changes
     - Removed some comments in the code that were from the first prototype of this plugin or some functions
