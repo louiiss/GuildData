@@ -67,3 +67,11 @@ v1.1.2
   Changed
     - Improved ids of copiable elements
 
+v1.1.3
+  Changed
+    - Categories are not counted in the channel count anymore
+  Fixed
+    - If the owner isn't loaded when you click on "Serverinfos anzeigen" the plugin tries again until it is loaded. So you don't have to click the button twice. But the content of the old guild is visible in that time.
+    - Showing all channels of a guild in the channel information
+    - Channels in the channel information are now sorted by their position property
+
