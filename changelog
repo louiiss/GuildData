@@ -54,3 +54,16 @@ v1.1.0
     - Removed some comments in the code that were from the first prototype of this plugin or some functions
     - Not loading the information of another guild if you selected a guild that is not the one you have currently loaded
 
+v1.1.1
+  Fixed
+    - You can open the guild info again if you are currently in a private channel
+  Changed
+    - Minor translation improvements
+
+v1.1.2
+  Added
+    - Some more copy on click (only user information left)
+    - You can now change the size of the emojis in the emoji list
+  Changed
+    - Improved ids of copiable elements
+
