@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.1.1";}
+	getVersion () {return "1.1.2";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
