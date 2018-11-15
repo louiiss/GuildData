@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.1.2";}
+	getVersion () {return "1.1.3";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -123,44 +123,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.1.0": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"Button to show changelog in the settings",
-						"Option to select the language of the plugin",
-						"More click events to copy the shown text (not finished yet)",
-						"Guild emojis are now shown in the guild info",
-						"Option to stop loading the information on guild change"
-					]
-				},
-				{
-					"title": "Fixed",
-					"type": "fixed",
-					"items": [
-						"Channel/role/member count is now visible in the guild info again",
-						"Fixed the position of the search result in user information in English language",
-						"Fixed the '${this.local.roleInfo.copy}' button. It got created every time the popup opened but never got deleted",
-						"Not reloading the information anymore when you change the channel (not the guild)"
-					]
-				},
-				{
-					"title": "Changed",
-					"type": "changed",
-					"items": [
-						"Removed some comments in the code that were from the first prototype of this plugin or some functions",
-						"Not loading the information of another guild if you selected a guild that is not the one you have currently loaded"
-					]
-				},
-				{
-					"title": "Request",
-					"type": "request",
-					"items": [
-						"If you still have some ideas what to add, please write me."
-					]
-				}
-			],
 			"1.1.1": [
 				{
 					"title": "Fixed",
@@ -191,6 +153,24 @@ class GuildData{
 					"type": "changed",
 					"items": [
 						"Improved ids of copiable elements"
+					]
+				}
+			],
+			"1.1.3": [
+				{
+					"title": "Changed",
+					"type": "changed",
+					"items": [
+						"Categories are not counted in the channel count anymore"
+					]
+				},
+				{
+					"title": "Fixed",
+					"type": "fixed",
+					"items": [
+						"If the owner isn't loaded when you click on \\"${this.local.showGuildData}\\" the plugin tries again until it is loaded. So you don't have to click the button twice. But the content of the old guild is visible in that time.",
+						"Showing all channels of a guild in the channel information",
+						"Channels in the channel information are now sorted by their position property"
 					]
 				}
 			]
@@ -1218,6 +1198,7 @@ class GuildData{
 	
 	
 	getServer(guild){
+		var self = this;
 		this.lastShownGuild = guild.id;
 		if(PluginUtilities.isServer()) this.informationOfCurrentGuild = (PluginUtilities.getCurrentServer().id == guild.id); else this.informationOfCurrentGuild = false;
 		
@@ -1237,6 +1218,11 @@ class GuildData{
 		var popup = document.getElementById('l0c4lh057 popup guild information');
 		document.getElementById('l0c4lh057 popup outer').style.display = 'block';
 		
+		if(!this.userModule.getUser(guild.ownerId)){
+			setTimeout(function(){self.getServer(guild);}, 100);
+			return;
+		}
+		
 		var tableContent = `<h3 class="l0c4lh057" id="l0c4lh057 guild information title">${this.local.guildInfo.title}</h3><br>
 		<div style="text-align:center;font-size:125%;font-weight:bold;";><p id="l0c4lh057 popup tocopy copyidguildname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidguildname');" style="display: inline;">${guild.name}</p> (<p id="l0c4lh057 popup tocopy copyidguildid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidguildid');" style="display: inline;">${guild.id}</p>)</div><br>`;
 		if(guild.icon) tableContent += `<div style="width:25%;padding-top:25%;background-image:url('${this.getGuildIcon(guild)}');background-size:contain;margin-left:auto;margin-right:auto;background-repeat:no-repeat;" onclick="copyText4Dg3g5('${this.getGuildIcon(guild)}')"></div>`;
@@ -1254,7 +1240,7 @@ class GuildData{
 		if(guild.systemChannelId) tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td class="l0c4lh057 popup guildinfo systemchannel showsystemchannel ${guild.systemChannelId}">${this.channelModule.getChannel(guild.systemChannelId)} (${guild.systemChannelId})</td></tr>`; else tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td><p id="l0c4lh057 popup tocopy copyidnosystemchannel" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidnosystemchannel');" style="display: inline;">${this.local.guildInfo.systemChannel.noSystemChannel}</p></td></tr>`;
 		tableContent += `<tr><td>${this.local.guildInfo.title}:</td><td class="l0c4lh057 popup guildinfo emojicount">${this.formatText(this.local.emojis.value, [this.emojiUtils.getGuildEmoji(guild.id).length])}</td></tr>
 		<tr><td>${this.local.guildInfo.memberCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyidmembercount" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidmembercount');" style="display: inline;">${this.formatText(this.local.guildInfo.memberCount.value, [this.memberModule.getMembers(guild.id).length])}</p></td></tr>
-		<tr><td>${this.local.guildInfo.channelCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelcount" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelcount');" style="display: inline;">${this.formatText(this.local.guildInfo.channelCount.value, [Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id).length])}</p></td></tr>
+		<tr><td>${this.local.guildInfo.channelCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelcount" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelcount');" style="display: inline;">${this.formatText(this.local.guildInfo.channelCount.value, [Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id && c.type != 4).length])}</p></td></tr>
 		<tr><td>${this.local.guildInfo.roleCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyidrolecount" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolecount');" style="display: inline;">${this.formatText(this.local.guildInfo.roleCount.value, [Object.keys(guild.roles).length])}</p></td></tr>`;
 		if(Array.from(guild.features).length > 0){
 			var features = "";
@@ -1270,25 +1256,36 @@ class GuildData{
 		var channelSearch = document.getElementById('l0c4lh057 popup channelSearch');
 		channelSearch.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo.title}</h3><br>`;
 		var channels = Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id);
-		var self = this;
 		var channelsSortedC = {};
 		var channelsSortedVT = {};
 		for(const channel of channels){
 			if(!channel.parent_id){
-				channelsSortedC[channel.position] = channel;
+				channelsSortedC['' + channel.position + channel.id] = channel;
 			}else{
 				if(!channelsSortedVT[channel.parent_id]) channelsSortedVT[channel.parent_id] = {};
-				channelsSortedVT[channel.parent_id][channel.position] = channel;
+				channelsSortedVT[channel.parent_id]['' + channel.position + channel.id] = channel;
 			}
 		}
+		var ordered = {};
+		Object.keys(channelsSortedC).sort().forEach(function(key) {
+			ordered[key] = channelsSortedC[key];
+		});
+		channelsSortedC = ordered;
 		for(const v of Object.keys(channelsSortedC)){
 			const channel = channelsSortedC[v];
+			if(channelsSortedVT[channel.id]){
+				ordered = {};
+				Object.keys(channelsSortedVT[channel.id]).sort().forEach(function(key) {
+					ordered[key] = channelsSortedVT[channel.id][key];
+				});
+				channelsSortedVT[channel.id] = ordered;
+			}
 			channelSearch.innerHTML += `<div id="l0c4lh057 popup channel collection ${channel.id}"><div class="l0c4lh057 popup channel single ${channel.id}">${this.getChannelIcon(channel.type, channel.nsfw)}${channel.name}</div></div>`;
 		}
 		for(const v1 of Object.keys(channelsSortedVT)){
 			for(const v2 of Object.keys(channelsSortedVT[v1])){
 				const channel = channelsSortedVT[v1][v2];
-				if(document.getElementById("l0c4lh057 popup channel collection " + channel.parent_id)) document.getElementById("l0c4lh057 popup channel collection " + channel.parent_id).innerHTML += `<div id="l0c4lh057 popup channel collection ${channel.id}" style="margin-left:20px;"><div class="l0c4lh057 popup channel single ${channel.id}">${this.getChannelIcon(channel.type, channel.nsfw)}${channel.name}</div></div>`;
+				document.getElementById("l0c4lh057 popup channel collection " + channel.parent_id).innerHTML += `<div id="l0c4lh057 popup channel collection ${channel.id}" style="margin-left:20px;"><div class="l0c4lh057 popup channel single ${channel.id}">${this.getChannelIcon(channel.type, channel.nsfw)}${channel.name}</div></div>`;
 			}
 		}
 		for(const channel of channels){
