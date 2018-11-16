@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.1.3";}
+	getVersion () {return "1.1.4";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -17,7 +17,9 @@ class GuildData{
 			showChangelogOnUpdate: true,
 			language: "auto",
 			updateInformationOnGuildChange: true,
-			emojiScale: 1.5
+			emojiScale: 1.5,
+			copyOnClick: true,
+			dateFormat: this.local.time.defaultDateFormat
 		}
 	}
 	getSettingsPanel() {
@@ -49,6 +51,34 @@ class GuildData{
 				(val) => {
 					this.settings.updateInformationOnGuildChange = val;
 				})
+		).append(
+			new PluginSettings.Checkbox(this.local.settings.copyOnClick.title, this.local.settings.copyOnClick.description, this.settings.copyOnClick,
+				(val) => {
+					this.settings.copyOnClick = val;
+				})
+		).append(
+			$(defaultForm)
+			.find(".description")
+			.html(this.local.settings.dateFormat.description)
+			.css({
+				'margin-top': '20px',
+				'white-space': 'pre-line'
+			})
+			.parent()
+			.find(".wrapper")
+			.find(".title")
+			.html(this.local.settings.dateFormat.title)
+			.parent()
+			.find(".content")
+			.html(`<input class="plugin-input plugin-input-text" style="width:300px;margin-right:5px;" value="${this.settings.dateFormat}" placeholder="${this.local.settings.dateFormat.placeholder}" type="text">`)
+			.find('.plugin-input')
+			.change((val) => {
+				this.settings.dateFormat = val.target.value;
+				this.saveSettings();
+			})
+			.parent()
+			.parent()
+			.parent()
 		).append(
 			new PluginSettings.Slider(this.local.settings.maxUsersShown.title, this.local.settings.maxUsersShown.description, 10, 1000, 1,
 				this.settings.maxUsersShown, (val) => {
@@ -104,6 +134,23 @@ class GuildData{
 			.parent()
 			.find(".wrapper")
 			.find(".content")
+			.css({
+				'width': '100%'
+			})
+			.append(
+				$(`<button type="button">`)
+				.toggleClass('l0c4lh057 settings button resetToDefault')
+				.css({
+					'float': 'left',
+					'margin-top': '-2px'
+				})
+				.html(this.local.settings.resetToDefault)
+				.click(() => {
+					this.settings = this.defaultSettings;
+					this.settings.lastUsedVersion = this.getVersion();
+					this.saveSettings();
+				})
+			)
 			.append(
 				$(`<button type="button">`)
 				.toggleClass('l0c4lh057 settings button showChangelog')
@@ -123,22 +170,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.1.1": [
-				{
-					"title": "Fixed",
-					"type": "fixed",
-					"items": [
-						"You can open the guild info again if you are currently in a private channel"
-					]
-				},
-				{
-					"title": "Changed",
-					"type": "changed",
-					"items": [
-						"Minor translation improvements"
-					]
-				}
-			],
 			"1.1.2": [
 				{
 					"title": "Added",
@@ -171,6 +202,26 @@ class GuildData{
 						"If the owner isn't loaded when you click on \\"${this.local.showGuildData}\\" the plugin tries again until it is loaded. So you don't have to click the button twice. But the content of the old guild is visible in that time.",
 						"Showing all channels of a guild in the channel information",
 						"Channels in the channel information are now sorted by their position property"
+					]
+				}
+			],
+			"1.1.4": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"Some user information elements have copy on click now (and guild acronym, forgot that)",
+						"Option to deactivate copy on click (except for images)",
+						"Button to reset settings to default",
+						"Option to change the date format"
+					]
+				},
+				{
+					"title": "Question",
+					"type": "request",
+					"items": [
+						"What should be the default date format for the English language? (currently ${this.strings.en.time.defaultDateFormat} -> ${this.formatDate(new Date(1640966351000), this.strings.en.time.defaultDateFormat)})",
+						"Should i display AM and PM as \\"AM\\" and \\"PM\\" or \\"am\\" and \\"pm\\" or \\"a.m.\\" and \\"p.m.\\"?"
 					]
 				}
 			]
@@ -238,7 +289,8 @@ class GuildData{
 						},
 						"afkTimeout": {
 							"title": "AFK Timeout",
-							"unit": "Sekunden"
+							"unit": "Sekunden",
+							"minutes": "Minuten"
 						},
 						"systemChannel": {
 							"title": "System-Kanal",
@@ -265,7 +317,8 @@ class GuildData{
 						"nickname": "Nickname",
 						"color": {
 							"title": "Farbe",
-							"example": "Beispiel"
+							"example": "Beispiel",
+							"noColor": "Keine Farbe eingestellt"
 						},
 						"hoistRole": {
 							"title": "Angepinnte Rolle",
@@ -360,6 +413,16 @@ class GuildData{
 						"emojiScale": {
 							"title": "Emojigröße",
 							"description": "Hier kannst du die Größe der Emojis in der Emoji-Liste ändern, standard: 1.5 (6 = die Emojis werden als Galerie ohne Namen angezeigt)"
+						},
+						"copyOnClick": {
+							"title": "Beim Klicken kopieren",
+							"description": "Kopiert den Text von angeklickten Elementen (Bild-URLs nicht mit inbegriffen)"
+						},
+						"resetToDefault": "Einstellungen zurücksetzen",
+						"dateFormat": {
+							"title": "Datumsformat",
+							"description": "Hier kannst du das Format für Daten im Plugin einstellen (standard: dd.MM.yyyy HH:mm:ss)\\n\\nyyyy - Jahr (1999)\\nyy - Jahr (99)\\nMMMM - Kompletter Monatsname (Januar, Dezember)\\nMMM - Kurzer Monatsname (Jan, Dez)\\nMM - Monat mit führender Null (01, 12)\\nM - Monat ohne führende Null (1, 12)\\nDDDD - Kompletter Tagesname (Montag, Sonntag)\\nDDD - Kurzer Tagesname (Mo, So)\\nDD - Tag mit führender Null (01, 31)\\nD - Tag ohne führende Null (1, 31)\\nHH - Stunden im 24h-Format mit führender Null (00, 23)\\nH - Stunden im 24h-Format ohne führende Null (0, 23)\\nhh - Stunden im 12h-Format mit führender Null (01, 12)\\nh - Stunden im 12h-Format ohne führende Null (1, 12)\\nmm - Minuten mit führender Null (00, 59)\\nm - Minuten ohne führende Null (0, 59)\\nss - Sekunden mit führender Null (00, 59)\\ns - Sekunden ohne führende Null (0, 59)\\nms - Millisekunden mit führenden Nullen (000, 999)\\ntt - Morgens oder abends (vormittags, nachmittags)",
+							"placeholder": "Datumsformat"
 						}
 					},
 					"permissions": {
@@ -404,20 +467,59 @@ class GuildData{
 							"minutes": "min",
 							"seconds": "s"
 						},
+						"semi": {
+							"month": {
+								"0": "Jan",
+								"1": "Feb",
+								"2": "Mär",
+								"3": "Apr",
+								"4": "Mai",
+								"5": "Jun",
+								"6": "Jul",
+								"7": "Aug",
+								"8": "Sep",
+								"9": "Okt",
+								"10": "Nov",
+								"11": "Dez"
+							},
+							"day": {
+								"1": "Mo",
+								"2": "Di",
+								"3": "Mi",
+								"4": "Do",
+								"5": "Fr",
+								"6": "Sa",
+								"7": "So"
+							}
+						},
 						"long": {
-							"years": "Jahre",
-							"year": "Jahr",
-							"months": "Monate",
-							"month": "Monat",
-							"days": "Tage",
-							"day": "Tag",
-							"hours": "Stunden",
-							"hour": "Stunde",
-							"minutes": "Minuten",
-							"minute": "Minute",
-							"seconds": "Sekunden",
-							"second": "Sekunde"
-						}
+							"day": {
+								"1": "Montag",
+								"2": "Dienstag",
+								"3": "Mittwoch",
+								"4": "Donnerstag",
+								"5": "Freitag",
+								"6": "Samstag",
+								"7": "Sonntag"
+							},
+							"month": {
+								"0": "Januar",
+								"1": "Februar",
+								"2": "März",
+								"3": "April",
+								"4": "Mai",
+								"5": "Juni",
+								"6": "Juli",
+								"7": "August",
+								"8": "September",
+								"9": "Oktober",
+								"10": "November",
+								"11": "Dezember"
+							}
+						},
+						"am": "vormittags",
+						"pm": "nachmittags",
+						"defaultDateFormat": "dd.MM.yyyy HH:mm:ss"
 					},
 					"changelog": {
 						"title": "Änderungsprotokoll",
@@ -486,7 +588,8 @@ class GuildData{
 						},
 						"afkTimeout": {
 							"title": "AFK timeout",
-							"unit": "seconds"
+							"unit": "seconds",
+							"minutes": "minutes"
 						},
 						"systemChannel": {
 							"title": "System Channel",
@@ -513,7 +616,8 @@ class GuildData{
 						"nickname": "Nickname",
 						"color": {
 							"title": "Color",
-							"example": "Example"
+							"example": "Example",
+							"noColor": "No color set"
 						},
 						"hoistRole": {
 							"title": "Hoist role",
@@ -608,6 +712,16 @@ class GuildData{
 						"emojiScale": {
 							"title": "Emoji Scale",
 							"description": "Here you can change the size of the emojis in the emoji list, default: 1.5 (6 = emojis are shown in a gallery without their names)"
+						},
+						"copyOnClick": {
+							"title": "Copy On Click",
+							"description": "Copy the text of an element when you click on it (image urls not included)"
+						},
+						"resetToDefault": "Reset settings",
+						"dateFormat": {
+							"title": "Date Format",
+							"description": "Here you can change the date format used in this plugin.\\n\\nyyyy - 4 digit year (1999)\\nyy - 2 digit year (99)\\nMMMM - Full month name (Januar, December)\\nMMM - Month abbreviation (Jan, Dec)\\nMM - Month with leading zero (01, 12)\\nM - Month without leading zero (1, 12)\\nDDDD - Full day name (Monday, Sunday)\\nDDD - Day abbreviation (Mon, Sun)\\nDD - Day with leading zero (01, 31)\\nD - Day without leading zero (1, 31)\\nHH - Hours in 24h format with leading zero (00, 23)\\nH - Hours in 24h format without leading zero (0, 23)\\nhh - Hours in 12h format with leading zero (01, 12)\\nh - Hours in 12h format without leading zero (1, 12)\\nmm - Minutes with leading zero (00, 59)\\nm - Minutes without leading zero (0, 59)\\nss - Seconds with leading zero (00, 59)\\ns - Seconds without leading zero (0, 59)\\nms - Milliseconds with leading zeros (000, 999)\\ntt - AM or PM (AM, PM)",
+							"placeholder": "Date Format"
 						}
 					},
 					"permissions": {
@@ -652,20 +766,59 @@ class GuildData{
 							"minutes": "min",
 							"seconds": "s"
 						},
+						"semi": {
+							"month": {
+								"0": "Jan",
+								"1": "Feb",
+								"2": "Mar",
+								"3": "Apr",
+								"4": "May",
+								"5": "Jun",
+								"6": "Jul",
+								"7": "Aug",
+								"8": "Sep",
+								"9": "Oct",
+								"10": "Nov",
+								"11": "Dec"
+							},
+							"day": {
+								"1": "Mon",
+								"2": "Tue",
+								"3": "Wed",
+								"4": "Thu",
+								"5": "Fri",
+								"6": "Sat",
+								"7": "Sun"
+							}
+						},
 						"long": {
-							"years": "years",
-							"year": "year",
-							"months": "months",
-							"month": "month",
-							"days": "days",
-							"day": "day",
-							"hours": "hours",
-							"hour": "hour",
-							"minutes": "minutes",
-							"minute": "minute",
-							"seconds": "seconds",
-							"second": "second"
-						}
+							"day": {
+								"1": "Monday",
+								"2": "Tuesday",
+								"3": "Wednesday",
+								"4": "Thursday",
+								"5": "Friday",
+								"6": "Saturday",
+								"7": "Sunday"
+							},
+							"month": {
+								"0": "January",
+								"1": "February",
+								"2": "March",
+								"3": "April",
+								"4": "May",
+								"5": "June",
+								"6": "July",
+								"7": "August",
+								"8": "September",
+								"9": "October",
+								"10": "November",
+								"11": "December"
+							}
+						},
+						"am": "AM",
+						"pm": "PM",
+						"defaultDateFormat": "dd/MM/yyyy hh:mm:ss tt"
 					},
 					"changelog": {
 						"title": "Changelog",
@@ -750,6 +903,12 @@ class GuildData{
 		.l0c4lh057 > table{
 			background-color: #1f1f1f;
 			border-spacing: 0px 6px;
+		}
+		.l0c4lh057.settings.button.resetToDefault{
+			background-color: #f04747;
+		}
+		.l0c4lh057.settings.button.resetToDefault:hover{
+			background-color: #d84040;
 		}
 		`
 		
@@ -1113,7 +1272,8 @@ class GuildData{
 						})
 						return source;
 					}
-					function copySelectedElement4Dg3g5(selElement){
+					function copySelectedElement4Dg3g5(selElement, doCopy=false){
+						if(!doCopy) return;
 						var tempInput = document.createElement('INPUT');
 						document.body.appendChild(tempInput);
 						tempInput.setAttribute('value', document.getElementById(selElement).innerHTML)
@@ -1122,7 +1282,8 @@ class GuildData{
 						document.body.removeChild(tempInput);
 						PluginUtilities.showToast(formatText4Dg3g5("${this.local.copied.replace(/"/g, '\\"')}", document.getElementById(selElement).innerHTML), {type:"success"});
 					}
-					function copyText4Dg3g5(text){
+					function copyText4Dg3g5(text, doCopy=false){
+						if(!doCopy) return;
 						var tempInput = document.createElement('textarea');
 						document.body.appendChild(tempInput);
 						tempInput.innerHTML = text;
@@ -1224,24 +1385,24 @@ class GuildData{
 		}
 		
 		var tableContent = `<h3 class="l0c4lh057" id="l0c4lh057 guild information title">${this.local.guildInfo.title}</h3><br>
-		<div style="text-align:center;font-size:125%;font-weight:bold;";><p id="l0c4lh057 popup tocopy copyidguildname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidguildname');" style="display: inline;">${guild.name}</p> (<p id="l0c4lh057 popup tocopy copyidguildid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidguildid');" style="display: inline;">${guild.id}</p>)</div><br>`;
-		if(guild.icon) tableContent += `<div style="width:25%;padding-top:25%;background-image:url('${this.getGuildIcon(guild)}');background-size:contain;margin-left:auto;margin-right:auto;background-repeat:no-repeat;" onclick="copyText4Dg3g5('${this.getGuildIcon(guild)}')"></div>`;
+		<div style="text-align:center;font-size:125%;font-weight:bold;";><p id="l0c4lh057 popup tocopy copyidguildname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidguildname', ${this.settings.copyOnClick});" style="display: inline;">${guild.name}</p> (<p id="l0c4lh057 popup tocopy copyidguildid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidguildid', ${this.settings.copyOnClick});" style="display: inline;">${guild.id}</p>)</div><br>`;
+		if(guild.icon) tableContent += `<div style="width:25%;padding-top:25%;background-image:url('${this.getGuildIcon(guild)}');background-size:contain;margin-left:auto;margin-right:auto;background-repeat:no-repeat;" onclick="copyText4Dg3g5('${this.getGuildIcon(guild)}', true)"></div>`;
 		tableContent += `<table class="l0c4lh057 popup user information table" style="width:100%;">
-		<tr><td>${this.local.guildInfo.owner}:</td><td><p id="l0c4lh057 popup tocopy copyidownertag" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidownertag');" style="display: inline;">${this.userModule.getUser(guild.ownerId).tag}</p> (<p id="l0c4lh057 popup tocopy copyidownerid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidownerid');" style="display: inline;">${guild.ownerId}</p>)</td></tr>
-		<tr><td>${this.local.guildInfo.acronym}:</td><td>${guild.acronym}</td></tr>
-		<tr><td>${this.local.guildInfo.createdAt}:</td><td><p id="l0c4lh057 popup tocopy copyidcreationdate" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidcreationdate');" style="display: inline;">${this.getSnowflakeCreationDate(guild.id).toLocaleString()}</p> (<p id="l0c4lh057 popup tocopy copyidcreationago" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidcreationago');" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
-		<tr><td>${this.local.guildInfo.joinedAt}:</td><td><p id="l0c4lh057 popup tocopy copyidjoineddate" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidjoineddate');" style="display: inline;">${guild.joinedAt.toLocaleString()}</p> (<p id="l0c4lh057 popup tocopy copyidjoinedago" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidjoinedago');" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
-		<tr><td>${this.local.guildInfo.verificationLevel.title}:</td><td><p id="l0c4lh057 popup tocopy copyidverificationlevel" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidverificationlevel');" style="display: inline;">${guild.verificationLevel}</p> (<p id="l0c4lh057 popup tocopy copyidverificationleveldescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidverificationleveldescription');" style="display: inline;">${this.getVerificationLevel(guild.verificationLevel)}</p>)</td></tr>
-		<tr><td>${this.local.guildInfo.explicitContentFilter.title}:</td><td><p id="l0c4lh057 popup tocopy copyidcontentfilter" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidcontentfilter');" style="display: inline;">${guild.explicitContentFilter}</p> (<p id="l0c4lh057 popup tocopy copyidcontentfilterdescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidcontentfilterdescription');" style="display: inline;">${this.getExplicitContentFilterLevel(guild.explicitContentFilter)}</p>)</td></tr>
-		<tr><td>${this.local.guildInfo.defaultMessageNotifications.title}:</td><td><p id="l0c4lh057 popup tocopy copyidmessagenotifications" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidmessagenotifications');" style="display: inline;">${guild.defaultMessageNotifications}</p> (<p id="l0c4lh057 popup tocopy copyidmessagenotificationsdescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidmessagenotificationsdescription');" style="display: inline;">${this.getDefaultMessageNotifications(guild.defaultMessageNotifications)}</p>)</td></tr>
-		<tr><td>${this.local.guildInfo.region}:</td><td><p id="l0c4lh057 popup tocopy copyidregion" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidregion');" style="display: inline;">${guild.region}</p></td></tr>`;
-		tableContent += `<tr><td>${this.local.guildInfo.afkChannel.title}:</td><td>` + (guild.afkChannelId ? ('<p id="l0c4lh057 popup tocopy copyidafkchannel" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyidafkchannel\');" style="display: inline;">' + this.channelModule.getChannel(guild.afkChannelId).name + '</p> ' + '(<p id="l0c4lh057 popup tocopy copyidafkchannelid" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyidafkchannelid\');" style="display: inline;">' + guild.afkChannelId + '</p>)') : ('<p id="l0c4lh057 popup tocopy copyidNo afk channel" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyidNo afk channel\');" style="display: inline;">' + this.local.guildInfo.afkChannel.noAfkChannel + '</p>')) + '</td></tr>';
-		tableContent += `<tr><td>${this.local.guildInfo.afkTimeout.title}:</td><td><p id="l0c4lh057 popup tocopy copyidafktimeout" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidafktimeout');" style="display: inline;">${guild.afkTimeout} ${this.local.guildInfo.afkTimeout.unit}</p> (<p id="l0c4lh057 popup tocopy copyidafktimeoutminutes" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidafktimeoutminutes');" style="display: inline;">${guild.afkTimeout/60} ${this.local.time.long.minutes}</p>)</td></tr>`;
-		if(guild.systemChannelId) tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td class="l0c4lh057 popup guildinfo systemchannel showsystemchannel ${guild.systemChannelId}">${this.channelModule.getChannel(guild.systemChannelId)} (${guild.systemChannelId})</td></tr>`; else tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td><p id="l0c4lh057 popup tocopy copyidnosystemchannel" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidnosystemchannel');" style="display: inline;">${this.local.guildInfo.systemChannel.noSystemChannel}</p></td></tr>`;
+		<tr><td>${this.local.guildInfo.owner}:</td><td><p id="l0c4lh057 popup tocopy copyidownertag" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidownertag', ${this.settings.copyOnClick});" style="display: inline;">${this.userModule.getUser(guild.ownerId).tag}</p> (<p id="l0c4lh057 popup tocopy copyidownerid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidownerid', ${this.settings.copyOnClick});" style="display: inline;">${guild.ownerId}</p>)</td></tr>
+		<tr><td>${this.local.guildInfo.acronym}:</td><td><p id="l0c4lh057 popup tocopy copyidacronym" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidacronym', ${this.settings.copyOnClick});" style="display: inline;">${guild.acronym}</p></td></tr>
+		<tr><td>${this.local.guildInfo.createdAt}:</td><td><p id="l0c4lh057 popup tocopy copyidcreationdate" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidcreationdate', ${this.settings.copyOnClick});" style="display: inline;">${this.formatDate(this.getSnowflakeCreationDate(guild.id), this.settings.dateFormat)}</p> (<p id="l0c4lh057 popup tocopy copyidcreationago" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidcreationago', ${this.settings.copyOnClick});" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
+		<tr><td>${this.local.guildInfo.joinedAt}:</td><td><p id="l0c4lh057 popup tocopy copyidjoineddate" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidjoineddate', ${this.settings.copyOnClick});" style="display: inline;">${this.formatDate(guild.joinedAt, this.settings.dateFormat)}</p> (<p id="l0c4lh057 popup tocopy copyidjoinedago" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidjoinedago', ${this.settings.copyOnClick});" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
+		<tr><td>${this.local.guildInfo.verificationLevel.title}:</td><td><p id="l0c4lh057 popup tocopy copyidverificationlevel" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidverificationlevel', ${this.settings.copyOnClick});" style="display: inline;">${guild.verificationLevel}</p> (<p id="l0c4lh057 popup tocopy copyidverificationleveldescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidverificationleveldescription', ${this.settings.copyOnClick});" style="display: inline;">${this.getVerificationLevel(guild.verificationLevel)}</p>)</td></tr>
+		<tr><td>${this.local.guildInfo.explicitContentFilter.title}:</td><td><p id="l0c4lh057 popup tocopy copyidcontentfilter" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidcontentfilter', ${this.settings.copyOnClick});" style="display: inline;">${guild.explicitContentFilter}</p> (<p id="l0c4lh057 popup tocopy copyidcontentfilterdescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidcontentfilterdescription', ${this.settings.copyOnClick});" style="display: inline;">${this.getExplicitContentFilterLevel(guild.explicitContentFilter)}</p>)</td></tr>
+		<tr><td>${this.local.guildInfo.defaultMessageNotifications.title}:</td><td><p id="l0c4lh057 popup tocopy copyidmessagenotifications" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidmessagenotifications', ${this.settings.copyOnClick});" style="display: inline;">${guild.defaultMessageNotifications}</p> (<p id="l0c4lh057 popup tocopy copyidmessagenotificationsdescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidmessagenotificationsdescription', ${this.settings.copyOnClick});" style="display: inline;">${this.getDefaultMessageNotifications(guild.defaultMessageNotifications)}</p>)</td></tr>
+		<tr><td>${this.local.guildInfo.region}:</td><td><p id="l0c4lh057 popup tocopy copyidregion" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidregion', ${this.settings.copyOnClick});" style="display: inline;">${guild.region}</p></td></tr>`;
+		tableContent += `<tr><td>${this.local.guildInfo.afkChannel.title}:</td><td>` + (guild.afkChannelId ? ('<p id="l0c4lh057 popup tocopy copyidafkchannel" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyidafkchannel\', ' + this.settings.copyOnClick + ');" style="display: inline;">' + this.channelModule.getChannel(guild.afkChannelId).name + '</p> ' + '(<p id="l0c4lh057 popup tocopy copyidafkchannelid" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyidafkchannelid\', ' + this.settings.copyOnClick + ');" style="display: inline;">' + guild.afkChannelId + '</p>)') : ('<p id="l0c4lh057 popup tocopy copyidNo afk channel" onclick="copySelectedElement4Dg3g5(\'l0c4lh057 popup tocopy copyidNo afk channel\', ' + this.settings.copyOnClick + ');" style="display: inline;">' + this.local.guildInfo.afkChannel.noAfkChannel + '</p>')) + '</td></tr>';
+		tableContent += `<tr><td>${this.local.guildInfo.afkTimeout.title}:</td><td><p id="l0c4lh057 popup tocopy copyidafktimeout" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidafktimeout', ${this.settings.copyOnClick});" style="display: inline;">${guild.afkTimeout} ${this.local.guildInfo.afkTimeout.unit}</p> (<p id="l0c4lh057 popup tocopy copyidafktimeoutminutes" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidafktimeoutminutes', ${this.settings.copyOnClick});" style="display: inline;">${guild.afkTimeout/60} ${this.local.guildInfo.afkTimeout.minutes}</p>)</td></tr>`;
+		if(guild.systemChannelId) tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td class="l0c4lh057 popup guildinfo systemchannel showsystemchannel ${guild.systemChannelId}">${this.channelModule.getChannel(guild.systemChannelId)} (${guild.systemChannelId})</td></tr>`; else tableContent += `<tr><td>${this.local.guildInfo.systemChannel.title}:</td><td><p id="l0c4lh057 popup tocopy copyidnosystemchannel" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidnosystemchannel', ${this.settings.copyOnClick});" style="display: inline;">${this.local.guildInfo.systemChannel.noSystemChannel}</p></td></tr>`;
 		tableContent += `<tr><td>${this.local.guildInfo.title}:</td><td class="l0c4lh057 popup guildinfo emojicount">${this.formatText(this.local.emojis.value, [this.emojiUtils.getGuildEmoji(guild.id).length])}</td></tr>
-		<tr><td>${this.local.guildInfo.memberCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyidmembercount" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidmembercount');" style="display: inline;">${this.formatText(this.local.guildInfo.memberCount.value, [this.memberModule.getMembers(guild.id).length])}</p></td></tr>
-		<tr><td>${this.local.guildInfo.channelCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelcount" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelcount');" style="display: inline;">${this.formatText(this.local.guildInfo.channelCount.value, [Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id && c.type != 4).length])}</p></td></tr>
-		<tr><td>${this.local.guildInfo.roleCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyidrolecount" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolecount');" style="display: inline;">${this.formatText(this.local.guildInfo.roleCount.value, [Object.keys(guild.roles).length])}</p></td></tr>`;
+		<tr><td>${this.local.guildInfo.memberCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyidmembercount" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidmembercount', ${this.settings.copyOnClick});" style="display: inline;">${this.formatText(this.local.guildInfo.memberCount.value, [this.memberModule.getMembers(guild.id).length])}</p></td></tr>
+		<tr><td>${this.local.guildInfo.channelCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelcount" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelcount', ${this.settings.copyOnClick});" style="display: inline;">${this.formatText(this.local.guildInfo.channelCount.value, [Array.filter(Object.values(this.channelModule.getChannels()), c => c.guild_id == guild.id && c.type != 4).length])}</p></td></tr>
+		<tr><td>${this.local.guildInfo.roleCount.title}:</td><td><p id="l0c4lh057 popup tocopy copyidrolecount" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolecount', ${this.settings.copyOnClick});" style="display: inline;">${this.formatText(this.local.guildInfo.roleCount.value, [Object.keys(guild.roles).length])}</p></td></tr>`;
 		if(Array.from(guild.features).length > 0){
 			var features = "";
 			guild.features.forEach(v => features += v + ', ');
@@ -1308,7 +1469,7 @@ class GuildData{
 		if(document.getElementById('l0c4lh057 popup roles copybtn')) document.getElementById('l0c4lh057 popup roles copybtn').outerHTML = '';
 		var copyRoles = document.createElement('button');
 		copyRoles.id = 'l0c4lh057 popup roles copybtn';
-		copyRoles.onclick = function(){copyText4Dg3g5(roleString.substring(roleString, roleString.length - 1));}
+		copyRoles.onclick = function(){copyText4Dg3g5(roleString.substring(roleString, roleString.length - 1), true);}
 		copyRoles.innerHTML = this.local.roleInfo.copy;
 		copyRoles.style.position = 'absolute';
 		copyRoles.style.bottom = '5px';
@@ -1380,8 +1541,8 @@ class GuildData{
 		var ge = document.getElementById('l0c4lh057 popup guild emojiinfo');
 		ge.style.zIndex = '15';
 		
-		var c = `<h3 class="l0c4lh057" id="l0c4lh057 guild title">${this.local.guildInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.emojis.title}<br><p id="l0c4lh057 popup tocopy copyidemojiname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidemojiname');" style="display: inline;">${emoji.name}</p> (<p id="l0c4lh057 popup tocopy copyidemojiid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidemojiid');" style="display: inline;">${emoji.id}</p>)</div><br>`;
-		if(emoji.url) c += `<div style="width:25%;padding-top:25%;background-image:url('${emoji.url}');margin-left:auto;margin-right:auto;background-repeat:no-repeat;background-size:contain;" onclick="copyText4Dg3g5('${emoji.url}');"></div>`;
+		var c = `<h3 class="l0c4lh057" id="l0c4lh057 guild title">${this.local.guildInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.emojis.title}<br><p id="l0c4lh057 popup tocopy copyidemojiname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidemojiname', ${this.settings.copyOnClick});" style="display: inline;">${emoji.name}</p> (<p id="l0c4lh057 popup tocopy copyidemojiid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidemojiid', ${this.settings.copyOnClick});" style="display: inline;">${emoji.id}</p>)</div><br>`;
+		if(emoji.url) c += `<div style="width:25%;padding-top:25%;background-image:url('${emoji.url}');margin-left:auto;margin-right:auto;background-repeat:no-repeat;background-size:contain;" onclick="copyText4Dg3g5('${emoji.url}', true);"></div>`;
 		c += `<table class="l0c4lh057 popup emojiinfo table" style="width:100%;">
 		<tr><td>${this.local.emojis.animated}:</td><td>${emoji.animated}</td></tr>
 		<tr><td>${this.local.emojis.managed}:</td><td>${emoji.managed}</td></tr>
@@ -1494,14 +1655,14 @@ class GuildData{
 		var self = this;
 		var scs = document.getElementById('l0c4lh057 popup sChannelSearch');
 		scs.style.zIndex = '15';
-		scs.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;"><p id="l0c4lh057 popup tocopy copyidchannelname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelname');" style="display: inline;">${channel.name}</p> (<p id="l0c4lh057 popup tocopy copyidchannelid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelid');" style="display: inline;">${channel.id}</p>)</div><br><table>
-		<tr><td>${this.local.channelInfo.channelType.title}:</td><td><p id="l0c4lh057 popup tocopy copyidchanneltype" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchanneltype');" style="display: inline;">${channel.type}</p> (<p id="l0c4lh057 popup tocopy copyidchanneltypedescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchanneltypedescription');" style="display: inline;">${this.getChannelType(channel.type)}</p>)</td></tr>
-		<tr><td>${this.local.channelInfo.topic}:</td><td><p id="l0c4lh057 popup tocopy copyidchanneltopic" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchanneltopic');" style="display: inline;">${channel.topic}</p></td></tr>
-		<tr><td>${this.local.channelInfo.position}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelposition" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelposition');" style="display: inline;">${channel.position}</p></td></tr>
-		<tr><td>${this.local.channelInfo.userLimit}:</td><td><p id="l0c4lh057 popup tocopy copyiduserlimit" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserlimit');" style="display: inline;">${channel.userLimit}</p></td></tr>
-		<tr><td>${this.local.channelInfo.nsfw}:</td><td><p id="l0c4lh057 popup tocopy copyidisnsfw" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidisnsfw');" style="display: inline;">${channel.nsfw}</p></td></tr>
-		<tr><td>${this.local.channelInfo.bitrate}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelbitrate" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelbitrate');" style="display: inline;">${channel.bitrate}</p></td></tr>
-		<tr><td>${this.local.channelInfo.slowmode.title}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelslowmode" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelslowmode');" style="display: inline;">${this.formatText(this.local.channelInfo.slowmode.value, [channel.rateLimitPerUser])}</p></td></tr></table><br>`;
+		scs.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;"><p id="l0c4lh057 popup tocopy copyidchannelname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelname', ${this.settings.copyOnClick});" style="display: inline;">${channel.name}</p> (<p id="l0c4lh057 popup tocopy copyidchannelid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelid', ${this.settings.copyOnClick});" style="display: inline;">${channel.id}</p>)</div><br><table>
+		<tr><td>${this.local.channelInfo.channelType.title}:</td><td><p id="l0c4lh057 popup tocopy copyidchanneltype" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchanneltype', ${this.settings.copyOnClick});" style="display: inline;">${channel.type}</p> (<p id="l0c4lh057 popup tocopy copyidchanneltypedescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchanneltypedescription', ${this.settings.copyOnClick});" style="display: inline;">${this.getChannelType(channel.type)}</p>)</td></tr>
+		<tr><td>${this.local.channelInfo.topic}:</td><td><p id="l0c4lh057 popup tocopy copyidchanneltopic" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchanneltopic', ${this.settings.copyOnClick});" style="display: inline;">${channel.topic}</p></td></tr>
+		<tr><td>${this.local.channelInfo.position}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelposition" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelposition', ${this.settings.copyOnClick});" style="display: inline;">${channel.position}</p></td></tr>
+		<tr><td>${this.local.channelInfo.userLimit}:</td><td><p id="l0c4lh057 popup tocopy copyiduserlimit" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserlimit', ${this.settings.copyOnClick});" style="display: inline;">${channel.userLimit}</p></td></tr>
+		<tr><td>${this.local.channelInfo.nsfw}:</td><td><p id="l0c4lh057 popup tocopy copyidisnsfw" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidisnsfw', ${this.settings.copyOnClick});" style="display: inline;">${channel.nsfw}</p></td></tr>
+		<tr><td>${this.local.channelInfo.bitrate}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelbitrate" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelbitrate', ${this.settings.copyOnClick});" style="display: inline;">${channel.bitrate}</p></td></tr>
+		<tr><td>${this.local.channelInfo.slowmode.title}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelslowmode" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelslowmode', ${this.settings.copyOnClick});" style="display: inline;">${this.formatText(this.local.channelInfo.slowmode.value, [channel.rateLimitPerUser])}</p></td></tr></table><br>`;
 		var permOverwr = Object.values(channel.permissionOverwrites);
 		for(const perm of permOverwr){
 			var c = `<div id="l0c4lh057 popup channel permission ${perm.id}" class="l0c4lh057 popup channel permission ${perm.id}">${this.getPermissionType(perm.type)}: `;
@@ -1551,13 +1712,13 @@ class GuildData{
 		var cp = document.getElementById('l0c4lh057 popup channel permission');
 		cp.style.zIndex = '20';
 		cp.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo.title}</h3><br>`;
-		if(perm.type == "member") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.channelInfo.channel}: ${channel.name}<br><p id="l0c4lh057 popup tocopy copyidchannelpermusertag" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermusertag');" style="display: inline;">${this.userModule.getUser(perm.id).tag}</p> (<p id="l0c4lh057 popup tocopy copyidchannelpermuserid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermuserid');" style="display: inline;">${perm.id}</p>)</div>`; else if(perm.type == "role") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.channelInfo.channel}: ${channel.name}<br><p id="l0c4lh057 popup tocopy copyidchannelpermrolename" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermrolename');" style="display: inline;">${guild.roles[perm.id].name}</p> (<p id="l0c4lh057 popup tocopy copyidchannelpermroleid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermroleid');" style="display: inline;">${perm.id}</p>)</div>`;
+		if(perm.type == "member") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.channelInfo.channel}: ${channel.name}<br><p id="l0c4lh057 popup tocopy copyidchannelpermusertag" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermusertag', ${this.settings.copyOnClick});" style="display: inline;">${this.userModule.getUser(perm.id).tag}</p> (<p id="l0c4lh057 popup tocopy copyidchannelpermuserid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermuserid', ${this.settings.copyOnClick});" style="display: inline;">${perm.id}</p>)</div>`; else if(perm.type == "role") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.channelInfo.channel}: ${channel.name}<br><p id="l0c4lh057 popup tocopy copyidchannelpermrolename" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermrolename', ${this.settings.copyOnClick});" style="display: inline;">${guild.roles[perm.id].name}</p> (<p id="l0c4lh057 popup tocopy copyidchannelpermroleid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermroleid', ${this.settings.copyOnClick});" style="display: inline;">${perm.id}</p>)</div>`;
 		cp.innerHTML += `<br><table>
-		<tr><td>${this.local.channelInfo.permissions.type}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelpermtype" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermtype');" style="display: inline;">${this.local.channelInfo[perm.type]}</p></td></tr>
-		<tr><td>${this.local.channelInfo.permissions.allow}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelpermallowed" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermallowed');" style="display: inline;">${perm.allow}</p></td></tr>
-		<tr><td></td><td><p id="l0c4lh057 popup tocopy copyidchannelpermalloweddescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermalloweddescription');" style="display: inline;">${this.getPermissionsFromBase16(perm.allow)}</p></td></tr>
-		<tr><td>${this.local.channelInfo.permissions.deny}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelpermdenied" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermdenied');" style="display: inline;">${perm.deny}</p></td></tr>
-		<tr><td></td><td><p id="l0c4lh057 popup tocopy copyidchannelpermdenieddescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermdenieddescription');" style="display: inline;">${this.getPermissionsFromBase16(perm.deny)}</p></td></tr></table>`;
+		<tr><td>${this.local.channelInfo.permissions.type}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelpermtype" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermtype', ${this.settings.copyOnClick});" style="display: inline;">${this.local.channelInfo[perm.type]}</p></td></tr>
+		<tr><td>${this.local.channelInfo.permissions.allow}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelpermallowed" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermallowed', ${this.settings.copyOnClick});" style="display: inline;">${perm.allow}</p></td></tr>
+		<tr><td></td><td><p id="l0c4lh057 popup tocopy copyidchannelpermalloweddescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermalloweddescription', ${this.settings.copyOnClick});" style="display: inline;">${this.getPermissionsFromBase16(perm.allow)}</p></td></tr>
+		<tr><td>${this.local.channelInfo.permissions.deny}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelpermdenied" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermdenied', ${this.settings.copyOnClick});" style="display: inline;">${perm.deny}</p></td></tr>
+		<tr><td></td><td><p id="l0c4lh057 popup tocopy copyidchannelpermdenieddescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermdenieddescription', ${this.settings.copyOnClick});" style="display: inline;">${this.getPermissionsFromBase16(perm.deny)}</p></td></tr></table>`;
 		
 		var cpBack = document.createElement('div');
 		cpBack.style.position = 'absolute';
@@ -1575,14 +1736,14 @@ class GuildData{
 	showRolePermissionInformation(role){
 		var rp = document.getElementById('l0c4lh057 popup role permission');
 		rp.style.zIndex = '15';
-		var c = `<h3 class="l0c4lh057">${this.local.roleInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;"><p id="l0c4lh057 popup tocopy copyidrolename" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolename');" style="display: inline;">${role.name}</p> (<p id="l0c4lh057 popup tocopy copyidroleid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidroleid');" style="display: inline;">${role.id}</p>)</div><br><table>
-		<tr><td>${this.local.permissions.title}:</td><td><p id="l0c4lh057 popup tocopy copyidrolepermissions" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolepermissions');" style="display: inline;">${role.permissions}</p></td></tr>
-		<tr><td></td><td><p id="l0c4lh057 popup tocopy copyidrolepermissionsdescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolepermissionsdescription');" style="display: inline;">${this.getPermissionsFromBase16(role.permissions)}</p></td></tr>
-		<tr><td>${this.local.permissions.notAllowed}:</td><td><p id="l0c4lh057 popup tocopy copyidroledenied" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidroledenied');" style="display: inline;">${this.getNotPermissionsFromBase16(role.permissions)}</p></td></tr>
-		<tr><td>${this.local.roleInfo.mentionable}:</td><td><p id="l0c4lh057 popup tocopy copyidrolementionable" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolementionable');" style="display: inline;">${role.mentionable}</p></td></tr>`;
-		if(role.colorString) c += `<tr><td>${this.local.roleInfo.color.title}:</td><td><p id="l0c4lh057 popup tocopy copyidrolecolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolecolor');" style="display: inline;">${role.colorString}</p> <p style="display:inline;color:${role.colorString}">(${this.local.roleInfo.color.example})</p></td></tr>`; else c += `<tr><td>${this.local.roleInfo.color.title}:</td><td><p id="l0c4lh057 popup tocopy copyidnorolecolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidnorolecolor');" style="display: inline;">${this.local.roleInfo.color.noColor}</p></td></tr>`;
+		var c = `<h3 class="l0c4lh057">${this.local.roleInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;"><p id="l0c4lh057 popup tocopy copyidrolename" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolename', ${this.settings.copyOnClick});" style="display: inline;">${role.name}</p> (<p id="l0c4lh057 popup tocopy copyidroleid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidroleid', ${this.settings.copyOnClick});" style="display: inline;">${role.id}</p>)</div><br><table>
+		<tr><td>${this.local.permissions.title}:</td><td><p id="l0c4lh057 popup tocopy copyidrolepermissions" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolepermissions', ${this.settings.copyOnClick});" style="display: inline;">${role.permissions}</p></td></tr>
+		<tr><td></td><td><p id="l0c4lh057 popup tocopy copyidrolepermissionsdescription" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolepermissionsdescription', ${this.settings.copyOnClick});" style="display: inline;">${this.getPermissionsFromBase16(role.permissions)}</p></td></tr>
+		<tr><td>${this.local.permissions.notAllowed}:</td><td><p id="l0c4lh057 popup tocopy copyidroledenied" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidroledenied', ${this.settings.copyOnClick});" style="display: inline;">${this.getNotPermissionsFromBase16(role.permissions)}</p></td></tr>
+		<tr><td>${this.local.roleInfo.mentionable}:</td><td><p id="l0c4lh057 popup tocopy copyidrolementionable" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolementionable', ${this.settings.copyOnClick});" style="display: inline;">${role.mentionable}</p></td></tr>`;
+		if(role.colorString) c += `<tr><td>${this.local.roleInfo.color.title}:</td><td><p id="l0c4lh057 popup tocopy copyidrolecolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolecolor', ${this.settings.copyOnClick});" style="display: inline;">${role.colorString}</p> <p style="display:inline;color:${role.colorString}">(${this.local.roleInfo.color.example})</p></td></tr>`; else c += `<tr><td>${this.local.roleInfo.color.title}:</td><td><p id="l0c4lh057 popup tocopy copyidnorolecolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidnorolecolor', ${this.settings.copyOnClick});" style="display: inline;">${this.local.roleInfo.color.noColor}</p></td></tr>`;
 		c += `
-		<tr><td>${this.local.roleInfo.hoist}:</td><td><p id="l0c4lh057 popup tocopy copyidrolehoist" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolehoist');" style="display: inline;">${role.hoist}</p></td></table>`
+		<tr><td>${this.local.roleInfo.hoist}:</td><td><p id="l0c4lh057 popup tocopy copyidrolehoist" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolehoist', ${this.settings.copyOnClick});" style="display: inline;">${role.hoist}</p></td></table>`
 		rp.innerHTML = c;
 		
 		var rpBack = document.createElement('div');
@@ -1722,6 +1883,30 @@ class GuildData{
 		return "";
 	}
 	
+	formatDate(date, format){
+		return format
+			.replace(/ms/g, date.getMilliseconds().pad(3))
+			.replace(/ss/g, date.getSeconds().pad())
+			.replace(/s/g, date.getSeconds())
+			.replace(/mm/g, date.getMinutes().pad())
+			.replace(/m/g, date.getMinutes())
+			.replace(/HH/g, date.getHours().pad())
+			.replace(/H/g, date.getHours())
+			.replace(/hh/g, (date.getHours() % 12 || 12).pad())
+			.replace(/h/g, date.getHours() % 12 || 12)
+			.replace(/dddd/g, this.local.time.long.day[date.getDay()])
+			.replace(/ddd/g, this.local.time.semi.day[date.getDay()])
+			.replace(/dd/g, date.getDate().pad())
+			.replace(/d/g, date.getDate())
+			.replace(/MMMM/g, this.local.time.long.month[date.getMonth()])
+			.replace(/MMM/g, this.local.time.semi.month[date.getMonth()])
+			.replace(/MM/g, (date.getMonth() + 1).pad())
+			.replace(/M/g, date.getMonth() + 1)
+			.replace(/yyyy/g, date.getFullYear())
+			.replace(/yy/g, ('' + date.getFullYear()).substr(2))
+			.replace(/tt/g, (date.getHours() > 11) ? this.local.time.pm : this.local.time.am)
+	}
+	
 	showUserInformation(guild, user, member){
 		var self = this;
 		var ui = document.getElementById('l0c4lh057 popup user information');
@@ -1729,14 +1914,17 @@ class GuildData{
 		var activity = this.UserMetaStore.getPrimaryActivity(user.id);
 		
 		if(!this.updateInformationTimer){
-			var c = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;">${user.tag} (${user.id})</div><div id="l0c4lh057 popup user information avatar" style="width:64px;height:64px;background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;background-image:url('${this.getUserAvatarURL(user.id, 64, false)}')"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;">`
-			if(member.nick) c += `<tr><td id="l0c4lh057 user information table nicknameTitle">${this.local.userInfo.nickname}:</td><td id="l0c4lh057 user information table nickname">${member.nick}</td></tr>`; else c += `<tr><td id="l0c4lh057 user information table nicknameTitle"></td><td id="l0c4lh057 user information table nickname"></td></tr>`;
-			c += `<tr><td>${this.local.userInfo.color.title}:</td><td id="l0c4lh057 user information table color">${member.colorString} <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div></td></tr>
-			<tr><td>${this.local.userInfo.hoistRole.title}:</td><td id="l0c4lh057 user information table hoistrole">`;
-			if(member.hoistRoleId) c += `${guild.roles[member.hoistRoleId].name} (${member.hoistRoleId})</td></tr>`; else c += `${this.local.userInfo.hoistRole.noHoistRole}</td></tr>`;
+			var c = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;"><p id="l0c4lh057 popup tocopy copyiduserinfousertag" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfousertag', ${this.settings.copyOnClick});" style="display: inline;">${user.tag}</p> (<p id="l0c4lh057 popup tocopy copyiduserinfouserid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfouserid', ${this.settings.copyOnClick});" style="display: inline;">${user.id}</p>)</div>
+			<div id="l0c4lh057 popup user information avatar" style="width:64px;height:64px;background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;background-image:url('${this.getUserAvatarURL(user.id, 64, false)}')"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;">`
+			if(member.nick) c += `<tr><td id="l0c4lh057 user information table nicknameTitle">${this.local.userInfo.nickname}:</td><td id="l0c4lh057 user information table nickname"><p id="l0c4lh057 popup tocopy copyiduserinfonickname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfonickname', ${this.settings.copyOnClick});" style="display: inline;">${member.nick}</p></td></tr>`; else c += `<tr><td id="l0c4lh057 user information table nicknameTitle"></td><td id="l0c4lh057 user information table nickname"><p id="l0c4lh057 popup tocopy copyiduserinfonickname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfonickname', ${this.settings.copyOnClick});" style="display: inline;"></p></td></tr>`;
+			c += `<tr><td>${this.local.userInfo.color.title}:</td><td id="l0c4lh057 user information table color"><p id="l0c4lh057 popup tocopy copyiduserinfocolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfocolor', ${this.settings.copyOnClick});" style="display: inline;">`;
+			if(member.colorString) c += `${member.colorString}</p> <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div>`; else c += this.local.userInfo.color.noColor + '</p>';
+			c += `</td></tr>
+			<tr><td>${this.local.userInfo.hoistRole.title}:</td><td id="l0c4lh057 user information table hoistrole"><p id="l0c4lh057 popup tocopy copyiduserinfohoistrolename" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfohoistrolename', ${this.settings.copyOnClick});" style="display: inline;">`;
+			if(member.hoistRoleId) c += `${guild.roles[member.hoistRoleId].name}</p> (<p id="l0c4lh057 popup tocopy copyiduserinfohoistroleid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfohoistroleid', ${this.settings.copyOnClick});" style="display: inline;">${member.hoistRoleId}</p>)</td></tr>`; else c += `${this.local.userInfo.hoistRole.noHoistRole}</p></td></tr>`;
 			c += `<tr><td>${this.local.userInfo.roles}:</td><td id="l0c4lh057 user information table roles">${this.getRolesOfMember(guild, member)}</td></tr>
-			<tr><td>${this.local.userInfo.isBot}:</td><td>${user.bot}</td></tr>
-			<tr><td>${this.local.userInfo.createdAt}:</td><td>${user.createdAt.toLocaleString()}</td></tr>
+			<tr><td>${this.local.userInfo.isBot}:</td><td><p id="l0c4lh057 popup tocopy copyiduserinfoisbot" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfoisbot', ${this.settings.copyOnClick});" style="display: inline;">${user.bot}</p></td></tr>
+			<tr><td>${this.local.userInfo.createdAt}:</td><td>${this.formatDate(user.createdAt, this.settings.dateFormat)}</td></tr>
 			<tr><td>${this.local.userInfo.status.title}:</td><td id="l0c4lh057 user information table status">${this.local.userInfo.status[this.UserMetaStore.getStatus(user.id)]}</td></tr>`;
 			if(!activity) c += `<tr><td id="l0c4lh057 user information table activity1">${this.local.userInfo.activity.title}:</td><td id="l0c4lh057 user information table activity2">${this.local.userInfo.activity.noActivity}</td></tr>`;
 			else c += `<tr><td id="l0c4lh057 user information table activity1"></td><td id="l0c4lh057 user information table activity2"></td></tr>`;
@@ -1895,7 +2083,7 @@ class GuildData{
 			document.getElementById('l0c4lh057 popup userContainer').appendChild(uiOpenChat);
 				
 			/* automatically update user information once per second, disable for editing */
-			if(!this.updateInformationTimer) this.updateInformationTimer = window.setInterval(function(){self.showUserInformation(guild, user, member);}, 1000);
+			if(!this.updateInformationTimer) this.updateInformationTimer = window.setInterval(function(){self.showUserInformation(guild, user, self.memberModule.getMember(guild.id, user.id));}, 1000);
 			
 			if(!document.getElementById('l0c4lh057 popup user back')){
 				var uiBack = document.createElement('div');
@@ -1926,9 +2114,12 @@ class GuildData{
 			$('.l0c4lh057.popup.user.back').click(function(){self.stopInterval(); document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0'; document.getElementById('l0c4lh057 popup user back').style.display = 'none'});
 			$('.l0c4lh057.popup.close').click(function(){self.stopInterval();});
 		}else{
-			if(member.nick){document.getElementById('l0c4lh057 user information table nicknameTitle').innerHTML = `${this.local.userInfo.nickname}:`; document.getElementById('l0c4lh057 user information table nickname').innerHTML = `${member.nick}`;}
-			else{document.getElementById('l0c4lh057 user information table nicknameTitle').innerHTML = ``; document.getElementById('l0c4lh057 user information table nickname').innerHTML = ``;}
-			document.getElementById('l0c4lh057 user information table color').innerHTML = `${member.colorString} <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div>`;
+			if(member.nick){document.getElementById('l0c4lh057 user information table nicknameTitle').innerHTML = `${this.local.userInfo.nickname}:`; document.getElementById('l0c4lh057 popup tocopy copyiduserinfonickname').innerHTML = `${member.nick}`;}
+			else{document.getElementById('l0c4lh057 user information table nicknameTitle').innerHTML = ``; document.getElementById('l0c4lh057 popup tocopy copyiduserinfonickname').innerHTML = ``;}
+			if(member.colorString)
+				document.getElementById('l0c4lh057 user information table color').innerHTML = `<p id="l0c4lh057 popup tocopy copyiduserinfocolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfocolor', ${this.settings.copyOnClick});" style="display: inline;">${member.colorString}</p> <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div>`;
+			else
+				document.getElementById('l0c4lh057 user information table color').innerHTML = `<p id="l0c4lh057 popup tocopy copyiduserinfocolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfocolor', ${this.settings.copyOnClick});" style="display: inline;">${this.local.userInfo.color.noColor}</p>`;
 			if(member.hoistRoleId) document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = `${guild.roles[member.hoistRoleId].name} (${member.hoistRoleId})`; else document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = this.local.userInfo.hoistRole.noHoistRole;
 			document.getElementById('l0c4lh057 user information table roles').innerHTML = `${this.getRolesOfMember(guild, member)}`;
 			document.getElementById('l0c4lh057 user information table status').innerHTML = this.local.userInfo.status[this.UserMetaStore.getStatus(user.id)];
@@ -2160,13 +2351,13 @@ class GuildData{
 			error: function(){
 				if(document.getElementById(elementId)){
 					document.getElementById(elementId).style.backgroundImage = 'url("' + self.getUserAvatarURL(userId, size, false) + '")';
-					document.getElementById(elementId).onclick = function(){copyText4Dg3g5(`${self.getUserAvatarURL(userId, size, false)}`)};
+					document.getElementById(elementId).onclick = function(){copyText4Dg3g5(`${self.getUserAvatarURL(userId, size, false)}`, true)};
 				}
 			},
 			success: function(){
 				if(document.getElementById(elementId)){
 					document.getElementById(elementId).style.backgroundImage = 'url("' + self.getUserAvatarURL(userId, size, true) + '")';
-					document.getElementById(elementId).onclick = function(){copyText4Dg3g5(`${self.getUserAvatarURL(userId, size, true)}`)};
+					document.getElementById(elementId).onclick = function(){copyText4Dg3g5(`${self.getUserAvatarURL(userId, size, true)}`, true)};
 				}
 			}
 		});
@@ -2271,4 +2462,10 @@ class GuildData{
 
 		return new Date(parseInt(toBinary(id).padStart(64).substring(0, 42), 2) + epoch);
 	}
+}
+
+Number.prototype.pad = function(size) {
+	var s = String(this);
+	while (s.length < (size || 2)) {s = "0" + s;}
+	return s;
 }
