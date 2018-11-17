@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.1.4";}
+	getVersion () {return "1.1.5";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -165,28 +165,36 @@ class GuildData{
 			)
 			.parent()
 			.parent()
+		).append(
+			$("<script>")
+			.html("document.getElementById('plugin-settings-GuildData').parentElement.addClass('l0c4lh057 settingspanel outer')")
+		).append(
+			$("<style>")
+			.html(`
+				.settings-open.ui-switch-item.l0c4lh057.settingspanel.outer::-webkit-scrollbar{
+					max-width: 10px !important;
+				}
+				.settings-open.ui-switch-item.l0c4lh057.settingspanel.outer:hover::-webkit-scrollbar-thumb{
+					display: initial;
+				}
+				.settings-open.ui-switch-item.l0c4lh057.settingspanel.outer::-webkit-scrollbar-thumb{
+					background-color: #292b2f;
+					background-color: #1e2124 !important;
+					border: none !important;
+					border-radius: 5px !important;
+					display: none;
+				}
+				.settings-open.ui-switch-item.l0c4lh057.settingspanel.outer::-webkit-scrollbar-button{
+					display: none !important;
+				}
+				.settings-open.ui-switch-item.l0c4lh057.settingspanel.outer::-webkit-scrollbar-track-piece{
+					background-color: #292b2f !important;
+				}`)
 		);
 	}
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.1.2": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"Some more copy on click (only user information left)",
-						"You can now change the size of the emojis in the emoji list"
-					]
-				},
-				{
-					"title": "Changed",
-					"type": "changed",
-					"items": [
-						"Improved ids of copiable elements"
-					]
-				}
-			],
 			"1.1.3": [
 				{
 					"title": "Changed",
@@ -215,13 +223,22 @@ class GuildData{
 						"Button to reset settings to default",
 						"Option to change the date format"
 					]
+				}
+			],
+			"1.1.5": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"\\"zzz\\", \\"zz\\" and \\"z\\" for date formatting (timezone offset)",
+						"\\"\\\\\\\\\\" as escape character in date formatting <div style='display:inline;background-image:linear-gradient(transparent 9px,#ffffff 7px,#ffffff 12px,rgba(255, 0, 0, 0) 12px);'>(only works with the test version of Discord)</div>"
+					]
 				},
 				{
-					"title": "Question",
-					"type": "request",
+					"title": "Changed",
+					"type": "changed",
 					"items": [
-						"What should be the default date format for the English language? (currently ${this.strings.en.time.defaultDateFormat} -> ${this.formatDate(new Date(1640966351000), this.strings.en.time.defaultDateFormat)})",
-						"Should i display AM and PM as \\"AM\\" and \\"PM\\" or \\"am\\" and \\"pm\\" or \\"a.m.\\" and \\"p.m.\\"?"
+						"Changed default date format (English) from \\"dd/MM/yyyy hh:mm:ss tt\\" (31/12/1999 12:59:59 PM) to \\"MM/dd/yyyy hh:mm:ss tt\\" (12/31/1999 12:59:59 PM)"
 					]
 				}
 			]
@@ -421,7 +438,7 @@ class GuildData{
 						"resetToDefault": "Einstellungen zurücksetzen",
 						"dateFormat": {
 							"title": "Datumsformat",
-							"description": "Hier kannst du das Format für Daten im Plugin einstellen (standard: dd.MM.yyyy HH:mm:ss)\\n\\nyyyy - Jahr (1999)\\nyy - Jahr (99)\\nMMMM - Kompletter Monatsname (Januar, Dezember)\\nMMM - Kurzer Monatsname (Jan, Dez)\\nMM - Monat mit führender Null (01, 12)\\nM - Monat ohne führende Null (1, 12)\\nDDDD - Kompletter Tagesname (Montag, Sonntag)\\nDDD - Kurzer Tagesname (Mo, So)\\nDD - Tag mit führender Null (01, 31)\\nD - Tag ohne führende Null (1, 31)\\nHH - Stunden im 24h-Format mit führender Null (00, 23)\\nH - Stunden im 24h-Format ohne führende Null (0, 23)\\nhh - Stunden im 12h-Format mit führender Null (01, 12)\\nh - Stunden im 12h-Format ohne führende Null (1, 12)\\nmm - Minuten mit führender Null (00, 59)\\nm - Minuten ohne führende Null (0, 59)\\nss - Sekunden mit führender Null (00, 59)\\ns - Sekunden ohne führende Null (0, 59)\\nms - Millisekunden mit führenden Nullen (000, 999)\\ntt - Morgens oder abends (vormittags, nachmittags)",
+							"description": "Hier kannst du das Format für Daten im Plugin einstellen (standard: dd.MM.yyyy HH:mm:ss)\\nDu kannst \\"\\\\\\\\\\" verwenden, um das folgende Zeichen als Zeichen darzustellen (HH\\\\h -> 14h)\\n\\nyyyy - Jahr (1999)\\nyy - Jahr (99)\\nMMMM - Kompletter Monatsname (Januar, Dezember)\\nMMM - Kurzer Monatsname (Jan, Dez)\\nMM - Monat mit führender Null (01, 12)\\nM - Monat ohne führende Null (1, 12)\\nDDDD - Kompletter Tagesname (Montag, Sonntag)\\nDDD - Kurzer Tagesname (Mo, So)\\nDD - Tag mit führender Null (01, 31)\\nD - Tag ohne führende Null (1, 31)\\nHH - Stunden im 24h-Format mit führender Null (00, 23)\\nH - Stunden im 24h-Format ohne führende Null (0, 23)\\nhh - Stunden im 12h-Format mit führender Null (01, 12)\\nh - Stunden im 12h-Format ohne führende Null (1, 12)\\nmm - Minuten mit führender Null (00, 59)\\nm - Minuten ohne führende Null (0, 59)\\nss - Sekunden mit führender Null (00, 59)\\ns - Sekunden ohne führende Null (0, 59)\\nms - Millisekunden mit führenden Nullen (000, 999)\\ntt - Morgens oder abends (vormittags, nachmittags)\\nzzz - Zeitzonenverschiebung (-01:00, +04:30)\\nzz - Zeitzonenverschiebung (-01, +04)\\nz - Zeitzonenverschiebung (-1, +4)",
 							"placeholder": "Datumsformat"
 						}
 					},
@@ -720,7 +737,7 @@ class GuildData{
 						"resetToDefault": "Reset settings",
 						"dateFormat": {
 							"title": "Date Format",
-							"description": "Here you can change the date format used in this plugin.\\n\\nyyyy - 4 digit year (1999)\\nyy - 2 digit year (99)\\nMMMM - Full month name (Januar, December)\\nMMM - Month abbreviation (Jan, Dec)\\nMM - Month with leading zero (01, 12)\\nM - Month without leading zero (1, 12)\\nDDDD - Full day name (Monday, Sunday)\\nDDD - Day abbreviation (Mon, Sun)\\nDD - Day with leading zero (01, 31)\\nD - Day without leading zero (1, 31)\\nHH - Hours in 24h format with leading zero (00, 23)\\nH - Hours in 24h format without leading zero (0, 23)\\nhh - Hours in 12h format with leading zero (01, 12)\\nh - Hours in 12h format without leading zero (1, 12)\\nmm - Minutes with leading zero (00, 59)\\nm - Minutes without leading zero (0, 59)\\nss - Seconds with leading zero (00, 59)\\ns - Seconds without leading zero (0, 59)\\nms - Milliseconds with leading zeros (000, 999)\\ntt - AM or PM (AM, PM)",
+							"description": "Here you can change the date format used in this plugin.\\nYou can use \\"\\\\\\\\\\" to display the character following after it (hh\\\\h -> 10h)\\n\\nyyyy - 4 digit year (1999)\\nyy - 2 digit year (99)\\nMMMM - Full month name (Januar, December)\\nMMM - Month abbreviation (Jan, Dec)\\nMM - Month with leading zero (01, 12)\\nM - Month without leading zero (1, 12)\\nDDDD - Full day name (Monday, Sunday)\\nDDD - Day abbreviation (Mon, Sun)\\nDD - Day with leading zero (01, 31)\\nD - Day without leading zero (1, 31)\\nHH - Hours in 24h format with leading zero (00, 23)\\nH - Hours in 24h format without leading zero (0, 23)\\nhh - Hours in 12h format with leading zero (01, 12)\\nh - Hours in 12h format without leading zero (1, 12)\\nmm - Minutes with leading zero (00, 59)\\nm - Minutes without leading zero (0, 59)\\nss - Seconds with leading zero (00, 59)\\ns - Seconds without leading zero (0, 59)\\nms - Milliseconds with leading zeros (000, 999)\\ntt - AM or PM (AM, PM)\\nzzz - Timezone offset (-01:00, +04:30)\\nzz - Timezone offset (-01, +04)\\nz - Timezone offset (-1, +4)",
 							"placeholder": "Date Format"
 						}
 					},
@@ -818,7 +835,7 @@ class GuildData{
 						},
 						"am": "AM",
 						"pm": "PM",
-						"defaultDateFormat": "dd/MM/yyyy hh:mm:ss tt"
+						"defaultDateFormat": "MM/dd/yyyy hh:mm:ss tt"
 					},
 					"changelog": {
 						"title": "Changelog",
@@ -1884,27 +1901,58 @@ class GuildData{
 	}
 	
 	formatDate(date, format){
-		return format
-			.replace(/ms/g, date.getMilliseconds().pad(3))
-			.replace(/ss/g, date.getSeconds().pad())
-			.replace(/s/g, date.getSeconds())
-			.replace(/mm/g, date.getMinutes().pad())
-			.replace(/m/g, date.getMinutes())
-			.replace(/HH/g, date.getHours().pad())
-			.replace(/H/g, date.getHours())
-			.replace(/hh/g, (date.getHours() % 12 || 12).pad())
-			.replace(/h/g, date.getHours() % 12 || 12)
-			.replace(/dddd/g, this.local.time.long.day[date.getDay()])
-			.replace(/ddd/g, this.local.time.semi.day[date.getDay()])
-			.replace(/dd/g, date.getDate().pad())
-			.replace(/d/g, date.getDate())
-			.replace(/MMMM/g, this.local.time.long.month[date.getMonth()])
-			.replace(/MMM/g, this.local.time.semi.month[date.getMonth()])
-			.replace(/MM/g, (date.getMonth() + 1).pad())
-			.replace(/M/g, date.getMonth() + 1)
-			.replace(/yyyy/g, date.getFullYear())
-			.replace(/yy/g, ('' + date.getFullYear()).substr(2))
-			.replace(/tt/g, (date.getHours() > 11) ? this.local.time.pm : this.local.time.am)
+		var self = this;
+		if(process.versions.chrome.split(".")[0] > 61)
+			return format
+				.replace(/(?<!\\)ms/g, date.getMilliseconds().pad(3))
+				.replace(/(?<!\\)ss/g, date.getSeconds().pad())
+				.replace(/(?<!\\)s/g, date.getSeconds())
+				.replace(/(?<!\\)mm/g, date.getMinutes().pad())
+				.replace(/(?<!\\)m/g, date.getMinutes())
+				.replace(/(?<!\\)HH/g, date.getHours().pad())
+				.replace(/(?<!\\)H/g, date.getHours())
+				.replace(/(?<!\\)hh/g, (date.getHours() % 12 || 12).pad())
+				.replace(/(?<!\\)h/g, date.getHours() % 12 || 12)
+				.replace(/(?<!\\)dddd/g, this.local.time.long.day[date.getDay()])
+				.replace(/(?<!\\)ddd/g, this.local.time.semi.day[date.getDay()])
+				.replace(/(?<!\\)dd/g, date.getDate().pad())
+				.replace(/(?<!\\)d/g, date.getDate())
+				.replace(/(?<!\\)MMMM/g, this.local.time.long.month[date.getMonth()])
+				.replace(/(?<!\\)MMM/g, this.local.time.semi.month[date.getMonth()])
+				.replace(/(?<!\\)MM/g, (date.getMonth() + 1).pad())
+				.replace(/(?<!\\)M/g, date.getMonth() + 1)
+				.replace(/(?<!\\)yyyy/g, date.getFullYear())
+				.replace(/(?<!\\)yy/g, ('' + date.getFullYear()).substr(2))
+				.replace(/(?<!\\)tt/g, (date.getHours() > 11) ? this.local.time.pm : this.local.time.am)
+				.replace(/(?<!\\)zzz/g, (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60)).pad() + ':' + Math.floor(Math.abs(date.getTimezoneOffset() % 60)).pad())
+				.replace(/(?<!\\)zz/g, (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60)).pad())
+				.replace(/(?<!\\)z/g, (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60)))
+		else
+			return (" " + format)
+				.replace(/([^\\]ms)/g, function($1){return $1.substr(0, 1) + date.getMilliseconds().pad(3)}) // add (?<!\\) in front of it to use \ as escape character
+				.replace(/([^\\]ss)/g, function($1){return $1.substr(0, 1) + date.getSeconds().pad()})
+				.replace(/([^\\]s)/g, function($1){return $1.substr(0, 1) + date.getSeconds()})
+				.replace(/([^\\]mm)/g, function($1){return $1.substr(0, 1) + date.getMinutes().pad()})
+				.replace(/([^\\]m)/g, function($1){return $1.substr(0, 1) + date.getMinutes()})
+				.replace(/([^\\]HH)/g, function($1){return $1.substr(0, 1) + date.getHours().pad()})
+				.replace(/([^\\]H)/g, function($1){return $1.replace(0, 1) + date.getHours()})
+				.replace(/([^\\]hh)/g, function($1){return $1.substr(0, 1) + (date.getHours() % 12 || 12).pad()})
+				.replace(/([^\\]h)/g, function($1){return $1.substr(0, 1) + date.getHours() % 12 || 12})
+				.replace(/([^\\]dddd)/g, function($1){return $1.substr(0, 1) + self.local.time.long.day[date.getDay()]})
+				.replace(/([^\\]ddd)/g, function($1){return $1.substr(0, 1) + self.local.time.semi.day[date.getDay()]})
+				.replace(/([^\\]dd)/g, function($1){return $1.substr(0, 1) + date.getDate().pad()})
+				.replace(/([^\\]d)/g, function($1){return $1.substr(0, 1) + date.getDate()})
+				.replace(/([^\\]MMMM)/g, function($1){return $1.substr(0, 1) + this.local.time.long.month[date.getMonth()]})
+				.replace(/([^\\]MMM)/g, function($1){return $1.substr(0, 1) + this.local.time.semi.month[date.getMonth()]})
+				.replace(/([^\\]MM)/g, function($1){return $1.substr(0, 1) + (date.getMonth() + 1).pad()})
+				.replace(/([^\\]M)/g, function($1){return $1.substr(0, 1) + date.getMonth() + 1})
+				.replace(/([^\\]yyyy)/g, function($1){return $1.substr(0, 1) + date.getFullYear()})
+				.replace(/([^\\]yy)/g, function($1){return $1.substr(0, 1) + ('' + date.getFullYear()).substr(2)})
+				.replace(/([^\\]tt)/g, function($1){return $1.substr(0, 1) + (date.getHours() > 11) ? this.local.time.pm : this.local.time.am})
+				.replace(/([^\\]zzz)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60)).pad() + ':' + Math.floor(Math.abs(date.getTimezoneOffset() % 60)).pad()})
+				.replace(/([^\\]zz)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60)).pad()})
+				.replace(/([^\\]z)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60))})
+				.replace(/\\/g, "").substr(1)
 	}
 	
 	showUserInformation(guild, user, member){
