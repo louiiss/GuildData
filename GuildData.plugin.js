@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.1.5";}
+	getVersion () {return "1.1.6";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -29,6 +29,7 @@ class GuildData{
 	}
 
 	generateSettings(panel) {
+		var self = this;
 		const defaultForm = 
 			`<div class="l0c4lh057 settings item" style="margin-top:0px;">
 				<div class="l0c4lh057 settings wrapper" style="position:relative;padding-right:5px;">
@@ -163,6 +164,21 @@ class GuildData{
 					this.showChangelog();
 				})
 			)
+			.append(
+				$(`<button type="button">`)
+				.toggleClass('l0c4lh057 settings button getSupport')
+				.css({
+					'float': 'right',
+					'margin-top': '-2px',
+					'margin-right': '5px'
+				})
+				.html(this.local.settings.getSupport)
+				.click(() => {
+					DiscordModules.PrivateChannelActions.ensurePrivateChannel(this.userModule.getCurrentUser().id, '226677096091484160').then(function(result){
+						self.channelActions.selectPrivateChannel(self.channelModule.getDMFromUserId('226677096091484160'));
+					});
+				})
+			)
 			.parent()
 			.parent()
 		).append(
@@ -195,24 +211,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.1.3": [
-				{
-					"title": "Changed",
-					"type": "changed",
-					"items": [
-						"Categories are not counted in the channel count anymore"
-					]
-				},
-				{
-					"title": "Fixed",
-					"type": "fixed",
-					"items": [
-						"If the owner isn't loaded when you click on \\"${this.local.showGuildData}\\" the plugin tries again until it is loaded. So you don't have to click the button twice. But the content of the old guild is visible in that time.",
-						"Showing all channels of a guild in the channel information",
-						"Channels in the channel information are now sorted by their position property"
-					]
-				}
-			],
 			"1.1.4": [
 				{
 					"title": "Added",
@@ -239,6 +237,31 @@ class GuildData{
 					"type": "changed",
 					"items": [
 						"Changed default date format (English) from \\"dd/MM/yyyy hh:mm:ss tt\\" (31/12/1999 12:59:59 PM) to \\"MM/dd/yyyy hh:mm:ss tt\\" (12/31/1999 12:59:59 PM)"
+					]
+				}
+			],
+			"1.1.6": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"If you click on a role in the user information you get the role information of that role",
+						"@everyone is the last shown role in user information (if it isn't, please contact me)",
+						"Added support button in settings (opens chat with me, hopefully it works, I can't test it because I can't send messages to myself)"
+					]
+				},
+				{
+					"title": "Changed",
+					"type": "changed",
+					"items": [
+						"When you click the owner in the guild info it shows him/her in the user info instead of copying the name/id"
+					]
+				},
+				{
+					"title": "Fixed",
+					"type": "fixed",
+					"items": [
+						"Background color of some table items"
 					]
 				}
 			]
@@ -440,7 +463,8 @@ class GuildData{
 							"title": "Datumsformat",
 							"description": "Hier kannst du das Format für Daten im Plugin einstellen (standard: dd.MM.yyyy HH:mm:ss)\\nDu kannst \\"\\\\\\\\\\" verwenden, um das folgende Zeichen als Zeichen darzustellen (HH\\\\h -> 14h)\\n\\nyyyy - Jahr (1999)\\nyy - Jahr (99)\\nMMMM - Kompletter Monatsname (Januar, Dezember)\\nMMM - Kurzer Monatsname (Jan, Dez)\\nMM - Monat mit führender Null (01, 12)\\nM - Monat ohne führende Null (1, 12)\\nDDDD - Kompletter Tagesname (Montag, Sonntag)\\nDDD - Kurzer Tagesname (Mo, So)\\nDD - Tag mit führender Null (01, 31)\\nD - Tag ohne führende Null (1, 31)\\nHH - Stunden im 24h-Format mit führender Null (00, 23)\\nH - Stunden im 24h-Format ohne führende Null (0, 23)\\nhh - Stunden im 12h-Format mit führender Null (01, 12)\\nh - Stunden im 12h-Format ohne führende Null (1, 12)\\nmm - Minuten mit führender Null (00, 59)\\nm - Minuten ohne führende Null (0, 59)\\nss - Sekunden mit führender Null (00, 59)\\ns - Sekunden ohne führende Null (0, 59)\\nms - Millisekunden mit führenden Nullen (000, 999)\\ntt - Morgens oder abends (vormittags, nachmittags)\\nzzz - Zeitzonenverschiebung (-01:00, +04:30)\\nzz - Zeitzonenverschiebung (-01, +04)\\nz - Zeitzonenverschiebung (-1, +4)",
 							"placeholder": "Datumsformat"
-						}
+						},
+						"getSupport": "Support"
 					},
 					"permissions": {
 						"title": "Berechtigungen",
@@ -739,7 +763,8 @@ class GuildData{
 							"title": "Date Format",
 							"description": "Here you can change the date format used in this plugin.\\nYou can use \\"\\\\\\\\\\" to display the character following after it (hh\\\\h -> 10h)\\n\\nyyyy - 4 digit year (1999)\\nyy - 2 digit year (99)\\nMMMM - Full month name (Januar, December)\\nMMM - Month abbreviation (Jan, Dec)\\nMM - Month with leading zero (01, 12)\\nM - Month without leading zero (1, 12)\\nDDDD - Full day name (Monday, Sunday)\\nDDD - Day abbreviation (Mon, Sun)\\nDD - Day with leading zero (01, 31)\\nD - Day without leading zero (1, 31)\\nHH - Hours in 24h format with leading zero (00, 23)\\nH - Hours in 24h format without leading zero (0, 23)\\nhh - Hours in 12h format with leading zero (01, 12)\\nh - Hours in 12h format without leading zero (1, 12)\\nmm - Minutes with leading zero (00, 59)\\nm - Minutes without leading zero (0, 59)\\nss - Seconds with leading zero (00, 59)\\ns - Seconds without leading zero (0, 59)\\nms - Milliseconds with leading zeros (000, 999)\\ntt - AM or PM (AM, PM)\\nzzz - Timezone offset (-01:00, +04:30)\\nzz - Timezone offset (-01, +04)\\nz - Timezone offset (-1, +4)",
 							"placeholder": "Date Format"
-						}
+						},
+						"getSupport": "Support"
 					},
 					"permissions": {
 						"title": "Permissions",
@@ -914,12 +939,12 @@ class GuildData{
 		.l0c4lh057{
 			-webkit-user-select: text;
 		}
-		.l0c4lh057 > table > tbody > tr:nth-child(even), .l0c4lh057.popup.gEmoji.role{
-			background-color: #2b2b2b;
-		}
 		.l0c4lh057 > table{
 			background-color: #1f1f1f;
 			border-spacing: 0px 6px;
+		}
+		.l0c4lh057 > table > tbody > tr:nth-child(even), .l0c4lh057.popup.gEmoji.role, .l0c4lh057.popup.userinfo.role, .l0c4lh057.popup.guild.relationships.friends, .l0c4lh057.popup.guildinfo.emojicount{
+			background-color: #2b2b2b;
 		}
 		.l0c4lh057.settings.button.resetToDefault{
 			background-color: #f04747;
@@ -1405,7 +1430,7 @@ class GuildData{
 		<div style="text-align:center;font-size:125%;font-weight:bold;";><p id="l0c4lh057 popup tocopy copyidguildname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidguildname', ${this.settings.copyOnClick});" style="display: inline;">${guild.name}</p> (<p id="l0c4lh057 popup tocopy copyidguildid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidguildid', ${this.settings.copyOnClick});" style="display: inline;">${guild.id}</p>)</div><br>`;
 		if(guild.icon) tableContent += `<div style="width:25%;padding-top:25%;background-image:url('${this.getGuildIcon(guild)}');background-size:contain;margin-left:auto;margin-right:auto;background-repeat:no-repeat;" onclick="copyText4Dg3g5('${this.getGuildIcon(guild)}', true)"></div>`;
 		tableContent += `<table class="l0c4lh057 popup user information table" style="width:100%;">
-		<tr><td>${this.local.guildInfo.owner}:</td><td><p id="l0c4lh057 popup tocopy copyidownertag" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidownertag', ${this.settings.copyOnClick});" style="display: inline;">${this.userModule.getUser(guild.ownerId).tag}</p> (<p id="l0c4lh057 popup tocopy copyidownerid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidownerid', ${this.settings.copyOnClick});" style="display: inline;">${guild.ownerId}</p>)</td></tr>
+		<tr><td>${this.local.guildInfo.owner}:</td><td><div class="l0c4lh057 popup user information owner" style="display:inline;">${this.userModule.getUser(guild.ownerId).tag} (${guild.ownerId})</div></td></tr>
 		<tr><td>${this.local.guildInfo.acronym}:</td><td><p id="l0c4lh057 popup tocopy copyidacronym" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidacronym', ${this.settings.copyOnClick});" style="display: inline;">${guild.acronym}</p></td></tr>
 		<tr><td>${this.local.guildInfo.createdAt}:</td><td><p id="l0c4lh057 popup tocopy copyidcreationdate" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidcreationdate', ${this.settings.copyOnClick});" style="display: inline;">${this.formatDate(this.getSnowflakeCreationDate(guild.id), this.settings.dateFormat)}</p> (<p id="l0c4lh057 popup tocopy copyidcreationago" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidcreationago', ${this.settings.copyOnClick});" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(this.getSnowflakeCreationDate(guild.id).getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
 		<tr><td>${this.local.guildInfo.joinedAt}:</td><td><p id="l0c4lh057 popup tocopy copyidjoineddate" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidjoineddate', ${this.settings.copyOnClick});" style="display: inline;">${this.formatDate(guild.joinedAt, this.settings.dateFormat)}</p> (<p id="l0c4lh057 popup tocopy copyidjoinedago" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidjoinedago', ${this.settings.copyOnClick});" style="display: inline;">${this.formatText(this.local.guildInfo.daysAgo, [Math.round(Math.abs(guild.joinedAt.getTime() - new Date().getTime()) / 8640000) / 10])}</p>)</td></tr>
@@ -1501,6 +1526,9 @@ class GuildData{
 			});
 		}
 		
+		$(".l0c4lh057.popup.user.information.owner").click(function(){
+			self.showUserInformation(guild, self.userModule.getUser(guild.ownerId), self.memberModule.getMember(guild.id, guild.ownerId))
+		});
 		$(".l0c4lh057.popup.guild.relationships.friends").click(function(){
 			self.showRelations(guild, "friends");
 		});
@@ -1963,14 +1991,14 @@ class GuildData{
 		
 		if(!this.updateInformationTimer){
 			var c = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;"><p id="l0c4lh057 popup tocopy copyiduserinfousertag" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfousertag', ${this.settings.copyOnClick});" style="display: inline;">${user.tag}</p> (<p id="l0c4lh057 popup tocopy copyiduserinfouserid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfouserid', ${this.settings.copyOnClick});" style="display: inline;">${user.id}</p>)</div>
-			<div id="l0c4lh057 popup user information avatar" style="width:64px;height:64px;background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;background-image:url('${this.getUserAvatarURL(user.id, 64, false)}')"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;">`
+			<div id="l0c4lh057 popup user information avatar" style="width:64px;height:64px;background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;background-image:url('${this.getUserAvatarURL(user.id, 64, false)}')"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;max-width:calc(100% - 64px);">`
 			if(member.nick) c += `<tr><td id="l0c4lh057 user information table nicknameTitle">${this.local.userInfo.nickname}:</td><td id="l0c4lh057 user information table nickname"><p id="l0c4lh057 popup tocopy copyiduserinfonickname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfonickname', ${this.settings.copyOnClick});" style="display: inline;">${member.nick}</p></td></tr>`; else c += `<tr><td id="l0c4lh057 user information table nicknameTitle"></td><td id="l0c4lh057 user information table nickname"><p id="l0c4lh057 popup tocopy copyiduserinfonickname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfonickname', ${this.settings.copyOnClick});" style="display: inline;"></p></td></tr>`;
 			c += `<tr><td>${this.local.userInfo.color.title}:</td><td id="l0c4lh057 user information table color"><p id="l0c4lh057 popup tocopy copyiduserinfocolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfocolor', ${this.settings.copyOnClick});" style="display: inline;">`;
 			if(member.colorString) c += `${member.colorString}</p> <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div>`; else c += this.local.userInfo.color.noColor + '</p>';
 			c += `</td></tr>
 			<tr><td>${this.local.userInfo.hoistRole.title}:</td><td id="l0c4lh057 user information table hoistrole"><p id="l0c4lh057 popup tocopy copyiduserinfohoistrolename" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfohoistrolename', ${this.settings.copyOnClick});" style="display: inline;">`;
 			if(member.hoistRoleId) c += `${guild.roles[member.hoistRoleId].name}</p> (<p id="l0c4lh057 popup tocopy copyiduserinfohoistroleid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfohoistroleid', ${this.settings.copyOnClick});" style="display: inline;">${member.hoistRoleId}</p>)</td></tr>`; else c += `${this.local.userInfo.hoistRole.noHoistRole}</p></td></tr>`;
-			c += `<tr><td>${this.local.userInfo.roles}:</td><td id="l0c4lh057 user information table roles">${this.getRolesOfMember(guild, member)}</td></tr>
+			c += `<tr><td>${this.local.userInfo.roles}:</td><td id="l0c4lh057 user information table roles" class="l0c4lh057 user information table roles">${this.getRolesOfMember(guild, member)}</td></tr>
 			<tr><td>${this.local.userInfo.isBot}:</td><td><p id="l0c4lh057 popup tocopy copyiduserinfoisbot" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfoisbot', ${this.settings.copyOnClick});" style="display: inline;">${user.bot}</p></td></tr>
 			<tr><td>${this.local.userInfo.createdAt}:</td><td>${this.formatDate(user.createdAt, this.settings.dateFormat)}</td></tr>
 			<tr><td>${this.local.userInfo.status.title}:</td><td id="l0c4lh057 user information table status">${this.local.userInfo.status[this.UserMetaStore.getStatus(user.id)]}</td></tr>`;
@@ -2169,7 +2197,7 @@ class GuildData{
 			else
 				document.getElementById('l0c4lh057 user information table color').innerHTML = `<p id="l0c4lh057 popup tocopy copyiduserinfocolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfocolor', ${this.settings.copyOnClick});" style="display: inline;">${this.local.userInfo.color.noColor}</p>`;
 			if(member.hoistRoleId) document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = `${guild.roles[member.hoistRoleId].name} (${member.hoistRoleId})`; else document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = this.local.userInfo.hoistRole.noHoistRole;
-			document.getElementById('l0c4lh057 user information table roles').innerHTML = `${this.getRolesOfMember(guild, member)}`;
+			document.getElementById('l0c4lh057 user information table roles').innerHTML = this.getRolesOfMember(guild, member);
 			document.getElementById('l0c4lh057 user information table status').innerHTML = this.local.userInfo.status[this.UserMetaStore.getStatus(user.id)];
 			if(activity){
 				document.getElementById('l0c4lh057 user information table activity1').innerHTML = ``;
@@ -2302,6 +2330,11 @@ class GuildData{
 				document.getElementById('l0c4lh057 user information table activity').style.display = `none`;
 			}
 		}
+		for(const roleId in guild.roles){
+			$(`.l0c4lh057.popup.userinfo.role.${roleId}`).click(function(){
+				self.showRolePermissionInformation(guild.roles[roleId])
+			})
+		}
 	}
 	
 	getDurationOfSeconds(seconds, joinParam){
@@ -2329,9 +2362,10 @@ class GuildData{
 	getRolesOfMember(guild, member){
 		var roles = "";
 		for(const roleId of member.roles){
-			roles += guild.roles[roleId].name + " (" + roleId + ")<br>";
+			roles += `<div class="l0c4lh057 popup userinfo role ${roleId}">${guild.roles[roleId].name} (${roleId})</div>`;
 		}
-		if(roles.length > 4) roles = roles.substring(0, roles.length - 4);
+		var everyoneRole = Object.keys(guild.roles).reverse()[0];
+		roles += `<div class="l0c4lh057 popup userinfo role ${everyoneRole}">${guild.roles[everyoneRole].name} (${everyoneRole})</div>`
 		return roles;
 	}
 	
