@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.1.6";}
+	getVersion () {return "1.1.7";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -211,18 +211,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.1.4": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"Some user information elements have copy on click now (and guild acronym, forgot that)",
-						"Option to deactivate copy on click (except for images)",
-						"Button to reset settings to default",
-						"Option to change the date format"
-					]
-				}
-			],
 			"1.1.5": [
 				{
 					"title": "Added",
@@ -262,6 +250,23 @@ class GuildData{
 					"type": "fixed",
 					"items": [
 						"Background color of some table items"
+					]
+				}
+			],
+			"1.1.7": [
+				{
+					"title": "Changed",
+					"type": "changed",
+					"items": [
+						"Changed the way of getting the @everyone role (now the last role shown in user information is definetly the @everyone role)"
+					]
+				},
+				{
+					"title": "Fixed",
+					"type": "fixed",
+					"items": [
+						"When you click on the guild owner while having a user opened in the user information there are no problems anymore",
+						"Fixed the format date function"
 					]
 				}
 			]
@@ -1527,7 +1532,8 @@ class GuildData{
 		}
 		
 		$(".l0c4lh057.popup.user.information.owner").click(function(){
-			self.showUserInformation(guild, self.userModule.getUser(guild.ownerId), self.memberModule.getMember(guild.id, guild.ownerId))
+			self.stopInterval();
+			self.showUserInformation(guild, self.userModule.getUser(guild.ownerId), self.memberModule.getMember(guild.id, guild.ownerId));
 		});
 		$(".l0c4lh057.popup.guild.relationships.friends").click(function(){
 			self.showRelations(guild, "friends");
@@ -1970,13 +1976,13 @@ class GuildData{
 				.replace(/([^\\]ddd)/g, function($1){return $1.substr(0, 1) + self.local.time.semi.day[date.getDay()]})
 				.replace(/([^\\]dd)/g, function($1){return $1.substr(0, 1) + date.getDate().pad()})
 				.replace(/([^\\]d)/g, function($1){return $1.substr(0, 1) + date.getDate()})
-				.replace(/([^\\]MMMM)/g, function($1){return $1.substr(0, 1) + this.local.time.long.month[date.getMonth()]})
-				.replace(/([^\\]MMM)/g, function($1){return $1.substr(0, 1) + this.local.time.semi.month[date.getMonth()]})
+				.replace(/([^\\]MMMM)/g, function($1){return $1.substr(0, 1) + self.local.time.long.month[date.getMonth()]})
+				.replace(/([^\\]MMM)/g, function($1){return $1.substr(0, 1) + self.local.time.semi.month[date.getMonth()]})
 				.replace(/([^\\]MM)/g, function($1){return $1.substr(0, 1) + (date.getMonth() + 1).pad()})
 				.replace(/([^\\]M)/g, function($1){return $1.substr(0, 1) + date.getMonth() + 1})
 				.replace(/([^\\]yyyy)/g, function($1){return $1.substr(0, 1) + date.getFullYear()})
 				.replace(/([^\\]yy)/g, function($1){return $1.substr(0, 1) + ('' + date.getFullYear()).substr(2)})
-				.replace(/([^\\]tt)/g, function($1){return $1.substr(0, 1) + (date.getHours() > 11) ? this.local.time.pm : this.local.time.am})
+				.replace(/([^\\]tt)/g, function($1){return $1.substr(0, 1) + ((date.getHours() > 11) ? self.local.time.pm : self.local.time.am)})
 				.replace(/([^\\]zzz)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60)).pad() + ':' + Math.floor(Math.abs(date.getTimezoneOffset() % 60)).pad()})
 				.replace(/([^\\]zz)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60)).pad()})
 				.replace(/([^\\]z)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60))})
@@ -1996,8 +2002,8 @@ class GuildData{
 			c += `<tr><td>${this.local.userInfo.color.title}:</td><td id="l0c4lh057 user information table color"><p id="l0c4lh057 popup tocopy copyiduserinfocolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfocolor', ${this.settings.copyOnClick});" style="display: inline;">`;
 			if(member.colorString) c += `${member.colorString}</p> <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div>`; else c += this.local.userInfo.color.noColor + '</p>';
 			c += `</td></tr>
-			<tr><td>${this.local.userInfo.hoistRole.title}:</td><td id="l0c4lh057 user information table hoistrole"><p id="l0c4lh057 popup tocopy copyiduserinfohoistrolename" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfohoistrolename', ${this.settings.copyOnClick});" style="display: inline;">`;
-			if(member.hoistRoleId) c += `${guild.roles[member.hoistRoleId].name}</p> (<p id="l0c4lh057 popup tocopy copyiduserinfohoistroleid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfohoistroleid', ${this.settings.copyOnClick});" style="display: inline;">${member.hoistRoleId}</p>)</td></tr>`; else c += `${this.local.userInfo.hoistRole.noHoistRole}</p></td></tr>`;
+			<tr><td>${this.local.userInfo.hoistRole.title}:</td><td id="l0c4lh057 user information table hoistrole" class="l0c4lh057 user information table hoistrole">`;
+			if(member.hoistRoleId) c += `${guild.roles[member.hoistRoleId].name} (${member.hoistRoleId})</td></tr>`; else c += `<p id="l0c4lh057 popup tocopy copyidnohoistrole" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidnohoistrole', ${this.settings.copyOnClick});" style="display: inline;">${this.local.userInfo.hoistRole.noHoistRole}</p></td></tr>`;
 			c += `<tr><td>${this.local.userInfo.roles}:</td><td id="l0c4lh057 user information table roles" class="l0c4lh057 user information table roles">${this.getRolesOfMember(guild, member)}</td></tr>
 			<tr><td>${this.local.userInfo.isBot}:</td><td><p id="l0c4lh057 popup tocopy copyiduserinfoisbot" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfoisbot', ${this.settings.copyOnClick});" style="display: inline;">${user.bot}</p></td></tr>
 			<tr><td>${this.local.userInfo.createdAt}:</td><td>${this.formatDate(user.createdAt, this.settings.dateFormat)}</td></tr>
@@ -2196,7 +2202,7 @@ class GuildData{
 				document.getElementById('l0c4lh057 user information table color').innerHTML = `<p id="l0c4lh057 popup tocopy copyiduserinfocolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfocolor', ${this.settings.copyOnClick});" style="display: inline;">${member.colorString}</p> <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div>`;
 			else
 				document.getElementById('l0c4lh057 user information table color').innerHTML = `<p id="l0c4lh057 popup tocopy copyiduserinfocolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfocolor', ${this.settings.copyOnClick});" style="display: inline;">${this.local.userInfo.color.noColor}</p>`;
-			if(member.hoistRoleId) document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = `${guild.roles[member.hoistRoleId].name} (${member.hoistRoleId})`; else document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = this.local.userInfo.hoistRole.noHoistRole;
+			if(member.hoistRoleId) document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = `${guild.roles[member.hoistRoleId].name} (${member.hoistRoleId})`; else document.getElementById('l0c4lh057 user information table hoistrole').innerHTML = `<p id="l0c4lh057 popup tocopy copyidnohoistrole" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidnohoistrole', ${this.settings.copyOnClick});" style="display: inline;">${this.local.userInfo.hoistRole.noHoistRole}</p>`;
 			document.getElementById('l0c4lh057 user information table roles').innerHTML = this.getRolesOfMember(guild, member);
 			document.getElementById('l0c4lh057 user information table status').innerHTML = this.local.userInfo.status[this.UserMetaStore.getStatus(user.id)];
 			if(activity){
@@ -2333,8 +2339,11 @@ class GuildData{
 		for(const roleId in guild.roles){
 			$(`.l0c4lh057.popup.userinfo.role.${roleId}`).click(function(){
 				self.showRolePermissionInformation(guild.roles[roleId])
-			})
+			});
 		}
+		if(member.hoistRoleId) $(`.l0c4lh057.user.information.table.hoistrole`).click(function(){
+			self.showRolePermissionInformation(guild.roles[member.hoistRoleId])
+		});
 	}
 	
 	getDurationOfSeconds(seconds, joinParam){
@@ -2364,7 +2373,7 @@ class GuildData{
 		for(const roleId of member.roles){
 			roles += `<div class="l0c4lh057 popup userinfo role ${roleId}">${guild.roles[roleId].name} (${roleId})</div>`;
 		}
-		var everyoneRole = Object.keys(guild.roles).reverse()[0];
+		var everyoneRole = guild.id;
 		roles += `<div class="l0c4lh057 popup userinfo role ${everyoneRole}">${guild.roles[everyoneRole].name} (${everyoneRole})</div>`
 		return roles;
 	}
