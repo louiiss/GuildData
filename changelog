@@ -89,3 +89,13 @@ v1.1.5
   Changed
     - Changed default date format (English) from "dd/MM/yyyy hh:mm:ss tt" (31/12/1999 12:59:59 PM) to "MM/dd/yyyy hh:mm:ss tt" (12/31/1999 12:59:59 PM)
 
+v1.1.6
+  Added
+    - If you click on a role in the user information you get the role information of that role
+    - @everyone is the last shown role in user information (if it isn't, please contact me)
+    - Added support button in settings (opens chat with me, hopefully it works, I can't test it because I can't send messages to myself)
+  Changed
+    - When you click the owner in the guild info it shows him/her in the user info instead of copying the name/id
+  Fixed
+    - Background color of some table items
+
