@@ -106,3 +106,8 @@ v1.1.7
     - When you click on the guild owner while having a user opened in the user information there are no problems anymore
     - Fixed the format date function
 
+v1.1.8
+  Added
+    - When you click on the button to get support in the settings the settings panel closes automatically
+    - Border around user avatar showing the user status
+
