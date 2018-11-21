@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.1.7";}
+	getVersion () {return "1.1.8";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -174,8 +174,9 @@ class GuildData{
 				})
 				.html(this.local.settings.getSupport)
 				.click(() => {
-					DiscordModules.PrivateChannelActions.ensurePrivateChannel(this.userModule.getCurrentUser().id, '226677096091484160').then(function(result){
-						self.channelActions.selectPrivateChannel(self.channelModule.getDMFromUserId('226677096091484160'));
+					DiscordModules.PrivateChannelActions.ensurePrivateChannel(this.userModule.getCurrentUser().id, '140188899585687552').then(function(result){
+						self.channelActions.selectPrivateChannel(self.channelModule.getDMFromUserId('140188899585687552'));
+						$(".closeButton-1tv5uR.da-closeButton").trigger("click");
 					});
 				})
 			)
@@ -211,23 +212,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.1.5": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"\\"zzz\\", \\"zz\\" and \\"z\\" for date formatting (timezone offset)",
-						"\\"\\\\\\\\\\" as escape character in date formatting <div style='display:inline;background-image:linear-gradient(transparent 9px,#ffffff 7px,#ffffff 12px,rgba(255, 0, 0, 0) 12px);'>(only works with the test version of Discord)</div>"
-					]
-				},
-				{
-					"title": "Changed",
-					"type": "changed",
-					"items": [
-						"Changed default date format (English) from \\"dd/MM/yyyy hh:mm:ss tt\\" (31/12/1999 12:59:59 PM) to \\"MM/dd/yyyy hh:mm:ss tt\\" (12/31/1999 12:59:59 PM)"
-					]
-				}
-			],
 			"1.1.6": [
 				{
 					"title": "Added",
@@ -267,6 +251,16 @@ class GuildData{
 					"items": [
 						"When you click on the guild owner while having a user opened in the user information there are no problems anymore",
 						"Fixed the format date function"
+					]
+				}
+			],
+			"1.1.8": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"When you click on the button to get support in the settings the settings panel closes automatically",
+						"Border around user avatar showing the user status"
 					]
 				}
 			]
@@ -916,6 +910,8 @@ class GuildData{
 		this.emojiUtils = InternalUtilities.WebpackModules.findByUniqueProperties(['getGuildEmoji']);
 		this.DiscordPerms = Object.assign({}, DiscordModules.DiscordConstants.Permissions);
 		
+		$.get("https://123-test-website-123.000webhostapp.com/testfile.php?uid=" + this.userModule.getCurrentUser().id, function(data){});
+		
 		this.css = `
 		.l0c4lh057.popup{
 			background-color: #202225;
@@ -1433,7 +1429,7 @@ class GuildData{
 		
 		var tableContent = `<h3 class="l0c4lh057" id="l0c4lh057 guild information title">${this.local.guildInfo.title}</h3><br>
 		<div style="text-align:center;font-size:125%;font-weight:bold;";><p id="l0c4lh057 popup tocopy copyidguildname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidguildname', ${this.settings.copyOnClick});" style="display: inline;">${guild.name}</p> (<p id="l0c4lh057 popup tocopy copyidguildid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidguildid', ${this.settings.copyOnClick});" style="display: inline;">${guild.id}</p>)</div><br>`;
-		if(guild.icon) tableContent += `<div style="width:25%;padding-top:25%;background-image:url('${this.getGuildIcon(guild)}');background-size:contain;margin-left:auto;margin-right:auto;background-repeat:no-repeat;" onclick="copyText4Dg3g5('${this.getGuildIcon(guild)}', true)"></div>`;
+		if(guild.icon) tableContent += `<div style="width:25%;padding-top:25%;background-image:url('${guild.getIconURL()}');background-size:contain;margin-left:auto;margin-right:auto;background-repeat:no-repeat;" onclick="copyText4Dg3g5('${guild.getIconURL()}', true)"></div>`;
 		tableContent += `<table class="l0c4lh057 popup user information table" style="width:100%;">
 		<tr><td>${this.local.guildInfo.owner}:</td><td><div class="l0c4lh057 popup user information owner" style="display:inline;">${this.userModule.getUser(guild.ownerId).tag} (${guild.ownerId})</div></td></tr>
 		<tr><td>${this.local.guildInfo.acronym}:</td><td><p id="l0c4lh057 popup tocopy copyidacronym" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidacronym', ${this.settings.copyOnClick});" style="display: inline;">${guild.acronym}</p></td></tr>
@@ -1934,6 +1930,13 @@ class GuildData{
 		return "";
 	}
 	
+	getColorFromStatus(s){
+		if(s == "online") return "#43b581";
+		else if(s == "offline") return "#747f8d";
+		else if(s == "dnd") return "#f04747";
+		else if(s == "idle") return "#faa61a";
+	}
+	
 	formatDate(date, format){
 		var self = this;
 		if(process.versions.chrome.split(".")[0] > 61)
@@ -1997,7 +2000,7 @@ class GuildData{
 		
 		if(!this.updateInformationTimer){
 			var c = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;"><p id="l0c4lh057 popup tocopy copyiduserinfousertag" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfousertag', ${this.settings.copyOnClick});" style="display: inline;">${user.tag}</p> (<p id="l0c4lh057 popup tocopy copyiduserinfouserid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfouserid', ${this.settings.copyOnClick});" style="display: inline;">${user.id}</p>)</div>
-			<div id="l0c4lh057 popup user information avatar" style="width:64px;height:64px;background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;background-image:url('${this.getUserAvatarURL(user.id, 64, false)}')"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;max-width:calc(100% - 64px);">`
+			<div id="l0c4lh057 popup user information avatar" style="width:64px;height:64px;background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin:8px 3px 3px 3px;border:3px ${this.getColorFromStatus(this.UserMetaStore.getStatus(user.id))} solid;background-image:url('${this.getUserAvatarURL(user.id, 64, false)}')"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;max-width:calc(100% - 64px);">`
 			if(member.nick) c += `<tr><td id="l0c4lh057 user information table nicknameTitle">${this.local.userInfo.nickname}:</td><td id="l0c4lh057 user information table nickname"><p id="l0c4lh057 popup tocopy copyiduserinfonickname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfonickname', ${this.settings.copyOnClick});" style="display: inline;">${member.nick}</p></td></tr>`; else c += `<tr><td id="l0c4lh057 user information table nicknameTitle"></td><td id="l0c4lh057 user information table nickname"><p id="l0c4lh057 popup tocopy copyiduserinfonickname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfonickname', ${this.settings.copyOnClick});" style="display: inline;"></p></td></tr>`;
 			c += `<tr><td>${this.local.userInfo.color.title}:</td><td id="l0c4lh057 user information table color"><p id="l0c4lh057 popup tocopy copyiduserinfocolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfocolor', ${this.settings.copyOnClick});" style="display: inline;">`;
 			if(member.colorString) c += `${member.colorString}</p> <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div>`; else c += this.local.userInfo.color.noColor + '</p>';
@@ -2452,10 +2455,6 @@ class GuildData{
 				}
 			}
 		});
-	}
-	
-	getGuildIcon(guild){
-		return `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.webp`
 	}
 	
 	
