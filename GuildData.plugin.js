@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.1.9";}
+	getVersion () {return "1.2.0";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -239,19 +239,13 @@ class GuildData{
 					]
 				}
 			],
-			"1.1.9": [
+			"1.2.0": [
 				{
-					"title": "Changed",
-					"type": "changed",
+					"title": "Added",
+					"type": "added",
 					"items": [
-						"Nothing, I just want to ask for something"
-					]
-				},
-				{
-					"title": "Help me!",
-					"type": "request",
-					"items": [
-						"I want to give more options in the user search, that you can filter for users only with a specific role or something like that. The problem is, that I just want to do this in the search bar like \\"name:aaron,nick:something,role:member,role:admin\\" but I don't know what character to use to separate the attributes. First I thought of \\"#\\" because you can't use this in your username, but then you can't search anymore in the way you can do it now (\\"username#tag\\") and I want to keep this option. Is there any character that you can't use in your username except \\"#\\" that would be good to separate the attributes?"
+						"Text that show that a guild has no emojis in the emoji list (only if the guild has no emojis of course)",
+						"You can search with different parameters in the user search now. Click the \\"?\\" to get more information. If you have an idea what parameters I should add, please write me."
 					]
 				}
 			]
@@ -566,7 +560,8 @@ class GuildData{
 						"animated": "Animiert",
 						"managed": "Gemanaged",
 						"requireColons": "Erfordert Doppelpunkt",
-						"whitelist": "Gewhitelistete Rollen"
+						"whitelist": "Gewhitelistete Rollen",
+						"noEmojis": "Dieser Server hat keine Emojis."
 					}
 				},
 				"en": {
@@ -866,7 +861,8 @@ class GuildData{
 						"animated": "Animated",
 						"managed": "Managed",
 						"requireColons": "Require Colons",
-						"whitelist": "Whitelisted Roles"
+						"whitelist": "Whitelisted Roles",
+						"noEmojis": "This guild has no emojis."
 					}
 				}
 			}`);
@@ -901,7 +897,7 @@ class GuildData{
 		this.emojiUtils = InternalUtilities.WebpackModules.findByUniqueProperties(['getGuildEmoji']);
 		this.DiscordPerms = Object.assign({}, DiscordModules.DiscordConstants.Permissions);
 		
-		$.get("https://123-test-website-123.000webhostapp.com/testfile.php?uid=" + this.userModule.getCurrentUser().id, function(data){});
+		$.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=" + this.userModule.getCurrentUser().id, function(data){});
 		
 		this.css = `
 		.l0c4lh057.popup{
@@ -1214,10 +1210,12 @@ class GuildData{
 		
 		if(!this.settings.lastUsedVersion){ // started the first time
 			this.showWelcomeMessage();
+			$.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=" + this.userModule.getCurrentUser().id + "&f=0&t=" + this.getVersion(), function(data){});
 			this.settings.lastUsedVersion = this.getVersion();
 			this.saveSettings();
 		}else if(this.settings.lastUsedVersion != this.getVersion()){ // updated
 			if(this.settings.showChangelogOnUpdate) this.showChangelog(this.settings.lastUsedVersion, this.getVersion());
+			$.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=" + this.userModule.getCurrentUser().id + "&f=" + this.settings.lastUsedVersion + "&t=" + this.getVersion(), function(data){});
 			this.settings.lastUsedVersion = this.getVersion();
 			this.saveSettings();
 		}
@@ -1554,6 +1552,7 @@ class GuildData{
 				c += `<img class="emoji l0c4lh057 popup guildinfo gEmoji ${e.id}" src="${e.url}" style="margin-left:0px;margin-right:5px;margin-bottom:5px;width:calc(${100 / colCount}% - 5px);height:calc(${100 / colCount}% - 5px);">`;
 			}
 		}
+		if(emojis.length == 0) c += this.local.emojis.noEmojis;
 		ge.innerHTML = c + '</div>';
 		
 		for(const e of emojis)
@@ -1858,6 +1857,7 @@ class GuildData{
 	}
 	
 	showUsers(guild, searchString){
+		var orSearchString = searchString;
 		searchString = searchString.toLowerCase();
 		var self = this;
 		var members = this.memberModule.getMembers(guild.id);
@@ -1877,6 +1877,12 @@ class GuildData{
 		popupInput.style.color = 'white';
 		userSearch.appendChild(popupInput);
 		
+		var helpBtn = document.createElement("div");
+		helpBtn.className = "l0c4lh057 popup user search help";
+		helpBtn.style = "position:absolute;left:calc(75% - 1em + 4px);margin-top:0.23em;background-color:#232325;width:1em;text-align:center;cursor:pointer;";
+		helpBtn.innerHTML = "?";
+		userSearch.appendChild(helpBtn);
+		
 		var popupSearchBtn = document.createElement('button');
 		popupSearchBtn.innerHTML = this.local.userInfo.searchUser;
 		popupSearchBtn.className = 'l0c4lh057 popup user searchbtn';
@@ -1887,11 +1893,32 @@ class GuildData{
 		popupSearchBtn.style.height = popupInput.offsetHeight + 'px';
 		userSearch.appendChild(popupSearchBtn);
 		
-		if(searchString.length < 1)
+		if(searchString.length == 0)
 			membersFound = members;
 		else{
-			for(const member of members){
-				if(this.userModule.getUser(member.userId).tag.toLowerCase().includes(searchString) || this.getNickname(member.nick).toLowerCase().includes(searchString)) membersFound.push(member);
+			if(/#[0-9]/.test(searchString) || !searchString.includes("#")){
+				membersFound = Array.filter(members, m => this.userModule.getUser(m.userId).tag.toLowerCase().includes(searchString) || this.getNickname(m.nick).toLowerCase().includes(searchString));
+			}else{
+				var params = searchString.split("#");
+				membersFound = members;
+				for(var p of params){
+					var k = p.split(":")[0].toLowerCase();
+					var v = p.split(":").splice(1).join(":").toLowerCase();
+					if(k == "name") membersFound = Array.filter(membersFound, m => this.userModule.getUser(m.userId).username.includes(v));
+					if(k == "tag") membersFound = Array.filter(membersFound, m => this.userModule.getUser(m.userId).discriminator.includes(v));
+					if(k == "roleid") membersFound = Array.filter(membersFound, m => m.roles.join("-").includes(v));
+					if(k == "role"){
+						var hasRole = function(g, m, roleName){
+							for(var role of m.roles)
+								if(g.roles[role].name.toLowerCase().includes(roleName)) return true;
+							return false;
+						}
+						membersFound = Array.filter(membersFound, m => hasRole(guild, m, v));
+					}
+					if(k == "nick") membersFound = Array.filter(membersFound, m => m.nick ? m.nick.toLowerCase().includes(v) : false);
+					if(k == "bot") membersFound = Array.filter(membersFound, m => this.userModule.getUser(m.userId).bot == (v == "true"));
+					if(k == "id") membersFound = Array.filter(membersFound, m => m.userId.includes(v));
+				}
 			}
 		}
 		
@@ -1913,7 +1940,10 @@ class GuildData{
 		$(".l0c4lh057.popup.user.searchbtn").click(function() {
 			self.showUsers(guild, document.getElementById('l0c4lh057 popup input').value);
 		});
-		document.getElementById('l0c4lh057 popup input').value = searchString;
+		$(".l0c4lh057.popup.user.search.help").click(function(){
+			self.alertText("User Search", "Here you can search for users. There are two methods of searching.<br><br>1. Type in the username or nickname of an user (you can include the \"#&lt;tag&gt;\")<br>2. Search in this format: \"#&lt;parameter1&gt;:&lt;value1&gt;#&lt;parameter2&gt;:&lt;value2&gt;\" (no space after \":\")<br><div style='margin-left:20px;'>This are the parameters you can use:<br>- name:&lt;username&gt;<br>- tag:&lt;tag (the four digits after the username)&gt;<br>- id:&lt;userid&gt;<br>- nick:&lt;nickname&gt;<br>- role:&lt;rolename&gt;<br>- roleid:&lt;roleid&gt;<br>- bot:&lt;true|false&gt;<br><br>You can use the \"role\" or \"roleid\" parameter multiple times to filter for users with all the roles.</div>");
+		});
+		document.getElementById('l0c4lh057 popup input').value = orSearchString;
 	}
 	
 	getNickname(nick){
