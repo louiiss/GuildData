@@ -111,3 +111,11 @@ v1.1.8
     - When you click on the button to get support in the settings the settings panel closes automatically
     - Border around user avatar showing the user status
 
+v1.1.9
+  Just asked a question
+
+v1.2.0
+  Added
+    - Text that show that a guild has no emojis in the emoji list (only if the guild has no emojis of course)
+    - You can search with different parameters in the user search now. Click the "?" to get more information. If you have an idea what parameters I should add, please write me.
+
