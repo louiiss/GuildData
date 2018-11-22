@@ -8,10 +8,10 @@ Plugin for BetterDiscord
   4. (Restart Discord)
 
 ## What this plugin can do:
-  1. Show data of guilds (owner, creation time, member count, channel count, role count, verification level, ...)
-  2. Show data of guild users (nickname, shown color, creation time, current activity, ...)
-  3. Show data of guild roles (permissions, color, mentionable, pinned)
-  4. Show data of guild channels (channel type, topic, nsfw, slowmode, channel specific permissions, ...)
+  * Show data of guilds (owner, creation time, member count, channel count, role count, verification level, ...)
+  * Show data of guild users (nickname, shown color, creation time, current activity, ...)
+  * Show data of guild roles (permissions, color, mentionable, pinned)
+  * Show data of guild channels (channel type, topic, nsfw, slowmode, channel specific permissions, ...)
 
 ## How to use:
 ### Opening the menu
