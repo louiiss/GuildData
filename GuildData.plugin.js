@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.1.8";}
+	getVersion () {return "1.1.9";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -212,31 +212,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.1.6": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"If you click on a role in the user information you get the role information of that role",
-						"@everyone is the last shown role in user information (if it isn't, please contact me)",
-						"Added support button in settings (opens chat with me, hopefully it works, I can't test it because I can't send messages to myself)"
-					]
-				},
-				{
-					"title": "Changed",
-					"type": "changed",
-					"items": [
-						"When you click the owner in the guild info it shows him/her in the user info instead of copying the name/id"
-					]
-				},
-				{
-					"title": "Fixed",
-					"type": "fixed",
-					"items": [
-						"Background color of some table items"
-					]
-				}
-			],
 			"1.1.7": [
 				{
 					"title": "Changed",
@@ -263,6 +238,22 @@ class GuildData{
 						"Border around user avatar showing the user status"
 					]
 				}
+			],
+			"1.1.9": [
+				{
+					"title": "Changed",
+					"type": "changed",
+					"items": [
+						"Nothing, I just want to ask for something"
+					]
+				},
+				{
+					"title": "Help me!",
+					"type": "request",
+					"items": [
+						"I want to give more options in the user search, that you can filter for users only with a specific role or something like that. The problem is, that I just want to do this in the search bar like \\"name:aaron,nick:something,role:member,role:admin\\" but I don't know what character to use to separate the attributes. First I thought of \\"#\\" because you can't use this in your username, but then you can't search anymore in the way you can do it now (\\"username#tag\\") and I want to keep this option. Is there any character that you can't use in your username except \\"#\\" that would be good to separate the attributes?"
+					]
+				}
 			]
 		}`);
 	}
@@ -271,7 +262,7 @@ class GuildData{
 			"added": "lightgreen",
 			"fixed": "orange",
 			"changed": "green",
-			"request": "red",
+			"request": "#ff1818",
 			"planned": "#7289da"
 		}`); // red: #f04747, blue: #7289da, green: #43b581, yellow: #faa61a
 	}
@@ -2000,7 +1991,7 @@ class GuildData{
 		
 		if(!this.updateInformationTimer){
 			var c = `<h3 class="l0c4lh057">${this.local.userInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;"><p id="l0c4lh057 popup tocopy copyiduserinfousertag" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfousertag', ${this.settings.copyOnClick});" style="display: inline;">${user.tag}</p> (<p id="l0c4lh057 popup tocopy copyiduserinfouserid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfouserid', ${this.settings.copyOnClick});" style="display: inline;">${user.id}</p>)</div>
-			<div id="l0c4lh057 popup user information avatar" style="width:64px;height:64px;background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin:8px 3px 3px 3px;border:3px ${this.getColorFromStatus(this.UserMetaStore.getStatus(user.id))} solid;background-image:url('${this.getUserAvatarURL(user.id, 64, false)}')"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;max-width:calc(100% - 64px);">`
+			<div id="l0c4lh057 popup user information avatar" style="width:64px;height:64px;background-repeat:no-repeat;background-size:contain;position:absolute;right:5px;margin-top:5px;border:3px ${this.getColorFromStatus(this.UserMetaStore.getStatus(user.id))} solid;background-image:url('${this.getUserAvatarURL(user.id, 64, false)}')"></div><br><table id="l0c4lh057 popup user information table" style="margin-bottom:10px;max-width:calc(100% - 64px);">`
 			if(member.nick) c += `<tr><td id="l0c4lh057 user information table nicknameTitle">${this.local.userInfo.nickname}:</td><td id="l0c4lh057 user information table nickname"><p id="l0c4lh057 popup tocopy copyiduserinfonickname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfonickname', ${this.settings.copyOnClick});" style="display: inline;">${member.nick}</p></td></tr>`; else c += `<tr><td id="l0c4lh057 user information table nicknameTitle"></td><td id="l0c4lh057 user information table nickname"><p id="l0c4lh057 popup tocopy copyiduserinfonickname" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfonickname', ${this.settings.copyOnClick});" style="display: inline;"></p></td></tr>`;
 			c += `<tr><td>${this.local.userInfo.color.title}:</td><td id="l0c4lh057 user information table color"><p id="l0c4lh057 popup tocopy copyiduserinfocolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyiduserinfocolor', ${this.settings.copyOnClick});" style="display: inline;">`;
 			if(member.colorString) c += `${member.colorString}</p> <div style="color:${member.colorString};display:inline;">(${this.local.userInfo.color.example})</div>`; else c += this.local.userInfo.color.noColor + '</p>';
@@ -2555,7 +2546,5 @@ class GuildData{
 }
 
 Number.prototype.pad = function(size) {
-	var s = String(this);
-	while (s.length < (size || 2)) {s = "0" + s;}
-	return s;
+	return String(this).padLeft(size || 2, "0");
 }
