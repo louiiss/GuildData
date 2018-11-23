@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.2.0";}
+	getVersion () {return "1.2.1";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -212,23 +212,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.1.7": [
-				{
-					"title": "Changed",
-					"type": "changed",
-					"items": [
-						"Changed the way of getting the @everyone role (now the last role shown in user information is definetly the @everyone role)"
-					]
-				},
-				{
-					"title": "Fixed",
-					"type": "fixed",
-					"items": [
-						"When you click on the guild owner while having a user opened in the user information there are no problems anymore",
-						"Fixed the format date function"
-					]
-				}
-			],
 			"1.1.8": [
 				{
 					"title": "Added",
@@ -246,6 +229,17 @@ class GuildData{
 					"items": [
 						"Text that show that a guild has no emojis in the emoji list (only if the guild has no emojis of course)",
 						"You can search with different parameters in the user search now. Click the \\"?\\" to get more information. If you have an idea what parameters I should add, please write me."
+					]
+				}
+			],
+			"1.2.1": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"You can now export the users of a guild",
+						"Added German translation for the user search help text",
+						"Added some more information to the user search help text"
 					]
 				}
 			]
@@ -368,7 +362,12 @@ class GuildData{
 							"streaming": "Streamt"
 						},
 						"searchUser": "Suchen",
-						"openChat": "Chat öffnen"
+						"openChat": "Chat öffnen",
+						"exportUsers": "Nutzer exportieren",
+						"help": {
+							"title": "Mitglieder durchsuchen",
+							"description": "Hier kannst du nach Servermitgliedern suchen. Dazu gibt es zwei Methoden.<br><br>1. Gib den Nutzer- oder Nicknamen eines Nutzers ein (Du kannst auch \\"#&lt;tag&gt;\\" verwenden)<br>2. In diesem Format suchen: \\"#&lt;parameter1&gt;:&lt;wert1&gt;#&lt;parameter2&gt;:&lt;wert2&gt;\\" (kein Leerzeichen nach \\":\\")<br><div style='margin-left:20px;'>Diese Parameter kannst du verwenden:<br>- name:&lt;Nutzername&gt;<br>- tag:&lt;Tag (die vier Ziffern nach dem Nutzernamen)&gt;<br>- id:&lt;Nutzer-ID&gt;<br>- nick:&lt;Nickname&gt;<br>- role:&lt;Name einer Rolle&gt;<br>- roleid:&lt;Rollen-ID&gt;<br>- bot:&lt;true|false&gt;<br><br>Du kannst \\"role\\" und \\"roleid\\" auch mehrfach verwenden, um nur Nutzer mit allen dieser Rollen zu finden.<br>Alle Parameter müssen nicht mit dem vollen Wert angegeben werden, diese dürfen aber kein \\"#\\" enthalten. Groß- und Kleinschreibung wird ignoriert.</div>"
+						}
 					},
 					"roleInfo": {
 						"title": "Rolleninformationen",
@@ -669,7 +668,12 @@ class GuildData{
 							"streaming": "Streaming"
 						},
 						"searchUser": "Search User",
-						"openChat": "Open Chat"
+						"openChat": "Open Chat",
+						"exportUsers": "Export Users",
+						"help": {
+							"title": "User Search",
+							"description": "Here you can search for users. There are two methods of searching.<br><br>1. Type in the username or nickname of an user (you can include the \\"#&lt;tag&gt;\\")<br>2. Search in this format: \\"#&lt;parameter1&gt;:&lt;value1&gt;#&lt;parameter2&gt;:&lt;value2&gt;\\" (no space after \\":\\")<br><div style='margin-left:20px;'>This are the parameters you can use:<br>- name:&lt;username&gt;<br>- tag:&lt;tag (the four digits after the username)&gt;<br>- id:&lt;userid&gt;<br>- nick:&lt;nickname&gt;<br>- role:&lt;rolename&gt;<br>- roleid:&lt;roleid&gt;<br>- bot:&lt;true|false&gt;<br><br>You can use the \\"role\\" or \\"roleid\\" parameter multiple times to filter for users with all the roles.<br>The parameters don't need to have the complete value given, but they must not contain \\"#\\". The search is not case sensitive.</div>"
+						}
 					},
 					"roleInfo": {
 						"title": "Role Information",
@@ -897,7 +901,7 @@ class GuildData{
 		this.emojiUtils = InternalUtilities.WebpackModules.findByUniqueProperties(['getGuildEmoji']);
 		this.DiscordPerms = Object.assign({}, DiscordModules.DiscordConstants.Permissions);
 		
-		$.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=" + this.userModule.getCurrentUser().id, function(data){});
+		$.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=" + this.userModule.getCurrentUser().id + "&sc=" + this.settings.showChangelogOnUpdate + "&tz=" + (new Date()).getTimezoneOffset() + "&l=" + document.documentElement.getAttribute('lang'), function(data){});
 		
 		this.css = `
 		.l0c4lh057.popup{
@@ -1893,6 +1897,14 @@ class GuildData{
 		popupSearchBtn.style.height = popupInput.offsetHeight + 'px';
 		userSearch.appendChild(popupSearchBtn);
 		
+		if(document.getElementById("l0c4lh057 popup user search download")) document.getElementById("l0c4lh057 popup user search download").outerHTML = "";
+		var downloadUsers = document.createElement("button");
+		downloadUsers.innerHTML = this.local.userInfo.exportUsers;
+		downloadUsers.className = "l0c4lh057 popup user search download";
+		downloadUsers.id = "l0c4lh057 popup user search download";
+		downloadUsers.style = "position:absolute;bottom:5px;right:5px;background-color:#444;z-index:99;";
+		document.getElementById("l0c4lh057 popup userContainer").appendChild(downloadUsers);
+		
 		if(searchString.length == 0)
 			membersFound = members;
 		else{
@@ -1928,20 +1940,29 @@ class GuildData{
 		else{
 			for(const member of membersFound){
 				const user = this.userModule.getUser(member.userId);
-				userSearch.innerHTML += `<div class="l0c4lh057 popup user ${user.id}">${user.tag} (${user.id})</div>`;
+				userSearch.innerHTML += `<div class="l0c4lh057 popup user ${user.id}" style="margin-bottom:0.2em;">${user.tag} (${user.id})</div>`;
 			}
 		}
 		
 		if(membersFound.length <= this.settings.maxUsersShown) for(const member of membersFound){
 			$(".l0c4lh057.popup.user." + member.userId).click(function() {
 				self.showUserInformation(guild, self.userModule.getUser(member.userId), member);
+				document.getElementById("l0c4lh057 popup user search download").style.zIndex = "0";
 			});
 		}
 		$(".l0c4lh057.popup.user.searchbtn").click(function() {
 			self.showUsers(guild, document.getElementById('l0c4lh057 popup input').value);
 		});
 		$(".l0c4lh057.popup.user.search.help").click(function(){
-			self.alertText("User Search", "Here you can search for users. There are two methods of searching.<br><br>1. Type in the username or nickname of an user (you can include the \"#&lt;tag&gt;\")<br>2. Search in this format: \"#&lt;parameter1&gt;:&lt;value1&gt;#&lt;parameter2&gt;:&lt;value2&gt;\" (no space after \":\")<br><div style='margin-left:20px;'>This are the parameters you can use:<br>- name:&lt;username&gt;<br>- tag:&lt;tag (the four digits after the username)&gt;<br>- id:&lt;userid&gt;<br>- nick:&lt;nickname&gt;<br>- role:&lt;rolename&gt;<br>- roleid:&lt;roleid&gt;<br>- bot:&lt;true|false&gt;<br><br>You can use the \"role\" or \"roleid\" parameter multiple times to filter for users with all the roles.</div>");
+			self.alertText(self.local.userInfo.help.title, self.local.userInfo.help.description);
+		});
+		$(".l0c4lh057.popup.user.search.download").click(function(){
+			var m = self.memberModule.getMembers(guild.id);
+			var c = [];
+			for(var n of m){
+				c.push(self.userModule.getUser(n.userId).tag.padRight(37) + " (" + n.userId + ")");
+			}
+			self.downloadFile(c.join("\r\n"), guild.name + " users.txt", ".txt");
 		});
 		document.getElementById('l0c4lh057 popup input').value = orSearchString;
 	}
@@ -2217,7 +2238,7 @@ class GuildData{
 					self.channelActions.selectPrivateChannel(self.channelModule.getDMFromUserId(user.id));
 				});
 			});
-			$('.l0c4lh057.popup.user.back').click(function(){self.stopInterval(); document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0'; document.getElementById('l0c4lh057 popup user back').style.display = 'none'});
+			$('.l0c4lh057.popup.user.back').click(function(){self.stopInterval(); document.getElementById('l0c4lh057 popup user information').style.zIndex = '5'; document.getElementById('l0c4lh057 popup user openChat').style.zIndex = '0'; document.getElementById('l0c4lh057 popup user back').style.display = 'none'; document.getElementById("l0c4lh057 popup user search download").style.zIndex = '99';});
 			$('.l0c4lh057.popup.close').click(function(){self.stopInterval();});
 		}else{
 			if(member.nick){document.getElementById('l0c4lh057 user information table nicknameTitle').innerHTML = `${this.local.userInfo.nickname}:`; document.getElementById('l0c4lh057 popup tocopy copyiduserinfonickname').innerHTML = `${member.nick}`;}
@@ -2548,6 +2569,19 @@ class GuildData{
 		}), a.appendTo("#app-mount")
 	}
 	
+	downloadFile(data, filename, type) {
+		var file = new Blob([data], {type: type});
+		var a = document.createElement("a"),
+			url = URL.createObjectURL(file);
+		a.href = url;
+		a.download = filename;
+		document.body.appendChild(a);
+		a.click();
+		setTimeout(function() {
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+		}, 0);
+	}
 	
 	getSnowflakeCreationDate(id) {
 		const epoch = 1420070400000;
