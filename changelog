@@ -119,3 +119,9 @@ v1.2.0
     - Text that show that a guild has no emojis in the emoji list (only if the guild has no emojis of course)
     - You can search with different parameters in the user search now. Click the "?" to get more information. If you have an idea what parameters I should add, please write me.
 
+v1.2.1
+  Added
+    - You can now export the users of a guild
+    - Added German translation for the user search help text
+    - Added some more information to the user search help text
+
