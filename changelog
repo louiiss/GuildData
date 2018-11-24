@@ -125,3 +125,12 @@ v1.2.1
     - Added German translation for the user search help text
     - Added some more information to the user search help text
 
+v1.2.2
+  Added
+    - The date format variables are hidden by default and you can show them in the settings to have a better overview
+  Changed
+    - The export button in the user search only exports the users that match the current search now
+  Fixed
+    - One of the libraries I use is now loaded if it is missing (I thought it was from BD itself). If someone else had the problem that it didn't work it should be fixed now.
+    - The timezone offset to UTC now has the correct sign. Now UTC+01:00 is displayed as +01:00 and not as -01:00 anymore. Got it the wrong way around.
+
