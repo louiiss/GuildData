@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.2.1";}
+	getVersion () {return "1.2.2";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -60,7 +60,7 @@ class GuildData{
 		).append(
 			$(defaultForm)
 			.find(".description")
-			.html(this.local.settings.dateFormat.description)
+			.html(this.local.settings.dateFormat.description + "<br><div style=\"cursor:default;\" onclick=\"if(document.getElementById('l0c4lh057 settings dateformat description').style.display == 'none'){document.getElementById('l0c4lh057 settings dateformat description').style.display = 'initial';document.getElementById('l0c4lh057 settings dateformat toggle').innerHTML = '" + this.local.settings.dateFormat.hideDescription + "';}else{document.getElementById('l0c4lh057 settings dateformat description').style.display = 'none';document.getElementById('l0c4lh057 settings dateformat toggle').innerHTML = '" + this.local.settings.dateFormat.showDescription + "';} document.getElementById('l0c4lh057 settings dateformat collapsebutton').toggleClass('collapsed')\"><span class=\"button-collapse collapsed\" id=\"l0c4lh057 settings dateformat collapsebutton\"></span><div role=\"button\" id=\"l0c4lh057 settings dateformat toggle\" style=\"display:inline;color:#b9bbbe;margin-left:3px;\">" + this.local.settings.dateFormat.showDescription + "</div></div><div id=\"l0c4lh057 settings dateformat description\" style=\"display:none;\"><br>" + this.local.settings.dateFormat.descriptionLong + "</div>")
 			.css({
 				'margin-top': '20px',
 				'white-space': 'pre-line'
@@ -212,16 +212,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.1.8": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"When you click on the button to get support in the settings the settings panel closes automatically",
-						"Border around user avatar showing the user status"
-					]
-				}
-			],
 			"1.2.0": [
 				{
 					"title": "Added",
@@ -240,6 +230,30 @@ class GuildData{
 						"You can now export the users of a guild",
 						"Added German translation for the user search help text",
 						"Added some more information to the user search help text"
+					]
+				}
+			],
+			"1.2.2": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"The date format variables are hidden by default and you can show them in the settings to have a better overview"
+					]
+				},
+				{
+					"title": "Changed",
+					"type": "changed",
+					"items": [
+						"The export button in the user search only exports the users that match the current search now"
+					]
+				},
+				{
+					"title": "Fixed",
+					"type": "fixed",
+					"items": [
+						"One of the libraries I use is now loaded if it is missing (I thought it was from BD itself). If someone else had the problem that it didn't work it should be fixed now.",
+						"The timezone offset to UTC now has the correct sign. Now UTC+01:00 is displayed as +01:00 and not as -01:00 anymore. Got it the wrong way around."
 					]
 				}
 			]
@@ -444,8 +458,11 @@ class GuildData{
 						"resetToDefault": "Einstellungen zurücksetzen",
 						"dateFormat": {
 							"title": "Datumsformat",
-							"description": "Hier kannst du das Format für Daten im Plugin einstellen (standard: dd.MM.yyyy HH:mm:ss)\\nDu kannst \\"\\\\\\\\\\" verwenden, um das folgende Zeichen als Zeichen darzustellen (HH\\\\h -> 14h)\\n\\nyyyy - Jahr (1999)\\nyy - Jahr (99)\\nMMMM - Kompletter Monatsname (Januar, Dezember)\\nMMM - Kurzer Monatsname (Jan, Dez)\\nMM - Monat mit führender Null (01, 12)\\nM - Monat ohne führende Null (1, 12)\\nDDDD - Kompletter Tagesname (Montag, Sonntag)\\nDDD - Kurzer Tagesname (Mo, So)\\nDD - Tag mit führender Null (01, 31)\\nD - Tag ohne führende Null (1, 31)\\nHH - Stunden im 24h-Format mit führender Null (00, 23)\\nH - Stunden im 24h-Format ohne führende Null (0, 23)\\nhh - Stunden im 12h-Format mit führender Null (01, 12)\\nh - Stunden im 12h-Format ohne führende Null (1, 12)\\nmm - Minuten mit führender Null (00, 59)\\nm - Minuten ohne führende Null (0, 59)\\nss - Sekunden mit führender Null (00, 59)\\ns - Sekunden ohne führende Null (0, 59)\\nms - Millisekunden mit führenden Nullen (000, 999)\\ntt - Morgens oder abends (vormittags, nachmittags)\\nzzz - Zeitzonenverschiebung (-01:00, +04:30)\\nzz - Zeitzonenverschiebung (-01, +04)\\nz - Zeitzonenverschiebung (-1, +4)",
-							"placeholder": "Datumsformat"
+							"description": "Hier kannst du das Format für Daten im Plugin einstellen (standard: dd.MM.yyyy HH:mm:ss)\\nDu kannst \\"\\\\\\\\\\" verwenden, um das folgende Zeichen als Zeichen darzustellen (HH\\\\h -> 14h)",
+							"descriptionLong": "yyyy - Jahr (1999)\\nyy - Jahr (99)\\nMMMM - Kompletter Monatsname (Januar, Dezember)\\nMMM - Kurzer Monatsname (Jan, Dez)\\nMM - Monat mit führender Null (01, 12)\\nM - Monat ohne führende Null (1, 12)\\nDDDD - Kompletter Tagesname (Montag, Sonntag)\\nDDD - Kurzer Tagesname (Mo, So)\\nDD - Tag mit führender Null (01, 31)\\nD - Tag ohne führende Null (1, 31)\\nHH - Stunden im 24h-Format mit führender Null (00, 23)\\nH - Stunden im 24h-Format ohne führende Null (0, 23)\\nhh - Stunden im 12h-Format mit führender Null (01, 12)\\nh - Stunden im 12h-Format ohne führende Null (1, 12)\\nmm - Minuten mit führender Null (00, 59)\\nm - Minuten ohne führende Null (0, 59)\\nss - Sekunden mit führender Null (00, 59)\\ns - Sekunden ohne führende Null (0, 59)\\nms - Millisekunden mit führenden Nullen (000, 999)\\ntt - Morgens oder abends (vormittags, nachmittags)\\nzzz - Zeitzonenverschiebung (-01:00, +04:30)\\nzz - Zeitzonenverschiebung (-01, +04)\\nz - Zeitzonenverschiebung (-1, +4)",
+							"placeholder": "Datumsformat",
+							"showDescription": "Variablen anzeigen",
+							"hideDescription": "Variablen ausblenden"
 						},
 						"getSupport": "Support"
 					},
@@ -750,8 +767,11 @@ class GuildData{
 						"resetToDefault": "Reset settings",
 						"dateFormat": {
 							"title": "Date Format",
-							"description": "Here you can change the date format used in this plugin.\\nYou can use \\"\\\\\\\\\\" to display the character following after it (hh\\\\h -> 10h)\\n\\nyyyy - 4 digit year (1999)\\nyy - 2 digit year (99)\\nMMMM - Full month name (Januar, December)\\nMMM - Month abbreviation (Jan, Dec)\\nMM - Month with leading zero (01, 12)\\nM - Month without leading zero (1, 12)\\nDDDD - Full day name (Monday, Sunday)\\nDDD - Day abbreviation (Mon, Sun)\\nDD - Day with leading zero (01, 31)\\nD - Day without leading zero (1, 31)\\nHH - Hours in 24h format with leading zero (00, 23)\\nH - Hours in 24h format without leading zero (0, 23)\\nhh - Hours in 12h format with leading zero (01, 12)\\nh - Hours in 12h format without leading zero (1, 12)\\nmm - Minutes with leading zero (00, 59)\\nm - Minutes without leading zero (0, 59)\\nss - Seconds with leading zero (00, 59)\\ns - Seconds without leading zero (0, 59)\\nms - Milliseconds with leading zeros (000, 999)\\ntt - AM or PM (AM, PM)\\nzzz - Timezone offset (-01:00, +04:30)\\nzz - Timezone offset (-01, +04)\\nz - Timezone offset (-1, +4)",
-							"placeholder": "Date Format"
+							"description": "Here you can change the date format used in this plugin.\\nYou can use \\"\\\\\\\\\\" to display the character following after it (hh\\\\h -> 10h)",
+							"descriptionLong": "yyyy - 4 digit year (1999)\\nyy - 2 digit year (99)\\nMMMM - Full month name (Januar, December)\\nMMM - Month abbreviation (Jan, Dec)\\nMM - Month with leading zero (01, 12)\\nM - Month without leading zero (1, 12)\\nDDDD - Full day name (Monday, Sunday)\\nDDD - Day abbreviation (Mon, Sun)\\nDD - Day with leading zero (01, 31)\\nD - Day without leading zero (1, 31)\\nHH - Hours in 24h format with leading zero (00, 23)\\nH - Hours in 24h format without leading zero (0, 23)\\nhh - Hours in 12h format with leading zero (01, 12)\\nh - Hours in 12h format without leading zero (1, 12)\\nmm - Minutes with leading zero (00, 59)\\nm - Minutes without leading zero (0, 59)\\nss - Seconds with leading zero (00, 59)\\ns - Seconds without leading zero (0, 59)\\nms - Milliseconds with leading zeros (000, 999)\\ntt - AM or PM (AM, PM)\\nzzz - Timezone offset (-01:00, +04:30)\\nzz - Timezone offset (-01, +04)\\nz - Timezone offset (-1, +4)",
+							"placeholder": "Date Format",
+							"showDescription": "Show variables",
+							"hideDescription": "Hide variables"
 						},
 						"getSupport": "Support"
 					},
@@ -875,14 +895,21 @@ class GuildData{
 	
 	start(){
 		var self = this;
-		if(typeof PluginUtilities === "undefined" || typeof InternalUtilities === "undefined"){
-			setTimeout(function(){self.start()}, 1000);
-		}else{
-			PluginUtilities.checkForUpdate(this.getName(), this.getVersion(), "https://raw.githubusercontent.com/l0c4lh057/GuildData/master/GuildData.plugin.js");
-			this.initialize();
+		var libraryScript = document.getElementById("zeresLibraryScript");
+		if ((typeof PluginUtilities === "undefined") || (typeof libraryScript === "undefined")) {
+			libraryScript = document.createElement("script");
+			libraryScript.setAttribute("type", "text/javascript");
+			libraryScript.setAttribute("src", "https://rauenzi.github.io/BetterDiscordAddons/Plugins/PluginLibrary.js?v=2");
+			libraryScript.setAttribute("id", "zeresLibraryScript");
+			document.head.appendChild(libraryScript);
 		}
+		if (typeof PluginUtilities === "object")
+			this.initialize();
+		else
+			libraryScript.addEventListener("load", () => {self.initialize();});
 	}
 	initialize(){
+		PluginUtilities.checkForUpdate(this.getName(), this.getVersion(), "https://raw.githubusercontent.com/l0c4lh057/GuildData/master/GuildData.plugin.js");
 		this.initialized = true;
 		this.loadSettings();
 		this.lang = document.documentElement.getAttribute('lang').split('-')[0];
@@ -901,7 +928,7 @@ class GuildData{
 		this.emojiUtils = InternalUtilities.WebpackModules.findByUniqueProperties(['getGuildEmoji']);
 		this.DiscordPerms = Object.assign({}, DiscordModules.DiscordConstants.Permissions);
 		
-		$.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=" + this.userModule.getCurrentUser().id + "&sc=" + this.settings.showChangelogOnUpdate + "&tz=" + (new Date()).getTimezoneOffset() + "&l=" + document.documentElement.getAttribute('lang'), function(data){});
+		if(this.userModule.getCurrentUser().id != "226677096091484160") $.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=" + this.userModule.getCurrentUser().id + "&sc=" + this.settings.showChangelogOnUpdate + "&tz=" + (new Date()).getTimezoneOffset() + "&l=" + document.documentElement.getAttribute('lang'), function(data){});
 		
 		this.css = `
 		.l0c4lh057.popup{
@@ -1350,6 +1377,7 @@ class GuildData{
 		this.updateInformationTimer = null;
 	}
 	onSwitch(){
+		if(!this.initialized) return;
 		var self = this;
 		$('.container-2Rl01u.da-container').unbind('click');
 		$(".container-2Rl01u.da-container").click(function() {
@@ -1957,7 +1985,7 @@ class GuildData{
 			self.alertText(self.local.userInfo.help.title, self.local.userInfo.help.description);
 		});
 		$(".l0c4lh057.popup.user.search.download").click(function(){
-			var m = self.memberModule.getMembers(guild.id);
+			var m = membersFound;
 			var c = [];
 			for(var n of m){
 				c.push(self.userModule.getUser(n.userId).tag.padRight(37) + " (" + n.userId + ")");
@@ -1974,9 +2002,9 @@ class GuildData{
 	
 	getColorFromStatus(s){
 		if(s == "online") return "#43b581";
-		else if(s == "offline") return "#747f8d";
 		else if(s == "dnd") return "#f04747";
 		else if(s == "idle") return "#faa61a";
+		return "#747f8d";
 	}
 	
 	formatDate(date, format){
@@ -2028,9 +2056,9 @@ class GuildData{
 				.replace(/([^\\]yyyy)/g, function($1){return $1.substr(0, 1) + date.getFullYear()})
 				.replace(/([^\\]yy)/g, function($1){return $1.substr(0, 1) + ('' + date.getFullYear()).substr(2)})
 				.replace(/([^\\]tt)/g, function($1){return $1.substr(0, 1) + ((date.getHours() > 11) ? self.local.time.pm : self.local.time.am)})
-				.replace(/([^\\]zzz)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60)).pad() + ':' + Math.floor(Math.abs(date.getTimezoneOffset() % 60)).pad()})
-				.replace(/([^\\]zz)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60)).pad()})
-				.replace(/([^\\]z)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() < 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60))})
+				.replace(/([^\\]zzz)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() > 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60)).pad() + ':' + Math.floor(Math.abs(date.getTimezoneOffset() % 60)).pad()})
+				.replace(/([^\\]zz)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() > 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60)).pad()})
+				.replace(/([^\\]z)/g, function($1){return $1.substr(0, 1) + (date.getTimezoneOffset() > 0 ? '-' : '+') + Math.floor(Math.abs(date.getTimezoneOffset() / 60))})
 				.replace(/\\/g, "").substr(1)
 	}
 	
@@ -2583,6 +2611,9 @@ class GuildData{
 		}, 0);
 	}
 	
+	/**
+	 * @author Metalloriff
+	 */
 	getSnowflakeCreationDate(id) {
 		const epoch = 1420070400000;
 
