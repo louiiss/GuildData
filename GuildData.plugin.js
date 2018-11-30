@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.2.2";}
+	getVersion () {return "1.2.3";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -212,16 +212,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.2.0": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"Text that show that a guild has no emojis in the emoji list (only if the guild has no emojis of course)",
-						"You can search with different parameters in the user search now. Click the \\"?\\" to get more information. If you have an idea what parameters I should add, please write me."
-					]
-				}
-			],
 			"1.2.1": [
 				{
 					"title": "Added",
@@ -254,6 +244,29 @@ class GuildData{
 					"items": [
 						"One of the libraries I use is now loaded if it is missing (I thought it was from BD itself). If someone else had the problem that it didn't work it should be fixed now.",
 						"The timezone offset to UTC now has the correct sign. Now UTC+01:00 is displayed as +01:00 and not as -01:00 anymore. Got it the wrong way around."
+					]
+				}
+			],
+			"1.2.3": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"The popup is now draggable (only on the border), it resets its position when you open the information again so you don't drag it somewhere you can't access it anymore"
+					]
+				},
+				{
+					"title": "Changed",
+					"type": "changed",
+					"items": [
+						"The user export is now done in another way than before"
+					]
+				},
+				{
+					"title": "Fixed",
+					"type": "fixed",
+					"items": [
+						"The right click menu should only appear on the guild icons now"
 					]
 				}
 			]
@@ -909,6 +922,7 @@ class GuildData{
 			libraryScript.addEventListener("load", () => {self.initialize();});
 	}
 	initialize(){
+		var self = this;
 		PluginUtilities.checkForUpdate(this.getName(), this.getVersion(), "https://raw.githubusercontent.com/l0c4lh057/GuildData/master/GuildData.plugin.js");
 		this.initialized = true;
 		this.loadSettings();
@@ -971,9 +985,7 @@ class GuildData{
 		.l0c4lh057.settings.button.resetToDefault:hover{
 			background-color: #d84040;
 		}
-		`
-		
-		var self = this;
+		`;
 		
 		$(".container-2Rl01u.da-container").click(function() {
 			if(!document.getElementsByClassName('container-2Rl01u da-container popout-open')[0]){
@@ -1250,6 +1262,8 @@ class GuildData{
 			this.settings.lastUsedVersion = this.getVersion();
 			this.saveSettings();
 		}
+		
+		this.dragElement(document.getElementById("l0c4lh057 popup outer"));
 	}
 	
 	showWelcomeMessage(){
@@ -1273,7 +1287,7 @@ class GuildData{
 			if(v == this.getVersion()) c += ` style="background-color:#2d2d31;border:2px #a7a7a7;border-style:solid;border-radius:7px;padding:5px;"`;
 			c += `><div style="font-size:140%;padding-bottom:10px;font-weight:900;">v${v}</div><div style="padding-left:10px;">`;
 			for(const v2 of this.changelog[v]){
-				c += `<div style="padding-bottom:7px;"><div style="color:${this.colors[v2.type]};padding-bottom:3px;font-weight:600;">${v2.title}</div><ul style="list-style:none;">`;
+				c += `<div style="padding-bottom:7px;"><div style="color:${v2.color ? v2.color : this.colors[v2.type]};padding-bottom:3px;font-weight:600;">${v2.title}</div><ul style="list-style:none;">`;
 				for(const v3 of v2.items){
 					c += `<li><div style="padding-left:10px;padding-top:3px;">- ${v3}</div></li>`;
 				}
@@ -1295,6 +1309,7 @@ class GuildData{
 	addContextMenuItems(e) {
 		if(e.target.parentElement.href){
 			if(e.target.parentElement.href.includes('/channels/@me/')) return; /* return if it's a private channel/group channel */
+			if(!e.target.parentElement.href.match(/\/channels\/[0-9]+\/[0-9]+/)) return; /* return if it's not a guild link */
 			let CSSRules = getMatchedCSSRules(e.toElement);
 			let context = document.querySelector('.contextMenu-HLZMGh');
 			if (!CSSRules) return;
@@ -1423,6 +1438,10 @@ class GuildData{
 	
 	
 	getServer(guild){
+		var outer = document.getElementById("l0c4lh057 popup outer");
+		outer.style.left = "10%";
+		outer.style.top = "10%";
+		
 		var self = this;
 		this.lastShownGuild = guild.id;
 		if(PluginUtilities.isServer()) this.informationOfCurrentGuild = (PluginUtilities.getCurrentServer().id == guild.id); else this.informationOfCurrentGuild = false;
@@ -1990,7 +2009,7 @@ class GuildData{
 			for(var n of m){
 				c.push(self.userModule.getUser(n.userId).tag.padRight(37) + " (" + n.userId + ")");
 			}
-			self.downloadFile(c.join("\r\n"), guild.name + " users.txt", ".txt");
+			self.downloadFile(c.join("\r\n"), guild.name + " users.txt", "Save users of \"" + guild.name + "\" with the filter \"" + orSearchString + "\"");
 		});
 		document.getElementById('l0c4lh057 popup input').value = orSearchString;
 	}
@@ -2565,7 +2584,7 @@ class GuildData{
 	
 	
 	
-	alertText(e, t) {
+	alertText(e, t, footerContent) {
 		let a = $(`<div class="bd-modal-wrapper theme-dark" style="z-index:9999;">
 						<div class="bd-backdrop backdrop-1wrmKB"></div>
 						<div class="bd-modal modal-1UGdnR">
@@ -2586,6 +2605,7 @@ class GuildData{
 							</div>
 						</div>
 					</div>`);
+		if(footerContent) $("<div style='margin-right:10px;'>" + footerContent + "</div>").insertBefore(a.find(".footer button"));
 		a.find(".footer button").on("click", () => {
 			a.addClass("closing"), setTimeout(() => {
 				a.remove()
@@ -2597,18 +2617,17 @@ class GuildData{
 		}), a.appendTo("#app-mount")
 	}
 	
-	downloadFile(data, filename, type) {
-		var file = new Blob([data], {type: type});
-		var a = document.createElement("a"),
-			url = URL.createObjectURL(file);
-		a.href = url;
-		a.download = filename;
-		document.body.appendChild(a);
-		a.click();
-		setTimeout(function() {
-			document.body.removeChild(a);
-			window.URL.revokeObjectURL(url);
-		}, 0);
+	downloadFile(content, filename, title){
+		var dialog = require("electron").remote.dialog;
+		dialog.showSaveDialog({defaultPath: filename, title: title}, function(sel){
+			if(!sel) return;
+			var fs = require("fs");
+			fs.writeFile(sel, content, (err) => {
+				if(err){
+					BdApi.alert("Could not save the users in the file " + err.message)
+				}
+			});
+		});
 	}
 	
 	/**
@@ -2637,6 +2656,52 @@ class GuildData{
 		};
 
 		return new Date(parseInt(toBinary(id).padStart(64).substring(0, 42), 2) + epoch);
+	}
+	
+	dragElement(elmnt) {
+		var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+		if (document.getElementById(elmnt.id + "header")) {
+			// if present, the header is where you move the DIV from:
+			document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+		} else {
+			// otherwise, move the DIV from anywhere inside the DIV: 
+			elmnt.onmousedown = dragMouseDown;
+		}
+
+		function dragMouseDown(e) {
+			e = e || window.event;
+			// get the mouse cursor position at startup:
+			pos3 = e.clientX;
+			pos4 = e.clientY;
+		var hovElem = document.elementFromPoint(pos3, pos4);
+		if(hovElem){
+			if(!hovElem.id) return;
+			if(hovElem.id != "l0c4lh057 popup outer" && hovElem.id != "l0c4lh057 popup inner") return;
+			}
+			e.preventDefault();
+			document.onmouseup = closeDragElement;
+			// call a function whenever the cursor moves:
+			document.onmousemove = elementDrag;
+		}
+
+		function elementDrag(e) {
+			e = e || window.event;
+			e.preventDefault();
+			// calculate the new cursor position:
+			pos1 = pos3 - e.clientX;
+			pos2 = pos4 - e.clientY;
+			pos3 = e.clientX;
+			pos4 = e.clientY;
+			// set the element's new position:
+			elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+			elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+		}
+
+		function closeDragElement() {
+			// stop moving when mouse button is released:
+			document.onmouseup = null;
+			document.onmousemove = null;
+		}
 	}
 }
 
