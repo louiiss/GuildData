@@ -134,3 +134,11 @@ v1.2.2
     - One of the libraries I use is now loaded if it is missing (I thought it was from BD itself). If someone else had the problem that it didn't work it should be fixed now.
     - The timezone offset to UTC now has the correct sign. Now UTC+01:00 is displayed as +01:00 and not as -01:00 anymore. Got it the wrong way around.
 
+v1.2.3
+  Added
+    - The popup is now draggable (only on the border), it resets its position when you open the information again so you don't drag it somewhere you can't access it anymore
+  Changed
+    - The user export is now done in another way than before
+  Fixed
+    - The right click menu should only appear on the guild icons now
+
