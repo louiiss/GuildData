@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.2.3";}
+	getVersion () {return "1.2.4";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -212,17 +212,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.2.1": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"You can now export the users of a guild",
-						"Added German translation for the user search help text",
-						"Added some more information to the user search help text"
-					]
-				}
-			],
 			"1.2.2": [
 				{
 					"title": "Added",
@@ -267,6 +256,15 @@ class GuildData{
 					"type": "fixed",
 					"items": [
 						"The right click menu should only appear on the guild icons now"
+					]
+				}
+			],
+			"1.2.4": [
+				{
+					"title": "Changed",
+					"type": "changed",
+					"items": [
+						"When you click on the roles or users name/id in the channel specific permissions, then you open the information for that user/role instead of copying the name/id"
 					]
 				}
 			]
@@ -905,7 +903,7 @@ class GuildData{
 			}`);
 		return this.strings[this.lang] || this.strings.en;
 	}
-	
+		
 	start(){
 		var self = this;
 		var libraryScript = document.getElementById("zeresLibraryScript");
@@ -1797,10 +1795,12 @@ class GuildData{
 	}
 	
 	showChannelPermissionInformation(perm, guild, channel){
+		var self = this;
 		var cp = document.getElementById('l0c4lh057 popup channel permission');
 		cp.style.zIndex = '20';
 		cp.innerHTML = `<h3 class="l0c4lh057">${this.local.channelInfo.title}</h3><br>`;
-		if(perm.type == "member") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.channelInfo.channel}: ${channel.name}<br><p id="l0c4lh057 popup tocopy copyidchannelpermusertag" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermusertag', ${this.settings.copyOnClick});" style="display: inline;">${this.userModule.getUser(perm.id).tag}</p> (<p id="l0c4lh057 popup tocopy copyidchannelpermuserid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermuserid', ${this.settings.copyOnClick});" style="display: inline;">${perm.id}</p>)</div>`; else if(perm.type == "role") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.channelInfo.channel}: ${channel.name}<br><p id="l0c4lh057 popup tocopy copyidchannelpermrolename" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermrolename', ${this.settings.copyOnClick});" style="display: inline;">${guild.roles[perm.id].name}</p> (<p id="l0c4lh057 popup tocopy copyidchannelpermroleid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermroleid', ${this.settings.copyOnClick});" style="display: inline;">${perm.id}</p>)</div>`;
+		if(perm.type == "member") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.channelInfo.channel}: ${channel.name}<br><div class="l0c4lh057 popup channelPermInfo user" style="display:inline;">${this.userModule.getUser(perm.id).tag} (${perm.id})</div></div>`;
+		else if(perm.type == "role") cp.innerHTML += `<div style="text-align:center;font-size:125%;font-weight:bold;">${this.local.channelInfo.channel}: ${channel.name}<br><div class="l0c4lh057 popup channelPermInfo role" style="display:inline;">${guild.roles[perm.id].name} (${perm.id})</div></div>`;
 		cp.innerHTML += `<br><table>
 		<tr><td>${this.local.channelInfo.permissions.type}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelpermtype" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermtype', ${this.settings.copyOnClick});" style="display: inline;">${this.local.channelInfo[perm.type]}</p></td></tr>
 		<tr><td>${this.local.channelInfo.permissions.allow}:</td><td><p id="l0c4lh057 popup tocopy copyidchannelpermallowed" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidchannelpermallowed', ${this.settings.copyOnClick});" style="display: inline;">${perm.allow}</p></td></tr>
@@ -1819,6 +1819,14 @@ class GuildData{
 		cpBack.innerHTML = 'X';
 		cpBack.onclick = function(){document.getElementById('l0c4lh057 popup channel permission').style.zIndex = '5';}
 		cp.appendChild(cpBack);
+		
+		$(".l0c4lh057.popup.channelPermInfo.role").click(function(){
+			self.showRolePermissionInformation(guild.roles[perm.id]);
+		});
+		$(".l0c4lh057.popup.channelPermInfo.user").click(function(){
+			self.stopInterval();
+			self.showUserInformation(guild, self.userModule.getUser(perm.id), self.memberModule.getMember(guild.id, perm.id));
+		});
 	}
 	
 	showRolePermissionInformation(role){
