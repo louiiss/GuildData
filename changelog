@@ -142,3 +142,7 @@ v1.2.3
   Fixed
     - The right click menu should only appear on the guild icons now
 
+v1.2.4
+  Changed
+    - When you click on the roles or users name/id in the channel specific permissions, then you open the information for that user/role instead of copying the name/id
+
