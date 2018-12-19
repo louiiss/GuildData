@@ -146,3 +146,8 @@ v1.2.4
   Changed
     - When you click on the roles or users name/id in the channel specific permissions, then you open the information for that user/role instead of copying the name/id
 
+v1.2.5
+  Added
+    - You can see the count of users with the role in role information (click on the count to automatically search for the users with this role)
+    - Made a patreon site if one of you wants to support me (or if anyone of you wants to improve my English)
+
