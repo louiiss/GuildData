@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.2.4";}
+	getVersion () {return "1.2.5";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -180,6 +180,19 @@ class GuildData{
 					});
 				})
 			)
+			.append(
+				$(`<button type="button">`)
+				.toggleClass('l0c4lh057 settings button supportMe')
+				.css({
+					'float': 'right',
+					'margin-top': '-2px',
+					'margin-right': '5px'
+				})
+				.html("Patreon")
+				.click(() => {
+					window.open("https://patreon.com/l0c4lh057/", "_blank");
+				})
+			)
 			.parent()
 			.parent()
 		).append(
@@ -212,30 +225,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.2.2": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"The date format variables are hidden by default and you can show them in the settings to have a better overview"
-					]
-				},
-				{
-					"title": "Changed",
-					"type": "changed",
-					"items": [
-						"The export button in the user search only exports the users that match the current search now"
-					]
-				},
-				{
-					"title": "Fixed",
-					"type": "fixed",
-					"items": [
-						"One of the libraries I use is now loaded if it is missing (I thought it was from BD itself). If someone else had the problem that it didn't work it should be fixed now.",
-						"The timezone offset to UTC now has the correct sign. Now UTC+01:00 is displayed as +01:00 and not as -01:00 anymore. Got it the wrong way around."
-					]
-				}
-			],
 			"1.2.3": [
 				{
 					"title": "Added",
@@ -265,6 +254,23 @@ class GuildData{
 					"type": "changed",
 					"items": [
 						"When you click on the roles or users name/id in the channel specific permissions, then you open the information for that user/role instead of copying the name/id"
+					]
+				}
+			],
+			"1.2.5": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"You can see the count of users with the role in role information (click on the count to automatically search for the users with this role)",
+						"<a href=\\"https://patreon.com/l0c4lh057\\" target=\\"_blank\\">Made a patreon site if one of you wants to support me (or if anyone of you wants to improve my English)</a>"
+					]
+				},
+				{
+					"title": "Do you want to translate this plugin?",
+					"type": "request",
+					"items": [
+						"I saw that some users of this plugin speak different languages than English or German. If anyone of you wants to help with translating the plugin, feel free to write me (I'm too lazy to add a button, click the support button in the plugin settings). Currently there are no languages than English more than once in this community, but maybe there will be another guy who speaks French, Polish or Russian in the future."
 					]
 				}
 			]
@@ -403,7 +409,11 @@ class GuildData{
 							"noColor": "Keine Farbe eingestellt"
 						},
 						"hoist": "Angepinnt",
-						"copy": "Kopieren"
+						"copy": "Kopieren",
+						"userCount": {
+							"title": "Nutzerzahl",
+							"value": "{0} Nutzer"
+						}
 					},
 					"channelInfo": {
 						"title": "Kanalinformationen",
@@ -448,7 +458,7 @@ class GuildData{
 							"title": "Infos beim Serverwechsel neu laden",
 							"description": "Lädt, wenn du den Server wechselst, die Infos zum neuen aktuellen Server"
 						},
-						"showChangelog": "Änderungsprotokoll anzeigen",
+						"showChangelog": "Neuerungen",
 						"selectLanguage": {
 							"title": "Sprache auswählen",
 							"description": "Ändert die Sprache, die im Plugin verwendet wird",
@@ -712,7 +722,11 @@ class GuildData{
 							"noColor": "No color set"
 						},
 						"hoist": "Hoist",
-						"copy": "Copy"
+						"copy": "Copy",
+						"userCount": {
+							"title": "User Count",
+							"value": "{0} users"
+						}
 					},
 					"channelInfo": {
 						"title": "Channel Information",
@@ -1561,7 +1575,7 @@ class GuildData{
 		for(const rId of Object.keys(guild.roles)){
 			const role = guild.roles[rId];
 			$(".l0c4lh057.popup.role." + rId).click(function(){
-				self.showRolePermissionInformation(role);
+				self.showRolePermissionInformation(guild, role);
 			});
 		}
 		
@@ -1648,7 +1662,7 @@ class GuildData{
 		for(const r of emoji.roles){
 			let role = guild.roles[r];
 			$(`.l0c4lh057.popup.gEmoji.${emoji.id}.role.${r}`).click(function(){
-				self.showRolePermissionInformation(role);
+				self.showRolePermissionInformation(guild, role);
 			});
 		}
 		
@@ -1821,7 +1835,7 @@ class GuildData{
 		cp.appendChild(cpBack);
 		
 		$(".l0c4lh057.popup.channelPermInfo.role").click(function(){
-			self.showRolePermissionInformation(guild.roles[perm.id]);
+			self.showRolePermissionInformation(guild, guild.roles[perm.id]);
 		});
 		$(".l0c4lh057.popup.channelPermInfo.user").click(function(){
 			self.stopInterval();
@@ -1829,7 +1843,9 @@ class GuildData{
 		});
 	}
 	
-	showRolePermissionInformation(role){
+	showRolePermissionInformation(guild, role){
+		var self = this;
+		console.log(role);
 		var rp = document.getElementById('l0c4lh057 popup role permission');
 		rp.style.zIndex = '15';
 		var c = `<h3 class="l0c4lh057">${this.local.roleInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;"><p id="l0c4lh057 popup tocopy copyidrolename" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolename', ${this.settings.copyOnClick});" style="display: inline;">${role.name}</p> (<p id="l0c4lh057 popup tocopy copyidroleid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidroleid', ${this.settings.copyOnClick});" style="display: inline;">${role.id}</p>)</div><br><table>
@@ -1839,7 +1855,9 @@ class GuildData{
 		<tr><td>${this.local.roleInfo.mentionable}:</td><td><p id="l0c4lh057 popup tocopy copyidrolementionable" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolementionable', ${this.settings.copyOnClick});" style="display: inline;">${role.mentionable}</p></td></tr>`;
 		if(role.colorString) c += `<tr><td>${this.local.roleInfo.color.title}:</td><td><p id="l0c4lh057 popup tocopy copyidrolecolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolecolor', ${this.settings.copyOnClick});" style="display: inline;">${role.colorString}</p> <p style="display:inline;color:${role.colorString}">(${this.local.roleInfo.color.example})</p></td></tr>`; else c += `<tr><td>${this.local.roleInfo.color.title}:</td><td><p id="l0c4lh057 popup tocopy copyidnorolecolor" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidnorolecolor', ${this.settings.copyOnClick});" style="display: inline;">${this.local.roleInfo.color.noColor}</p></td></tr>`;
 		c += `
-		<tr><td>${this.local.roleInfo.hoist}:</td><td><p id="l0c4lh057 popup tocopy copyidrolehoist" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolehoist', ${this.settings.copyOnClick});" style="display: inline;">${role.hoist}</p></td></table>`
+		<tr><td>${this.local.roleInfo.hoist}:</td><td><p id="l0c4lh057 popup tocopy copyidrolehoist" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolehoist', ${this.settings.copyOnClick});" style="display: inline;">${role.hoist}</p></td></tr>
+		<tr><td>${this.local.roleInfo.userCount.title}</td><td class="l0c4lh057 popup roleInformation userCount">${this.formatText(this.local.roleInfo.userCount.value, "" + Array.filter(this.memberModule.getMembers(guild.id), m => ("-" + m.roles.join("-") + "-").includes("-" + role.id + "-")).length)}</td></tr>
+		</table>`
 		rp.innerHTML = c;
 		
 		var rpBack = document.createElement('div');
@@ -1853,6 +1871,10 @@ class GuildData{
 		rpBack.innerHTML = 'X';
 		rpBack.onclick = function(){document.getElementById('l0c4lh057 popup role permission').style.zIndex = '5';}
 		rp.appendChild(rpBack);
+		
+		$(".l0c4lh057.popup.roleInformation.userCount").click(function(){
+			self.showUsers(guild, "#roleid:" + role.id);
+		});
 	}
 	
 	get perms(){
@@ -2438,11 +2460,11 @@ class GuildData{
 		}
 		for(const roleId in guild.roles){
 			$(`.l0c4lh057.popup.userinfo.role.${roleId}`).click(function(){
-				self.showRolePermissionInformation(guild.roles[roleId])
+				self.showRolePermissionInformation(guild, guild.roles[roleId])
 			});
 		}
 		if(member.hoistRoleId) $(`.l0c4lh057.user.information.table.hoistrole`).click(function(){
-			self.showRolePermissionInformation(guild.roles[member.hoistRoleId])
+			self.showRolePermissionInformation(guild, guild.roles[member.hoistRoleId])
 		});
 	}
 	
