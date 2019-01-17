@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.2.5";}
+	getVersion () {return "1.2.6";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -225,29 +225,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.2.3": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"The popup is now draggable (only on the border), it resets its position when you open the information again so you don't drag it somewhere you can't access it anymore"
-					]
-				},
-				{
-					"title": "Changed",
-					"type": "changed",
-					"items": [
-						"The user export is now done in another way than before"
-					]
-				},
-				{
-					"title": "Fixed",
-					"type": "fixed",
-					"items": [
-						"The right click menu should only appear on the guild icons now"
-					]
-				}
-			],
 			"1.2.4": [
 				{
 					"title": "Changed",
@@ -265,12 +242,31 @@ class GuildData{
 						"You can see the count of users with the role in role information (click on the count to automatically search for the users with this role)",
 						"<a href=\\"https://patreon.com/l0c4lh057\\" target=\\"_blank\\">Made a patreon site if one of you wants to support me (or if anyone of you wants to improve my English)</a>"
 					]
+				}
+			],
+			"1.2.6": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"Parameter \\"status\\" in user search (online, offline, idle, dnd)",
+						"More options in user search: instead of searching for users that fulfill a certain property you can search for users that don't fulfill it. Instead of using \\"#name:NAME\\" use \\"name!:NAME\\". This also applies to all other searching keywords"
+					]
 				},
 				{
-					"title": "Do you want to translate this plugin?",
+					"title": "Fixed",
+					"type": "fixed",
+					"items": [
+						"The plugin should work again",
+						"The \\"${this.local.userInfo.exportUsers}\\" button should always disappear when you open the user information, doesn't matter in which way it opens",
+						"When you show the users of a specific role the current user information closes now"
+					]
+				},
+				{
+					"title": "Known issues",
 					"type": "request",
 					"items": [
-						"I saw that some users of this plugin speak different languages than English or German. If anyone of you wants to help with translating the plugin, feel free to write me (I'm too lazy to add a button, click the support button in the plugin settings). Currently there are no languages than English more than once in this community, but maybe there will be another guy who speaks French, Polish or Russian in the future."
+						"The context menu doesn't work anymore. Right clicking the guild icon has to be fixed, I'll do it in the near future. Luckily there is still a way to show the information"
 					]
 				}
 			]
@@ -397,7 +393,7 @@ class GuildData{
 						"exportUsers": "Nutzer exportieren",
 						"help": {
 							"title": "Mitglieder durchsuchen",
-							"description": "Hier kannst du nach Servermitgliedern suchen. Dazu gibt es zwei Methoden.<br><br>1. Gib den Nutzer- oder Nicknamen eines Nutzers ein (Du kannst auch \\"#&lt;tag&gt;\\" verwenden)<br>2. In diesem Format suchen: \\"#&lt;parameter1&gt;:&lt;wert1&gt;#&lt;parameter2&gt;:&lt;wert2&gt;\\" (kein Leerzeichen nach \\":\\")<br><div style='margin-left:20px;'>Diese Parameter kannst du verwenden:<br>- name:&lt;Nutzername&gt;<br>- tag:&lt;Tag (die vier Ziffern nach dem Nutzernamen)&gt;<br>- id:&lt;Nutzer-ID&gt;<br>- nick:&lt;Nickname&gt;<br>- role:&lt;Name einer Rolle&gt;<br>- roleid:&lt;Rollen-ID&gt;<br>- bot:&lt;true|false&gt;<br><br>Du kannst \\"role\\" und \\"roleid\\" auch mehrfach verwenden, um nur Nutzer mit allen dieser Rollen zu finden.<br>Alle Parameter müssen nicht mit dem vollen Wert angegeben werden, diese dürfen aber kein \\"#\\" enthalten. Groß- und Kleinschreibung wird ignoriert.</div>"
+							"description": "Hier kannst du nach Servermitgliedern suchen. Dazu gibt es zwei Methoden.<br><br>1. Gib den Nutzer- oder Nicknamen eines Nutzers ein (Du kannst auch \\"#&lt;tag&gt;\\" verwenden)<br>2. In diesem Format suchen: \\"#&lt;parameter1&gt;:&lt;wert1&gt;#&lt;parameter2&gt;:&lt;wert2&gt;\\" (kein Leerzeichen nach \\":\\")<br><div style='margin-left:20px;'>Diese Parameter kannst du verwenden:<br>- name:&lt;Nutzername&gt;<br>- tag:&lt;Tag (die vier Ziffern nach dem Nutzernamen)&gt;<br>- id:&lt;Nutzer-ID&gt;<br>- nick:&lt;Nickname&gt;<br>- status:(online|offline|idle|dnd)<br>- role:&lt;Name einer Rolle&gt;<br>- roleid:&lt;Rollen-ID&gt;<br>- bot:(true|false)<br><br>Du kannst \\"role\\" und \\"roleid\\" auch mehrfach verwenden, um nur Nutzer mit allen dieser Rollen zu finden.<br>Alle Parameter müssen nicht mit dem vollen Wert angegeben werden, diese dürfen aber kein \\"#\\" enthalten. Groß- und Kleinschreibung wird ignoriert.</div>"
 						}
 					},
 					"roleInfo": {
@@ -710,7 +706,7 @@ class GuildData{
 						"exportUsers": "Export Users",
 						"help": {
 							"title": "User Search",
-							"description": "Here you can search for users. There are two methods of searching.<br><br>1. Type in the username or nickname of an user (you can include the \\"#&lt;tag&gt;\\")<br>2. Search in this format: \\"#&lt;parameter1&gt;:&lt;value1&gt;#&lt;parameter2&gt;:&lt;value2&gt;\\" (no space after \\":\\")<br><div style='margin-left:20px;'>This are the parameters you can use:<br>- name:&lt;username&gt;<br>- tag:&lt;tag (the four digits after the username)&gt;<br>- id:&lt;userid&gt;<br>- nick:&lt;nickname&gt;<br>- role:&lt;rolename&gt;<br>- roleid:&lt;roleid&gt;<br>- bot:&lt;true|false&gt;<br><br>You can use the \\"role\\" or \\"roleid\\" parameter multiple times to filter for users with all the roles.<br>The parameters don't need to have the complete value given, but they must not contain \\"#\\". The search is not case sensitive.</div>"
+							"description": "Here you can search for users. There are two methods of searching.<br><br>1. Type in the username or nickname of an user (you can include the \\"#&lt;tag&gt;\\")<br>2. Search in this format: \\"#&lt;parameter1&gt;:&lt;value1&gt;#&lt;parameter2&gt;:&lt;value2&gt;\\" (no space after \\":\\")<br><div style='margin-left:20px;'>This are the parameters you can use:<br>- name:&lt;username&gt;<br>- tag:&lt;tag (the four digits after the username)&gt;<br>- id:&lt;userid&gt;<br>- nick:&lt;nickname&gt;<br>- status:(online|offline|idle|dnd)<br>- role:&lt;rolename&gt;<br>- roleid:&lt;roleid&gt;<br>- bot:(true|false)<br><br>You can use the \\"role\\" or \\"roleid\\" parameter multiple times to filter for users with all the roles.<br>The parameters don't need to have the complete value given, but they must not contain \\"#\\". The search is not case sensitive.</div>"
 						}
 					},
 					"roleInfo": {
@@ -940,7 +936,7 @@ class GuildData{
 		this.loadSettings();
 		this.lang = document.documentElement.getAttribute('lang').split('-')[0];
 		if(this.settings.language != "auto") this.lang = this.settings.language;
-		PluginUtilities.showToast(`${this.formatText(this.local.startMsg, [this.getName() + ' ' + this.getVersion()])}`, {type:"success"});
+		BdApi.showToast(`${this.formatText(this.local.startMsg, [this.getName() + ' ' + this.getVersion()])}`, {type:"success"});
 		
 		this.guildModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getGuild"]);
 		this.userModule = InternalUtilities.WebpackModules.findByUniqueProperties(["getUser"]);
@@ -1845,7 +1841,6 @@ class GuildData{
 	
 	showRolePermissionInformation(guild, role){
 		var self = this;
-		console.log(role);
 		var rp = document.getElementById('l0c4lh057 popup role permission');
 		rp.style.zIndex = '15';
 		var c = `<h3 class="l0c4lh057">${this.local.roleInfo.title}</h3><br><div style="text-align:center;font-size:125%;font-weight:bold;"><p id="l0c4lh057 popup tocopy copyidrolename" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidrolename', ${this.settings.copyOnClick});" style="display: inline;">${role.name}</p> (<p id="l0c4lh057 popup tocopy copyidroleid" onclick="copySelectedElement4Dg3g5('l0c4lh057 popup tocopy copyidroleid', ${this.settings.copyOnClick});" style="display: inline;">${role.id}</p>)</div><br><table>
@@ -1938,6 +1933,7 @@ class GuildData{
 	}
 	
 	showUsers(guild, searchString){
+		$(".l0c4lh057.popup.user.back").trigger("click");
 		var orSearchString = searchString;
 		searchString = searchString.toLowerCase();
 		var self = this;
@@ -2007,6 +2003,24 @@ class GuildData{
 					if(k == "nick") membersFound = Array.filter(membersFound, m => m.nick ? m.nick.toLowerCase().includes(v) : false);
 					if(k == "bot") membersFound = Array.filter(membersFound, m => this.userModule.getUser(m.userId).bot == (v == "true"));
 					if(k == "id") membersFound = Array.filter(membersFound, m => m.userId.includes(v));
+					if(k == "status") membersFound = Array.filter(membersFound, m => this.UserMetaStore.getStatus(m.userId) == v);
+					
+					
+					if(k == "name!") membersFound = Array.filter(membersFound, m => !this.userModule.getUser(m.userId).username.includes(v));
+					if(k == "tag!") membersFound = Array.filter(membersFound, m => !this.userModule.getUser(m.userId).discriminator.includes(v));
+					if(k == "roleid!") membersFound = Array.filter(membersFound, m => !m.roles.join("-").includes(v));
+					if(k == "role!"){
+						var hasRole = function(g, m, roleName){
+							for(var role of m.roles)
+								if(g.roles[role].name.toLowerCase().includes(roleName)) return true;
+							return false;
+						}
+						membersFound = Array.filter(membersFound, m => !hasRole(guild, m, v));
+					}
+					if(k == "nick!") membersFound = Array.filter(membersFound, m => m.nick ? !m.nick.toLowerCase().includes(v) : true);
+					if(k == "bot!") membersFound = Array.filter(membersFound, m => this.userModule.getUser(m.userId).bot != (v == "true"));
+					if(k == "id!") membersFound = Array.filter(membersFound, m => !m.userId.includes(v));
+					if(k == "status!") membersFound = Array.filter(membersFound, m => this.UserMetaStore.getStatus(m.userId) != v);
 				}
 			}
 		}
@@ -2024,7 +2038,6 @@ class GuildData{
 		if(membersFound.length <= this.settings.maxUsersShown) for(const member of membersFound){
 			$(".l0c4lh057.popup.user." + member.userId).click(function() {
 				self.showUserInformation(guild, self.userModule.getUser(member.userId), member);
-				document.getElementById("l0c4lh057 popup user search download").style.zIndex = "0";
 			});
 		}
 		$(".l0c4lh057.popup.user.searchbtn").click(function() {
@@ -2113,6 +2126,7 @@ class GuildData{
 	
 	showUserInformation(guild, user, member){
 		var self = this;
+		document.getElementById("l0c4lh057 popup user search download").style.zIndex = "0";
 		var ui = document.getElementById('l0c4lh057 popup user information');
 		ui.style.zIndex = '15';
 		var activity = this.UserMetaStore.getPrimaryActivity(user.id);
