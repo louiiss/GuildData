@@ -151,3 +151,14 @@ v1.2.5
     - You can see the count of users with the role in role information (click on the count to automatically search for the users with this role)
     - Made a patreon site if one of you wants to support me (or if anyone of you wants to improve my English)
 
+v1.2.6
+  Added
+    - Parameter "status" in user search (online, offline, idle, dnd)
+    - More options in user search: instead of searching for users that fulfill a certain property you can search for users that don't fulfill it. Instead of using "#name:NAME" use "name!:NAME". This also applies to all other searching keywords
+  Fixed
+    - The plugin should work again
+    - The "Export users" button should always disappear when you open the user information, doesn't matter in which way it opens
+    - When you show the users of a specific role the current user information closes now
+  Known issues
+    - The context menu doesn't work anymore. Right clicking the guild icon has to be fixed, I'll do it in the near future. Luckily there is still a way to show the information
+
