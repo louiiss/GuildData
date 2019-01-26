@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.2.6";}
+	getVersion () {return "1.2.7";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -225,15 +225,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.2.4": [
-				{
-					"title": "Changed",
-					"type": "changed",
-					"items": [
-						"When you click on the roles or users name/id in the channel specific permissions, then you open the information for that user/role instead of copying the name/id"
-					]
-				}
-			],
 			"1.2.5": [
 				{
 					"title": "Added",
@@ -267,6 +258,22 @@ class GuildData{
 					"type": "request",
 					"items": [
 						"The context menu doesn't work anymore. Right clicking the guild icon has to be fixed, I'll do it in the near future. Luckily there is still a way to show the information"
+					]
+				}
+			],
+			"1.2.7": [
+				{
+					"title": "Added",
+					"type": "added",
+					"items": [
+						"There is now a \\"${this.local.guildInfo.exportEmojis}\\" button that saves the links of the emojis of a guild in a file. When I am motivated I'll look for saving them all in a zip or something like that"
+					]
+				},
+				{
+					"title": "Fixed",
+					"type": "fixed",
+					"items": [
+						"Right clicking a guild icon to open the guild information should work again"
 					]
 				}
 			]
@@ -353,7 +360,8 @@ class GuildData{
 								"value": "{0} blockierte Nutzer",
 								"noUsers": "Du hast kein Mitglied dieses Servers blockiert."
 							}
-						}
+						},
+						"exportEmojis": "Emojis speichern"
 					},
 					"userInfo": {
 						"title": "Nutzerinformationen",
@@ -666,7 +674,8 @@ class GuildData{
 								"value": "{0} blocked users",
 								"noUsers": "There are no blocked users in this guild"
 							}
-						}
+						},
+						"exportEmojis": "Export Emojis"
 					},
 					"userInfo": {
 						"title": "User Information",
@@ -1318,10 +1327,7 @@ class GuildData{
 		if(e.target.parentElement.href){
 			if(e.target.parentElement.href.includes('/channels/@me/')) return; /* return if it's a private channel/group channel */
 			if(!e.target.parentElement.href.match(/\/channels\/[0-9]+\/[0-9]+/)) return; /* return if it's not a guild link */
-			let CSSRules = getMatchedCSSRules(e.toElement);
 			let context = document.querySelector('.contextMenu-HLZMGh');
-			if (!CSSRules) return;
-			let CSSRule = CSSRules.item(CSSRules.length - 1);
 			let currentWin = this.currentWindow;
 			let subMenu = new PluginContextMenu.TextItem(this.local.showGuildData, {
 				callback: () => {
@@ -1630,6 +1636,21 @@ class GuildData{
 		geBack.innerHTML = 'X';
 		geBack.onclick = function(){document.getElementById('l0c4lh057 popup guild emojis').style.zIndex = '0';}
 		ge.appendChild(geBack);
+		
+		if(document.getElementById("l0c4lh057 popup guild emojis download")) document.getElementById("l0c4lh057 popup guild emojis download").outerHTML = "";
+		var dlEmojis = document.createElement("button");
+		dlEmojis.innerHTML = this.local.guildInfo.exportEmojis;
+		dlEmojis.className = "l0c4lh057 popup guild emojis download";
+		dlEmojis.id = "l0c4lh057 popup guild emojis download";
+		dlEmojis.style = "position:absolute;bottom:5px;right:5px;background-color:#444;z-index:99;";
+		document.getElementById("l0c4lh057 popup guild emojis").appendChild(dlEmojis);
+		$(".l0c4lh057.popup.guild.emojis.download").click(function(){
+			var c = [];
+			for(var e of emojis){
+				c.push(e.url);
+			}
+			self.downloadFile(c.join("\r\n"), guild.name + " emojis.txt", "Save emojis of \"" + guild.name + "\"");
+		});
 	}
 	
 	showGuildEmoji(guild, emoji){
