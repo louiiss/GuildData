@@ -162,3 +162,9 @@ v1.2.6
   Known issues
     - The context menu doesn't work anymore. Right clicking the guild icon has to be fixed, I'll do it in the near future. Luckily there is still a way to show the information
 
+v1.2.7
+  Added
+    - There is now a "Emojis speichern" button that saves the links of the emojis of a guild in a file. When I am motivated I'll look for saving them all in a zip or something like that
+  Fixed
+    - Right clicking a guild icon to open the guild information should work again
+
