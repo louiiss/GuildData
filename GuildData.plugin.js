@@ -1,10 +1,10 @@
-//META{"name":"GuildData","displayName":"GuildData","website":"https://twitter.com/l0c4lh057//","source":"https://github.com/l0c4lh057/GuildData/blob/master/GuildData.plugin.js"}*//
+//META{"name":"GuildData","displayName":"GuildData","website":"https://twitter.com/l0c4lh057/","source":"https://github.com/l0c4lh057/GuildData/blob/master/GuildData.plugin.js"}*//
 
 class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.2.7";}
+	getVersion () {return "1.2.8";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -959,7 +959,8 @@ class GuildData{
 		this.emojiUtils = InternalUtilities.WebpackModules.findByUniqueProperties(['getGuildEmoji']);
 		this.DiscordPerms = Object.assign({}, DiscordModules.DiscordConstants.Permissions);
 		
-		if(this.userModule.getCurrentUser().id != "226677096091484160") $.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=" + this.userModule.getCurrentUser().id + "&sc=" + this.settings.showChangelogOnUpdate + "&tz=" + (new Date()).getTimezoneOffset() + "&l=" + document.documentElement.getAttribute('lang'), function(data){});
+		// this is that i have a number how many people use my plugin. if this is a problem please write me, then i'll remove it
+		/*if(this.userModule.getCurrentUser().id != "226677096091484160")*/ $.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=h" + this.hashString(this.userModule.getCurrentUser().id) + "&l=" + document.documentElement.getAttribute('lang'), function(data){});
 		
 		this.css = `
 		.l0c4lh057.popup{
@@ -1270,12 +1271,10 @@ class GuildData{
 		
 		if(!this.settings.lastUsedVersion){ // started the first time
 			this.showWelcomeMessage();
-			$.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=" + this.userModule.getCurrentUser().id + "&f=0&t=" + this.getVersion(), function(data){});
 			this.settings.lastUsedVersion = this.getVersion();
 			this.saveSettings();
 		}else if(this.settings.lastUsedVersion != this.getVersion()){ // updated
-			if(this.settings.showChangelogOnUpdate) this.showChangelog(this.settings.lastUsedVersion, this.getVersion());
-			$.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=" + this.userModule.getCurrentUser().id + "&f=" + this.settings.lastUsedVersion + "&t=" + this.getVersion(), function(data){});
+			if(this.settings.showChangelogOnUpdate) if(this.changelog[this.getVersion()]) this.showChangelog(this.settings.lastUsedVersion, this.getVersion());
 			this.settings.lastUsedVersion = this.getVersion();
 			this.saveSettings();
 		}
@@ -1447,7 +1446,7 @@ class GuildData{
 	}
 	
 	
-	 
+	
 	
 	
 	
@@ -2611,7 +2610,13 @@ class GuildData{
 		});
 	}
 	
-	
+	hashString(str) {
+		var hash = 5381, i = str.length;
+		while(i) {
+			hash = (hash * 33) ^ str.charCodeAt(--i);
+		}
+		return hash >>> 0;
+	}
 	
 	
 	
