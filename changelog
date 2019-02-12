@@ -168,3 +168,9 @@ v1.2.7
   Fixed
     - Right clicking a guild icon to open the guild information should work again
 
+v1.2.9
+  Changed
+    - Started porting from PluginLibrary to ZLibrary
+  Fixed
+    - Copying data should work again
+
