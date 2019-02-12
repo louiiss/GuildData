@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.2.8";}
+	getVersion () {return "1.2.9";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -225,16 +225,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.2.5": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"You can see the count of users with the role in role information (click on the count to automatically search for the users with this role)",
-						"<a href=\\"https://patreon.com/l0c4lh057\\" target=\\"_blank\\">Made a patreon site if one of you wants to support me (or if anyone of you wants to improve my English)</a>"
-					]
-				}
-			],
 			"1.2.6": [
 				{
 					"title": "Added",
@@ -274,6 +264,22 @@ class GuildData{
 					"type": "fixed",
 					"items": [
 						"Right clicking a guild icon to open the guild information should work again"
+					]
+				}
+			],
+			"1.2.9": [
+				{
+					"title": "Changed",
+					"type": "changed",
+					"items": [
+						"Started porting from PluginLibrary to ZLibrary"
+					]
+				},
+				{
+					"title": "Fixed",
+					"type": "fixed",
+					"items": [
+						"Copying data should work again"
 					]
 				}
 			]
@@ -925,22 +931,33 @@ class GuildData{
 		
 	start(){
 		var self = this;
+		var libraryScript = document.getElementById(/*"zeresLibraryScript"*/"ZLibraryScript");
+		if (!libraryScript || !window.ZLibrary) {
+			libraryScript = document.createElement("script");
+			libraryScript.setAttribute("type", "text/javascript");
+			libraryScript.setAttribute("src", /*"https://rauenzi.github.io/BetterDiscordAddons/Plugins/PluginLibrary.js?v=2"*/"https://rauenzi.github.io/BDPluginLibrary/release/ZLibrary.js");
+			libraryScript.setAttribute("id", /*"zeresLibraryScript"*/"ZLibraryScript");
+			document.head.appendChild(libraryScript);
+		}
+		if (window.ZLibrary) /*this.initialize();*/this.loadOldLib();
+		else libraryScript.addEventListener("load", () => {/*self.initialize();*/self.loadOldLib();});
+	}
+	loadOldLib(){
+		var self = this;
 		var libraryScript = document.getElementById("zeresLibraryScript");
-		if ((typeof PluginUtilities === "undefined") || (typeof libraryScript === "undefined")) {
+		if (!libraryScript || typeof PluginUtilities == "undefined") {
 			libraryScript = document.createElement("script");
 			libraryScript.setAttribute("type", "text/javascript");
 			libraryScript.setAttribute("src", "https://rauenzi.github.io/BetterDiscordAddons/Plugins/PluginLibrary.js?v=2");
 			libraryScript.setAttribute("id", "zeresLibraryScript");
 			document.head.appendChild(libraryScript);
 		}
-		if (typeof PluginUtilities === "object")
-			this.initialize();
-		else
-			libraryScript.addEventListener("load", () => {self.initialize();});
+		if (typeof PluginUtilities == "object") this.initialize();
+		else libraryScript.addEventListener("load", () => {self.initialize();});
 	}
 	initialize(){
 		var self = this;
-		PluginUtilities.checkForUpdate(this.getName(), this.getVersion(), "https://raw.githubusercontent.com/l0c4lh057/GuildData/master/GuildData.plugin.js");
+		ZLibrary.PluginUpdater.checkForUpdate(this.getName(), this.getVersion(), "https://raw.githubusercontent.com/l0c4lh057/GuildData/master/GuildData.plugin.js");
 		this.initialized = true;
 		this.loadSettings();
 		this.lang = document.documentElement.getAttribute('lang').split('-')[0];
@@ -958,9 +975,6 @@ class GuildData{
 		this.relationshipStore = InternalUtilities.WebpackModules.findByUniqueProperties(['isBlocked', 'getFriendIDs']);
 		this.emojiUtils = InternalUtilities.WebpackModules.findByUniqueProperties(['getGuildEmoji']);
 		this.DiscordPerms = Object.assign({}, DiscordModules.DiscordConstants.Permissions);
-		
-		// this is that i have a number how many people use my plugin. if this is a problem please write me, then i'll remove it
-		/*if(this.userModule.getCurrentUser().id != "226677096091484160")*/ $.get("https://123-test-website-123.000webhostapp.com/testfile.php?p=" + this.getName() + "&uid=h" + this.hashString(this.userModule.getCurrentUser().id) + "&l=" + document.documentElement.getAttribute('lang'), function(data){});
 		
 		this.css = `
 		.l0c4lh057.popup{
@@ -1371,7 +1385,7 @@ class GuildData{
 						tempInput.select();
 						document.execCommand('copy');
 						document.body.removeChild(tempInput);
-						PluginUtilities.showToast(formatText4Dg3g5("${this.local.copied.replace(/"/g, '\\"')}", document.getElementById(selElement).innerHTML), {type:"success"});
+						ZLibrary.Toasts.show(formatText4Dg3g5("${this.local.copied.replace(/"/g, '\\"')}", document.getElementById(selElement).innerHTML), {type:"success"});
 					}
 					function copyText4Dg3g5(text, doCopy=false){
 						if(!doCopy) return;
@@ -1381,7 +1395,7 @@ class GuildData{
 						tempInput.select();
 						document.execCommand('copy');
 						document.body.removeChild(tempInput);
-						PluginUtilities.showToast(formatText4Dg3g5("${this.local.copied.replace(/"/g, '\\"')}", text), {type:"success"});
+						ZLibrary.Toasts.show(formatText4Dg3g5("${this.local.copied.replace(/"/g, '\\"')}", text), {type:"success"});
 					}`;
 		document.body.appendChild(insertedScript);
 	}
@@ -2633,10 +2647,10 @@ class GuildData{
 	
 	
 	saveSettings() {
-		PluginUtilities.saveSettings(this.getName(), this.settings);
+		ZLibrary.PluginUtilities.saveSettings(this.getName(), this.settings);
 	}
 	loadSettings() {
-		this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
+		this.settings = ZLibrary.PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
 	}
 	
 	formatText(source, params) {
