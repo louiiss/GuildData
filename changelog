@@ -174,3 +174,7 @@ v1.2.9
   Fixed
     - Copying data should work again
 
+v1.2.10
+  Fixed
+    - The popup with the information shouldn't get deleted anymore
+
