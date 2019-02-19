@@ -4,7 +4,7 @@ class GuildData{
 	initConstructor () {}
 	getName () {return "GuildData";}
 	getDescription () {return this.local.description;}
-	getVersion () {return "1.2.9";}
+	getVersion () {return "1.2.10";}
 	getAuthor () {return "l0c4lh057";}
 	
 	
@@ -225,32 +225,6 @@ class GuildData{
 	
 	get changelog(){
 		return JSON.parse(`{
-			"1.2.6": [
-				{
-					"title": "Added",
-					"type": "added",
-					"items": [
-						"Parameter \\"status\\" in user search (online, offline, idle, dnd)",
-						"More options in user search: instead of searching for users that fulfill a certain property you can search for users that don't fulfill it. Instead of using \\"#name:NAME\\" use \\"name!:NAME\\". This also applies to all other searching keywords"
-					]
-				},
-				{
-					"title": "Fixed",
-					"type": "fixed",
-					"items": [
-						"The plugin should work again",
-						"The \\"${this.local.userInfo.exportUsers}\\" button should always disappear when you open the user information, doesn't matter in which way it opens",
-						"When you show the users of a specific role the current user information closes now"
-					]
-				},
-				{
-					"title": "Known issues",
-					"type": "request",
-					"items": [
-						"The context menu doesn't work anymore. Right clicking the guild icon has to be fixed, I'll do it in the near future. Luckily there is still a way to show the information"
-					]
-				}
-			],
 			"1.2.7": [
 				{
 					"title": "Added",
@@ -280,6 +254,15 @@ class GuildData{
 					"type": "fixed",
 					"items": [
 						"Copying data should work again"
+					]
+				}
+			],
+			"1.2.10": [
+				{
+					"title": "Fixed",
+					"type": "fixed",
+					"items": [
+						"The popup with the information shouldn't get deleted anymore"
 					]
 				}
 			]
@@ -1061,7 +1044,8 @@ class GuildData{
 			popupWindow.style.borderRadius = '10px';
 			popupWindow.style.boxShadow = '#191919 0px 0px 50px 30px';
 			popupWindow.style.zIndex = '101';
-			document.getElementsByClassName('layer-3QrUeG')[0].appendChild(popupWindow);
+			//document.getElementsByClassName('layer-3QrUeG')[0].appendChild(popupWindow);
+			document.body.appendChild(popupWindow);
 			
 			var popupInner = document.createElement('div');
 			popupInner.className = 'l0c4lh057 popup';
